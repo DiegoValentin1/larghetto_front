@@ -21,15 +21,10 @@ export const EditBridaForm = ({
 }) => {
   const form = useFormik({
     initialValues: {
-      specNo: "",
-      grade:"",
-      type:"",
-      smys:"",
-      status: true,
+      instrumento: ""
     },
     validationSchema: yup.object().shape({
-      grade: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-      smys: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+      instrumento: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres")
     }),
     onSubmit: async (values) => {
       return Alert.fire({
@@ -50,7 +45,7 @@ export const EditBridaForm = ({
             console.log(values);
             const response = await AxiosClient({
               method: "PUT",
-              url: "/brida/",
+              url: "/instrumento/",
               data: JSON.stringify(values),
             });
             if (!response.error) {
@@ -83,10 +78,9 @@ export const EditBridaForm = ({
   })
 
   React.useMemo(() => {
-    const { id, grade, smys } = objeto;
+    const { id, instrumento} = objeto;
     form.values.id = id;
-    form.values.grade = grade;
-    form.values.smys = smys;
+    form.values.instrumento = instrumento;
   }, [objeto]);
 
   const handleClose = () => {
@@ -101,30 +95,19 @@ export const EditBridaForm = ({
       onHide={handleClose}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Actualizar Material Brida Extremo</Modal.Title>
+        <Modal.Title>Actualizar Instrumento</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={form.handleSubmit}>
           <Form.Group as={Row} className="mb-3">
-            <Form.Label htmlFor="grade">Grade</Form.Label>
+            <Form.Label htmlFor="instrumento">Instrumento</Form.Label>
             <Form.Control
-              name="grade"
-              value={form.values.grade}
+              name="instrumento"
+              value={form.values.instrumento}
               onChange={form.handleChange}
             />
-            {form.errors.grade && (
-              <span className="error-text">{form.errors.grade}</span>
-            )}
-          </Form.Group>
-          <Form.Group as={Row} className="mb-3">
-            <Form.Label htmlFor="smys">SMYS</Form.Label>
-            <Form.Control
-              name="smys"
-              value={form.values.smys}
-              onChange={form.handleChange}
-            />
-            {form.errors.smys && (
-              <span className="error-text">{form.errors.smys}</span>
+            {form.errors.instrumento && (
+              <span className="error-text">{form.errors.instrumento}</span>
             )}
           </Form.Group>
           <FormGroup className="mb-3">

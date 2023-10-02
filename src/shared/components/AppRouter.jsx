@@ -7,12 +7,12 @@ import { PublicNavbar } from "./PublicNavbar";
 import { Loader } from "./Loader";
 import AppLayout from "./AppLayout";
 import SuperDashBoard from "../../modules/super/SuperDashBoard";
-import Users from "../../modules/super/Users";
+import Users from "../../modules/super/Alumnos";
 import UserHome from "../../modules/user/UserHome";
 import UserTrabajos from "../../modules/user/UserTrabajos";
 import SuperMateriales from "../../modules/super/SuperMaterialesCamisa";
-import SuperMaterialesBrida from "../../modules/super/SuperMaterialesBrida";
-import SuperMaterialesTee from "../../modules/super/SuperMaterialesTee";
+import SuperMaterialesBrida from "../../modules/super/Instrumentos";
+import SuperMaterialesTee from "../../modules/super/Maestros";
 import PdfTemplate from "../../modules/user/PDF/PdfTemplate";
 
 export const AppRouter = () => {
@@ -32,9 +32,6 @@ export const AppRouter = () => {
                   <Routes>
                     <Route path="/" element={<AppLayout option={1} />}>
                     <Route index element={<Users option={true}/>} />
-                    <Route path="materiales-brida-extremo" element={<SuperMaterialesBrida/>} />
-                    <Route path="materiales-tee-reduccion" element={<SuperMaterialesTee/>} />
-                    <Route path="materiales-camisa-interior" element={<SuperMateriales/>} />
                     <Route path="*" element={<>ADMIN</>} />
                     </Route>
                   </Routes>
@@ -45,7 +42,7 @@ export const AppRouter = () => {
                   <Routes>
                     <Route path="/" element={<AppLayout option={2}/>}>
                     {/* <Route index element={<SuperDashBoard/>} /> */}
-                    <Route index element={<Users option={false}/>} />
+                    <Route index element={<Users/>} />
                     <Route path="materiales-brida-extremo" element={<SuperMaterialesBrida/>} />
                     <Route path="materiales-tee-reduccion" element={<SuperMaterialesTee/>} />
                     <Route path="materiales-camisa-interior" element={<SuperMateriales/>} />

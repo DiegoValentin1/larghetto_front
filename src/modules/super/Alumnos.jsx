@@ -6,21 +6,16 @@ import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
 import FeatherIcon from "feather-icons-react/build/FeatherIcon";
 import '../../utils/styles/DataTable.css'
-import { AddUserForm } from './SuperForms/AddUserForm';
+import { AddUserForm } from './SuperForms/AddAlumnoForm';
 import { Edit } from 'feather-icons-react/build/IconComponents';
 import { EditUserForm } from './SuperForms/EditUserForm';
 
 
 
 
-export default function Users({option}) {
+export default function Users() {
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
-        {
-            name: 'Empresa',
-            selector: 'empresa',
-            sortable: true
-        },
         {
             name: 'Nombre',
             selector: 'name',
@@ -32,8 +27,23 @@ export default function Users({option}) {
             sortable: true,
         },
         {
-            name: 'Rol',
-            selector: 'role',
+            name: 'Mensualidad',
+            selector: 'mensualidad',
+            sortable: true,
+        },
+        {
+            name: 'Proximo Pago',
+            selector: (row)=>{return row.proximo_pago.substring(0,10)},
+            sortable: true,
+        },
+        {
+            name: 'Instrumento',
+            selector: 'instrumento',
+            sortable: true,
+        },
+        {
+            name: 'Maestro',
+            selector: 'maestro',
             sortable: true,
         },
         {
@@ -114,7 +124,7 @@ export default function Users({option}) {
     const cargarDatos = async () => {
         try {
             const response = await AxiosClient({
-                url: option ? "/personal/admin/" : "/personal/",
+                url: "/personal/",
                 method: "GET",
             });
             console.log(response);
@@ -165,7 +175,7 @@ export default function Users({option}) {
                                 <div style={{ display: "flex", flexDirection: "row" }}>
 
                                     <div style={{ width: "95%", paddingTop: 3 }}>
-                                        Usuarios
+                                        Alumnos
                                     </div>
 
                                     <div >
@@ -188,8 +198,8 @@ export default function Users({option}) {
             </div>
 
 
-            <AddUserForm option={option} isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditUserForm option={option} isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
+            <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
         </>
 
     )

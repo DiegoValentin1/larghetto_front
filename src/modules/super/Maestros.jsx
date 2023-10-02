@@ -16,13 +16,23 @@ export default function SuperMaterialesTee() {
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
-            name: 'Grade',
-            selector: 'grade',
+            name: 'Nombre',
+            selector: 'name',
             sortable: true
         },
         {
-            name: 'SMYS',
-            selector: 'smys',
+            name: 'Email',
+            selector: 'email',
+            sortable: true,
+        },
+        {
+            name: 'Telefono',
+            selector: 'telefono',
+            sortable: true,
+        },
+        {
+            name: 'Domicilio',
+            selector: 'domicilio',
             sortable: true,
         },
         {
@@ -75,7 +85,7 @@ export default function SuperMaterialesTee() {
     const changeStatus = async (id) => {
         try {
             const response = await AxiosClient({
-                url: "/tee/" + id,
+                url: "/personal/" + id,
                 method: "DELETE",
             });
             if (!response.error) {
@@ -101,7 +111,7 @@ export default function SuperMaterialesTee() {
     const cargarDatos = async () => {
         try {
             const response = await AxiosClient({
-                url: "/tee/",
+                url: "/personal/teacher",
                 method: "GET",
             });
             console.log(response);
@@ -151,7 +161,7 @@ export default function SuperMaterialesTee() {
                                 <div style={{ display: "flex", flexDirection: "row" }}>
 
                                     <div style={{ width: "95%", paddingTop: 3 }}>
-                                        Material Tee Reducción
+                                        Maestros
                                     </div>
 
                                     <div >

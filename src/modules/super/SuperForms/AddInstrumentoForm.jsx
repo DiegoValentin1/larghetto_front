@@ -9,12 +9,10 @@ import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, err
 export const AddBridaForm = ({ isOpen, cargarDatos, onClose }) => {
     const form = useFormik({
         initialValues: {
-            grade: "",
-            SMYS: ""
+            instrumento: ""
         },
         validationSchema: yup.object().shape({
-            grade: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            SMYS: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+            instrumento: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         }),
         onSubmit: async (values) => {
             return Alert.fire({
@@ -33,15 +31,13 @@ export const AddBridaForm = ({ isOpen, cargarDatos, onClose }) => {
                 preConfirm: async () => {
                     try {
                         console.log(JSON.stringify({
-                            grade: values.grade,
-                            SMYS: values.rol,
+                            instrumento: values.instrumento,
                         }));
                         const response = await AxiosClient({
                             method: "POST",
-                            url: "/brida/",
+                            url: "/instrumento/",
                             data: JSON.stringify({
-                                grade: values.grade,
-                                smys: values.SMYS,
+                                instrumento: values.instrumento
                             }),
                         });
                         console.log(response);
@@ -86,22 +82,15 @@ export const AddBridaForm = ({ isOpen, cargarDatos, onClose }) => {
         onHide={handleClose}
     >
         <Modal.Header closeButton>
-            <Modal.Title>Registrar Material Brida Extremo</Modal.Title>
+            <Modal.Title>Registrar Instrumento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <Form onSubmit={form.handleSubmit}>
                 <Form.Group className='mb-3'>
-                    <Form.Label htmlFor='grade'>Grade</Form.Label>
-                    <Form.Control name='grade' placeholder="F46" value={form.values.grade} onChange={form.handleChange} />
+                    <Form.Label htmlFor='instrumento'>Nombre del Instrumento</Form.Label>
+                    <Form.Control name='instrumento' placeholder="Guitarra" value={form.values.instrumento} onChange={form.handleChange} />
                     {
-                        form.errors.grade && (<span className='error-text'>{form.errors.grade}</span>)
-                    }
-                </Form.Group>
-                <Form.Group className='mb-3'>
-                    <Form.Label htmlFor='abbreviation'>SMYS</Form.Label>
-                    <Form.Control name='SMYS' placeholder="315" value={form.values.SMYS} onChange={form.handleChange} />
-                    {
-                        form.errors.SMYS && (<span className='error-text'>{form.errors.SMYS}</span>)
+                        form.errors.instrumento && (<span className='error-text'>{form.errors.instrumento}</span>)
                     }
                 </Form.Group>
                 <FormGroup className='mb-3'>

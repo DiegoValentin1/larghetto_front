@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../modules/auth/authContext";
 import { TbShirt } from 'react-icons/tb'
-import { GiTeePipe } from 'react-icons/gi'
+import { GiGuitarBassHead } from 'react-icons/gi'
+import { FaChalkboardTeacher } from 'react-icons/fa'
 
 
 const SuperSidebar = () => {
@@ -40,10 +41,10 @@ const SuperSidebar = () => {
                     <img className='profilePicture' src={require('../../utils/img/profilePicture.jpg')} alt="" />
                 </div>
                 {/* <Link to='/' className="home icon" data-label="Home"><FeatherIcon icon={'home'} /></Link> */}
-                <Link to='/' className="user icon" data-label="Usuarios"><FeatherIcon icon={'users'} /></Link>
-                <Link to='materiales-tee-reduccion' className="sliders icon" data-label="Tee Reducción" ><GiTeePipe style={{ height: 28, width: 28 }}/> </Link>
-                <Link to='materiales-brida-extremo' className="sliders icon" data-label="Brida Exterior" style={{ fontSize:"1.5rem"}}>BE </Link>
-                <Link to='materiales-camisa-interior' className="sliders icon" data-label="Camisa Interior" ><TbShirt style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='/' className="user icon" data-label="Alumnos"><FeatherIcon icon={'users'} /></Link>
+                <Link to='materiales-tee-reduccion' className="sliders icon" data-label="Maestros" ><FaChalkboardTeacher style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='materiales-brida-extremo' className="sliders icon" data-label="Instrumentos" style={{ fontSize:"1.5rem"}}><GiGuitarBassHead style={{ height: 28, width: 28 }}/> </Link>
+                {/* <Link to='materiales-camisa-interior' className="sliders icon" data-label="Camisa Interior" ><TbShirt style={{ height: 28, width: 28 }}/> </Link> */}
 {/* 
                 <div className='atributosContainer' style={{ gap: gapSize, height:height, width:height, backgroundColor:display}}>
                     <Link to='users' className=" icon" data-label="Valor de esfuerzo mínimo a la cedencia especificado">WH</Link>

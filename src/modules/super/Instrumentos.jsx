@@ -6,8 +6,8 @@ import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
 import FeatherIcon from "feather-icons-react/build/FeatherIcon";
 import '../../utils/styles/DataTable.css'
-import { AddBridaForm } from './SuperForms/AddBridaForm';
-import { EditBridaForm } from './SuperForms/EditBridaForm';
+import { AddBridaForm } from './SuperForms/AddInstrumentoForm';
+import { EditBridaForm } from './SuperForms/EditInstrumentoForm';
 
 
 
@@ -16,14 +16,9 @@ export default function SuperMaterialesBrida() {
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
-            name: 'Grade',
-            selector: 'grade',
+            name: 'Instrumento',
+            selector: 'instrumento',
             sortable: true
-        },
-        {
-            name: 'SMYS',
-            selector: 'smys',
-            sortable: true,
         },
         {
             name: 'Status',
@@ -75,7 +70,7 @@ export default function SuperMaterialesBrida() {
     const changeStatus = async (id) => {
         try {
             const response = await AxiosClient({
-                url: "/brida/" + id,
+                url: "/instrumento/" + id,
                 method: "DELETE",
             });
             if (!response.error) {
@@ -101,7 +96,7 @@ export default function SuperMaterialesBrida() {
     const cargarDatos = async () => {
         try {
             const response = await AxiosClient({
-                url: "/brida/",
+                url: "/instrumento",
                 method: "GET",
             });
             console.log(response);
@@ -151,7 +146,7 @@ export default function SuperMaterialesBrida() {
                                 <div style={{ display: "flex", flexDirection: "row" }}>
 
                                     <div style={{ width: "95%", paddingTop: 3 }}>
-                                        Material Brida Extremo
+                                        Instrumentos
                                     </div>
 
                                     <div >
