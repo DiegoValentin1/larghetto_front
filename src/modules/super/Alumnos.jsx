@@ -9,7 +9,7 @@ import FeatherIcon from "feather-icons-react/build/FeatherIcon";
 import '../../utils/styles/DataTable.css'
 import { AddUserForm } from './SuperForms/AddAlumnoForm';
 import { Edit } from 'feather-icons-react/build/IconComponents';
-import { EditUserForm } from './SuperForms/EditUserForm';
+import { EditUserForm } from './SuperForms/EditAlumnoForm';
 import { AlumnoInfo } from './Components/AlumnoInfo';
 
 
@@ -21,11 +21,6 @@ export default function Users() {
         {
             name: 'Nombre',
             selector: 'name',
-            sortable: true,
-        },
-        {
-            name: 'Email',
-            selector: 'email',
             sortable: true,
         },
         {

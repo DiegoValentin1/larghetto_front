@@ -62,15 +62,15 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const form = useFormik({
         initialValues: {
             email: "",
-            password: "",
-            rol: "",
-            nombre: ""
+            role: "ALUMNO",
+            nombre: "",
+            fechaNacimiento: "",
+
         },
         validationSchema: menor ?
             yup.object().shape({
-                nombre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+                name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
-                password: yup.string().required("Campo obligatorio").min(8, "Minimo 8 caracteres"),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
                 domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
@@ -90,9 +90,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
             })
             :
             yup.object().shape({
-                nombre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+                name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
-                password: yup.string().required("Campo obligatorio").min(8, "Minimo 8 caracteres"),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
                 domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
@@ -122,22 +121,11 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 allowOutsideClick: () => !Alert.isLoading,
                 preConfirm: async () => {
                     try {
-                        console.log(JSON.stringify({
-                            email: values.email,
-                            password: values.password,
-                            rol: values.rol,
-                            name: values.nombre
-                        }));
+                        console.log(JSON.stringify({ ...values, role: "ALUMNO" }));
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/alumno",
-                            data: JSON.stringify({
-                                email: values.email,
-                                password: values.password,
-                                role: "ALUMNO",
-                                name: values.nombre,
-                                empresa: values.empresa
-                            }),
+                            data: JSON.stringify({ ...values, role: "ALUMNO" }),
                         });
                         console.log(response);
                         if (!response.error) {
@@ -220,6 +208,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
         show={isOpen}
         onHide={handleClose}
         style={{ width: "90vw", display: "flex", alignContent: "center", justifyItems: "center", marginLeft: "5vw", padding: "0" }}
+        dialogClassName="mi-modal-personalizado"
+        id="modalAlumnoR"
     >
         <Modal.Header closeButton >
             <Modal.Title>Registrar Usuario</Modal.Title>
@@ -227,12 +217,12 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
         <Modal.Body>
             <Form onSubmit={form.handleSubmit}>
                 <div className="InputContainer4-2">
-                    <div className="InputContainer4" style={{ width: "89%" }}>
+                    <div className="InputContainer4" style={{ width: "89%", gridTemplateColumns: "repeat(3, 1fr)" }}>
                         <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='nombre'>Nombre</Form.Label>
-                            <Form.Control name='nombre' placeholder="Pablo" value={form.values.nombre} onChange={form.handleChange} />
+                            <Form.Label htmlFor='name'>Nombre</Form.Label>
+                            <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
                             {
-                                form.errors.nombre && (<span className='error-text'>{form.errors.nombre}</span>)
+                                form.errors.name && (<span className='error-text'>{form.errors.name}</span>)
                             }
                         </Form.Group>
                         <Form.Group className='mb-3'>
@@ -249,13 +239,13 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                                 form.errors.email && (<span className='error-text'>{form.errors.email}</span>)
                             }
                         </Form.Group>
-                        <Form.Group className='mb-3'>
+                        {/* <Form.Group className='mb-3'>
                             <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
                             <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
                             {
                                 form.errors.password && (<span className='error-text'>{form.errors.password}</span>)
                             }
-                        </Form.Group>
+                        </Form.Group> */}
                     </div>
                     <div className="InputContainer1" style={{ width: "10%" }}>
                         <Form.Group className='mb-3'>
@@ -285,14 +275,14 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='telefono'>Telefono</Form.Label>
-                            <Form.Control type='number' min={0}  name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
+                            <Form.Control type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
                             {
                                 form.errors.telefono && (<span className='error-text'>{form.errors.telefono}</span>)
                             }
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='contactoEmergencia'>Contacto de Emergencia</Form.Label>
-                            <Form.Control type='number' min={0}  name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
+                            <Form.Control type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
                             {
                                 form.errors.contactoEmergencia && (<span className='error-text'>{form.errors.contactoEmergencia}</span>)
                             }
@@ -415,17 +405,17 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                                     onChange={form.handleChange}
                                 >
                                     <option value="">Selecciona un Horario</option>
-                                    <option value="1">08:00</option>
-                                    <option value="2">09:00</option>
-                                    <option value="3">10:00</option>
-                                    <option value="4">11:00</option>
-                                    <option value="5">12:00</option>
-                                    <option value="6">13:00</option>
-                                    <option value="7">14:00</option>
-                                    <option value="8">15:00</option>
-                                    <option value="9">16:00</option>
-                                    <option value="10">17:00</option>
-                                    <option value="11">18:00</option>
+                                    <option value="08:00">08:00</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
                                 </Form.Select>
                             </div>
 
@@ -447,7 +437,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                             </Form.Group>
                             <Form.Group className='mb-3'>
                                 <Form.Label htmlFor='madreTelefono'>Contacto de la madre</Form.Label>
-                                <Form.Control type='number' min={0}  name='madreTelefono' placeholder="7771234567" value={form.values.madreTelefono} onChange={form.handleChange} />
+                                <Form.Control type='number' min={0} name='madreTelefono' placeholder="7771234567" value={form.values.madreTelefono} onChange={form.handleChange} />
                                 {
                                     form.errors.madreTelefono && (<span className='error-text'>{form.errors.madreTelefono}</span>)
                                 }
@@ -460,8 +450,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                                 }
                             </Form.Group>
                             <Form.Group className='mb-3'>
-                                <Form.Label htmlFor='padreTelefono'>Contacto de la madre</Form.Label>
-                                <Form.Control type='number' min={0}  name='padreTelefono' placeholder="7777654321" value={form.values.padreTelefono} onChange={form.handleChange} />
+                                <Form.Label htmlFor='padreTelefono'>Contacto del padre</Form.Label>
+                                <Form.Control type='number' min={0} name='padreTelefono' placeholder="7777654321" value={form.values.padreTelefono} onChange={form.handleChange} />
                                 {
                                     form.errors.padreTelefono && (<span className='error-text'>{form.errors.padreTelefono}</span>)
                                 }

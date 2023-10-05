@@ -74,18 +74,18 @@
     border-radius: 0.5rem;
 }
 
-.modal-content {
+.mi-modal-personalizado .modal-content {
     width: 90vw;
     margin: 0;
     height: 90vh;
     margin-top: 5vh;
 }
 
-.modal-dialog {
+#modalAlumnoR {
     margin: 0;
 }
 
-.modal-body {
+.mi-modal-personalizado .modal-body {
     padding: 10px;
     padding-top: 0;
 }
