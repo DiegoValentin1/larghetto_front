@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
+import { AiOutlineInfoCircle } from 'react-icons/ai'
 import "bootstrap/dist/css/bootstrap.min.css";
 import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
@@ -9,6 +10,7 @@ import '../../utils/styles/DataTable.css'
 import { AddUserForm } from './SuperForms/AddAlumnoForm';
 import { Edit } from 'feather-icons-react/build/IconComponents';
 import { EditUserForm } from './SuperForms/EditUserForm';
+import { AlumnoInfo } from './Components/AlumnoInfo';
 
 
 
@@ -33,7 +35,7 @@ export default function Users() {
         },
         {
             name: 'Proximo Pago',
-            selector: (row)=>{return row.proximo_pago.substring(0,10)},
+            selector: (row) => { return row.proximo_pago.substring(0, 10) },
             sortable: true,
         },
         {
@@ -62,7 +64,16 @@ export default function Users() {
             name: '',
             cell: (row) => (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
-                    <div style={{ paddingRight: 10 }}>
+                    <div style={{ paddingRight: "10px" }}>
+                        <AiOutlineInfoCircle className='DataIcon' onClick={() => {
+
+                            setSelectedObject(row);
+                            console.log(row);
+                            console.log(selectedObject);
+                            setIsInfo(true);
+                        }} style={{ height: 24, width: 25, marginBottom: 0 }} />
+                    </div>
+                    <div style={{ paddingRight: "0px" }}>
                         <FaEdit className='DataIcon' onClick={() => {
 
                             setSelectedObject(row);
@@ -92,6 +103,7 @@ export default function Users() {
 
 
     const [isEditing, setIsEditting] = useState(false);
+    const [isInfo, setIsInfo] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [datos, setDatos] = useState([]);
 
@@ -158,7 +170,7 @@ export default function Users() {
         cargarDatos();
     }, []);
 
-    useEffect(()=>aplicarEstilosAlSiguienteDiv());
+    useEffect(() => aplicarEstilosAlSiguienteDiv());
 
 
 
@@ -199,7 +211,8 @@ export default function Users() {
 
 
             <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />
+            <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />
         </>
 
     )

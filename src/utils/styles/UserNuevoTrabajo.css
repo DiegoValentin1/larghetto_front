@@ -118,3 +118,171 @@ input[type=number]::-webkit-outer-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+.AlumnoInfoMain{
+    background-color: rgb(255, 255, 255);
+    height: 100%;
+    width: 100%;
+    padding: 0.7rem;
+    display: flex;
+    flex-direction: row;
+}
+
+.AlumnoInfoLeft{
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    height: 100%;
+    width: 70%;
+    border: solid 0px red;
+}
+
+.AlumnoInfoRight{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 30%;
+    border: solid 0px red;
+}
+
+.AlumnoInfoBottomInfo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 65%;
+    width: 100%;
+    border: solid 0px red;
+    padding-left: 0.5rem;
+}
+
+.AlumnoInfoProfilePicture{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 35%;
+    width: 100%;
+    border: solid 2px #333;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.AlumnoInfoTitleInfo{
+    width: 100%;
+    border: solid 0px red;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+}
+
+.AlumnoInfoTitleInfo p:first-child{
+    font-weight: bold;
+    height: 35%;
+    margin: 0;
+}
+
+.AlumnoInfoTitleInfo p:nth-child(2){
+    height: 65%;
+    margin: 0;
+}
+
+.AlumnoInfoInfoCentro{
+    width: 100%;
+    height: 15%;
+    display: flex;
+    flex-direction: row;
+}
+
+.CalendarioMain{
+    height: 90%;
+    width: 100%;
+    /* border: dotted 3px #333; */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    border-radius: 1rem;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
+    transition: transform 0.3s;
+}
+
+.CalendarioMain:hover{
+    transform: scale(1.01);
+}
+
+.CalendarioTitulo{
+    padding-top: 0.5rem;
+    background-color: #ebebeb;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.CalendarioTituloMes{
+    font-weight: 500;
+    font-size: 20px;
+    padding-bottom: 0.5rem;
+}
+
+.CalendarioTituloDias{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.CalendarioTituloDia{
+    width: 14.28%;
+    text-align: center;
+    font-size: 12px;
+}
+
+.CalendarioDiasMain{
+    height: 70%;
+    width: 100%;
+    border-top: solid 1px #333;
+}
+
+.CalendarioDias{
+    width: 100%;
+    height: 16.6%;
+    display: flex;
+    border-bottom: solid 1px #333;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    padding-inline: 0rem;
+}
+
+.CalendarioDia{
+    height: 100%;
+    width: 14.28%;
+    margin: 0;
+    text-align: center;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s;
+    border-radius: 0.5rem;
+}
+
+.CalendarioDia:hover{
+    transform: scale(1.06);
+    background-color: #e1e1e1;
+}
+
+.CalendarioCirculo{
+    width: 4%;
+    height: 54%;
+    border-radius: 100%;
+    margin-right: 10px;
+    margin-left: 3px;
+    background-color: white;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
