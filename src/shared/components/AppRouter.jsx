@@ -15,11 +15,13 @@ import SuperMaterialesBrida from "../../modules/super/Instrumentos";
 import SuperMaterialesTee from "../../modules/super/Maestros";
 import PdfTemplate from "../../modules/user/PDF/PdfTemplate";
 import Promociones from "../../modules/super/Promociones";
+import Encargados from "../../modules/super/Encargados";
+import Recepcionistas from "../../modules/super/Recepcionistas";
 
 export const AppRouter = () => {
-  // const { user } = useContext(AuthContext);
-  const user = {data:{role:"SUPER"}, isLogged:true};
-  console.log(user.data.role);
+  const { user } = useContext(AuthContext);
+  // const user = {data:{role:"SUPER"}, isLogged:true};
+  // console.log(user.data.role);
   return (
     <Router>
       <Routes>
@@ -28,49 +30,52 @@ export const AppRouter = () => {
           path="/*"
           element={
             user.isLogged ? (
-              user.data.role === 'ADMIN' ? (
+              user.data.role === 'ENCARGADO' ? (
                 <>
                   <Routes>
                     <Route path="/" element={<AppLayout option={1} />}>
-                    <Route index element={<Users option={true}/>} />
-                    <Route path="*" element={<>ADMIN</>} />
-                    </Route>
-                  </Routes>
-              </>
-              ) : (
-                user.data.role === 'SUPER' ? (
-                  <>
-                  <Routes>
-                    <Route path="/" element={<AppLayout option={2}/>}>
-                    {/* <Route index element={<SuperDashBoard/>} /> */}
                     <Route index element={<Users/>} />
                     <Route path="instrumentos" element={<SuperMaterialesBrida/>} />
                     <Route path="maestros" element={<SuperMaterialesTee/>} />
                     <Route path="promociones" element={<Promociones/>} />
-                    <Route index element={<Loader/>} />
-                    <Route path="*" element={<>SUPER</>} />
+                    <Route path="recepcionistas" element={<Recepcionistas/>} />
                     </Route>
                   </Routes>
-              </>
+                </>
+              ) : (
+                user.data.role === 'SUPER' ? (
+                  <>
+                    <Routes>
+                      <Route path="/" element={<AppLayout option={2} />}>
+                        {/* <Route index element={<SuperDashBoard/>} /> */}
+                        <Route index element={<Users />} />
+                        <Route path="instrumentos" element={<SuperMaterialesBrida />} />
+                        <Route path="maestros" element={<SuperMaterialesTee />} />
+                        <Route path="promociones" element={<Promociones />} />
+                        <Route path="encargados" element={<Encargados />} />
+                        <Route path="recepcionistas" element={<Recepcionistas />} />
+                        <Route index element={<Loader />} />
+                        <Route path="*" element={<>SUPER</>} />
+                      </Route>
+                    </Routes>
+                  </>
                 ) : (
-                  user.data.role === 'USER' && (
+                  user.data.role === 'RECEPCION' && (
                     <>
-                  <Routes>
-                    <Route path="/" element={<AppLayout option={3} />}>
-                    <Route path="trabajos" element={<UserTrabajos/>} />
-                    <Route path="pdf-view" element={<div style={{height:"91.5vh", display:"flex", justifyContent:"center", alignItems:"center"}}><PdfTemplate/></div>} />
-                    <Route index element={<UserHome/>} />
-                    <Route path="*" element={<>USER</>} />
-                    </Route>
-                  </Routes>
-                  
-              </>
+                      <Routes>
+                        <Route path="/" element={<AppLayout option={3} />}>
+                        <Route index element={<Users/>} />
+                        <Route path="maestros" element={<SuperMaterialesTee />} />
+                        </Route>
+                      </Routes>
+
+                    </>
                   )
                 )
               )
             ) : (
               <>
-                <PublicNavbar/>
+                <PublicNavbar />
                 <Container style={{ marginTop: "20px" }}>
                   <Routes>
                     <Route path="more-info/:id" element={<>MOREINFO</>} />

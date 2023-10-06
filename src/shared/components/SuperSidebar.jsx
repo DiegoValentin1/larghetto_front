@@ -5,10 +5,11 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../modules/auth/authContext";
-import { TbShirt } from 'react-icons/tb'
+import { IoWoman } from 'react-icons/io5'
 import { GiGuitarBassHead } from 'react-icons/gi'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 import { TbDiscount2Off } from 'react-icons/tb'
+import { RiAdminLine } from 'react-icons/ri'
 
 
 const SuperSidebar = () => {
@@ -45,7 +46,9 @@ const SuperSidebar = () => {
                 <Link to='/' className="user icon" data-label="Alumnos"><FeatherIcon icon={'users'} /></Link>
                 <Link to='maestros' className="sliders icon" data-label="Maestros" ><FaChalkboardTeacher style={{ height: 28, width: 28 }}/> </Link>
                 <Link to='instrumentos' className="sliders icon" data-label="Instrumentos" style={{ fontSize:"1.5rem"}}><GiGuitarBassHead style={{ height: 28, width: 28 }}/> </Link>
-                <Link to='promociones' className="sliders icon" data-label="Camisa Interior" ><TbDiscount2Off style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='promociones' className="sliders icon" data-label="Promociones" ><TbDiscount2Off style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='recepcionistas' className="sliders icon" data-label="Recepcionistas" ><IoWoman style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='encargados' className="sliders icon" data-label="Encargados" ><RiAdminLine style={{ height: 28, width: 28 }}/> </Link>
 {/* 
                 <div className='atributosContainer' style={{ gap: gapSize, height:height, width:height, backgroundColor:display}}>
                     <Link to='users' className=" icon" data-label="Valor de esfuerzo mínimo a la cedencia especificado">WH</Link>

@@ -5,9 +5,10 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../modules/auth/authContext";
-import { FaDumbbell, FaRuler } from 'react-icons/fa'
-import { TbShirt } from 'react-icons/tb'
-import { GiTeePipe } from 'react-icons/gi'
+import { GiGuitarBassHead } from 'react-icons/gi'
+import { FaChalkboardTeacher } from 'react-icons/fa'
+import { TbDiscount2Off } from 'react-icons/tb'
+import { IoWoman } from 'react-icons/io5'
 
 const AdminSidebar = () => {
     const { dispatch } = useContext(AuthContext);
@@ -39,10 +40,12 @@ const AdminSidebar = () => {
                     <img className='profilePicture' src={require('../../utils/img/profilePicture.jpg')} alt="" />
                 </div> */}
                 {/* <Link to='/' className="home icon" data-label="Pagina Principal"><FeatherIcon icon={'home'} /></Link> */}
-                <Link to='/' className="user icon" data-label="Perfil"><FeatherIcon icon={'user'} /></Link>
-                <Link to='materiales-tee-reduccion' className="sliders icon" data-label="Tee Reducción" ><GiTeePipe style={{ height: 28, width: 28 }}/> </Link>
-                <Link to='materiales-brida-extremo' className="sliders icon" data-label="Brida Exterior" style={{ fontSize:"1.5rem"}}>BE </Link>
-                <Link to='materiales-camisa-interior' className="sliders icon" data-label="Camisa Interior" ><TbShirt style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='/' className="user icon" data-label="Alumnos"><FeatherIcon icon={'users'} /></Link>
+                <Link to='maestros' className="sliders icon" data-label="Maestros" ><FaChalkboardTeacher style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='instrumentos' className="sliders icon" data-label="Instrumentos" style={{ fontSize:"1.5rem"}}><GiGuitarBassHead style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='promociones' className="sliders icon" data-label="Promociones" ><TbDiscount2Off style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='recepcionistas' className="sliders icon" data-label="Recepcionistas" ><IoWoman style={{ height: 28, width: 28 }}/> </Link>
+                
             </div>
             <div className="bottom">
                 {/* <div className="config icon" data-label="Configuración"><FeatherIcon icon={'settings'} /></div> */}

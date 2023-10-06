@@ -176,7 +176,7 @@ export const EditMaestroForm = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={form.handleSubmit}>
-          <div className="InputContainer4">
+          <div className="InputContainer3">
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='name'>Nombre</Form.Label>
               <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
@@ -198,7 +198,7 @@ export const EditMaestroForm = ({
                 form.errors.email && (<span className='error-text'>{form.errors.email}</span>)
               }
             </Form.Group>
-            <Form.Group className="mb-3">
+            {/* <Form.Group className="mb-3">
               <Form.Label htmlFor="hora">Horario</Form.Label>
               <div className="InputSelect">
                 <Form.Select
@@ -226,7 +226,7 @@ export const EditMaestroForm = ({
               {form.errors.hora && (
                 <span className="error-text">{form.errors.hora}</span>
               )}
-            </Form.Group>
+            </Form.Group> */}
             {/* <Form.Group className='mb-3'>
                             <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
                             <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
@@ -235,7 +235,7 @@ export const EditMaestroForm = ({
                             }
                         </Form.Group> */}
           </div>
-          <div className="InputContainer5" style={{ width: "100%" }}>
+          <div className="InputContainer4" style={{ width: "100%" }}>
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='domicilio'>Domicilio</Form.Label>
               <Form.Control name='domicilio' placeholder="Calle #34" value={form.values.domicilio} onChange={form.handleChange} />
@@ -264,7 +264,7 @@ export const EditMaestroForm = ({
                 form.errors.contactoEmergencia && (<span className='error-text'>{form.errors.contactoEmergencia}</span>)
               }
             </Form.Group>
-            <Form.Group className="mb-3">
+            {/* <Form.Group className="mb-3">
               <Form.Label htmlFor="dia">Día</Form.Label>
               <div className="InputSelect">
                 <Form.Select
@@ -288,7 +288,7 @@ export const EditMaestroForm = ({
               {form.errors.dia && (
                 <span className="error-text">{form.errors.dia}</span>
               )}
-            </Form.Group>
+            </Form.Group> */}
           </div>
           <div className="InputContainer3">
             <Form.Group className='mb-3'>
@@ -313,7 +313,7 @@ export const EditMaestroForm = ({
               }
             </Form.Group>
           </div>
-          <div className="InputContainer4-2">
+          {/* <div className="InputContainer4-2">
             <div className="InputContainer5">
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="maestro">Maestro</Form.Label>
@@ -363,7 +363,7 @@ export const EditMaestroForm = ({
               </Form.Group>
 
             </div>
-          </div>
+          </div> */}
 
           <FormGroup className='mb-3'>
             <Row style={{ padding: "10px" }}>

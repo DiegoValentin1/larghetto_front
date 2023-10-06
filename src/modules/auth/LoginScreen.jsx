@@ -81,7 +81,6 @@ export const LoginScreen = () => {
     <div className="loginMainFrame">
       <div className={`loginContainer ${expanded ? 'expandedContainer' : ''}`}>
         <div className={`loginLeftContainer ${expanded ? 'expandedL' : ''}`}>
-        <img className="loginMpgiaLogo" src={require('../../utils/img/mpgialogo.png')} alt="" />
         <div className="formContainer">
           <Form className="loginSelect" onSubmit={formik.handleSubmit}>
                         <Form.Group className="form-outline mb-4">
@@ -143,9 +142,6 @@ export const LoginScreen = () => {
                         </Form.Group>
           </Form>
         </div>
-        <div className="loginCopyRight">
-        © 2023 MPGIA. All rights reserved
-        </div>
         </div>
 
         <div className={`loginRightContainer ${expanded ? 'expandedR' : ''}`}>
@@ -169,7 +165,6 @@ export const LoginScreen = () => {
         {!success && !failure && expanded && (
           <React.Fragment>
             <div className="logo">
-              <img className="loginMpgiaLogo" src={require('../../utils/img/mpgialogo.png')} alt="" />
               <div class="progress-bar">
                 <div class="progress"></div>
               </div>
