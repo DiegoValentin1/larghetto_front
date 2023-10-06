@@ -156,6 +156,8 @@ export const AlumnoInfo = ({ isOpen, cargarDatos, onClose, objeto }) => {
         show={isOpen}
         onHide={handleClose}
         style={{ width: "90vw", display: "flex", alignContent: "center", justifyItems: "center", marginLeft: "5vw", padding: "0" }}
+        dialogClassName="mi-modal-personalizado"
+        id="modalAlumnoR"
     >
         <Modal.Header closeButton >
             <Modal.Title>Información Del Alumno</Modal.Title>

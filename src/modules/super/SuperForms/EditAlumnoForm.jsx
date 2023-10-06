@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Col, Row, Form, Modal, FormGroup } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -29,149 +29,150 @@ export const EditUserForm = ({
 
   const form = useFormik({
     initialValues: {
-        email: "",
-        role: "ALUMNO",
-        nombre: "",
-        fechaNacimiento:"",
-        
+      email: "",
+      role: "ALUMNO",
+      nombre: "",
+      fechaNacimiento: "",
+
     },
     validationSchema: menor ?
-        yup.object().shape({
-            name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
-            fechaNacimiento: yup.string().required("Campo obligatorio"),
-            nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-            domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-            contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-            mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-            maestro: yup.string().required("Campo obligatorio"),
-            instrumento: yup.string().required("Campo obligatorio"),
-            promocion: yup.string().required("Campo obligatorio"),
-            dia: yup.string().required("Campo obligatorio"),
-            hora: yup.string().required("Campo obligatorio"),
-            nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-            nombrePadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            padreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-        })
-        :
-        yup.object().shape({
-            name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
-            fechaNacimiento: yup.string().required("Campo obligatorio"),
-            nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-            domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-            contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-            mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-            maestro: yup.string().required("Campo obligatorio"),
-            instrumento: yup.string().required("Campo obligatorio"),
-            promocion: yup.string().required("Campo obligatorio"),
-            dia: yup.string().required("Campo obligatorio"),
-            hora: yup.string().required("Campo obligatorio")
-        }),
+      yup.object().shape({
+        name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
+        fechaNacimiento: yup.string().required("Campo obligatorio"),
+        nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+        contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+        mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        maestro: yup.string().required("Campo obligatorio"),
+        instrumento: yup.string().required("Campo obligatorio"),
+        promocion: yup.string().required("Campo obligatorio"),
+        dia: yup.string().required("Campo obligatorio"),
+        hora: yup.string().required("Campo obligatorio"),
+        nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+        nombrePadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        padreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+      })
+      :
+      yup.object().shape({
+        name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
+        fechaNacimiento: yup.string().required("Campo obligatorio"),
+        nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+        contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+        mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        maestro: yup.string().required("Campo obligatorio"),
+        instrumento: yup.string().required("Campo obligatorio"),
+        promocion: yup.string().required("Campo obligatorio"),
+        dia: yup.string().required("Campo obligatorio"),
+        hora: yup.string().required("Campo obligatorio")
+      }),
     onSubmit: async (values) => {
-        return Alert.fire({
-            title: confirmTitle,
-            text: confirmMsj,
-            icon: "warning",
-            confirmButtonColor: "#009574",
-            confirmButtonText: "Aceptar",
-            cancelButtonColor: '#DD6B55',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true,
-            backdrop: true,
-            showCancelButton: true,
-            showLoaderOnConfirm: true,
-            allowOutsideClick: () => !Alert.isLoading,
-            preConfirm: async () => {
-                try {
-                    console.log(JSON.stringify({...values, role:"ALUMNO"}));
-                    const response = await AxiosClient({
-                        method: "PUT",
-                        url: "/personal/alumno",
-                        data: JSON.stringify({...values, role:"ALUMNO"}),
-                    });
-                    console.log(response);
-                    if (!response.error) {
-                        cargarDatos();
-                        Alert.fire({
-                            title: successTitle,
-                            text: succesMsj,
-                            icon: "success",
-                            confirmButtonColor: "#3085d6",
-                            confirmButtonText: "Aceptar"
-                        }).then((result) => {
-                            if (result.isConfirmed) handleClose();
-                        });
-                    }
-                    return response;
-                } catch (error) {
-                    console.log(error);
-                    Alert.fire({
-                        title: errorTitle,
-                        text: errorMsj,
-                        icon: "error",
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "Aceptar"
-                    }).then((result) => {
-                        if (result.isConfirmed) handleClose();
-                    });
-                }
+      return Alert.fire({
+        title: confirmTitle,
+        text: confirmMsj,
+        icon: "warning",
+        confirmButtonColor: "#009574",
+        confirmButtonText: "Aceptar",
+        cancelButtonColor: '#DD6B55',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        backdrop: true,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Alert.isLoading,
+        preConfirm: async () => {
+          try {
+            console.log(JSON.stringify({ ...values, role: "ALUMNO" }));
+            const response = await AxiosClient({
+              method: "PUT",
+              url: "/personal/alumno",
+              data: JSON.stringify({ ...values, role: "ALUMNO" }),
+            });
+            console.log(response);
+            if (!response.error) {
+              cargarDatos();
+              Alert.fire({
+                title: successTitle,
+                text: succesMsj,
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Aceptar"
+              }).then((result) => {
+                if (result.isConfirmed) handleClose();
+              });
             }
-        });
+            return response;
+          } catch (error) {
+            console.log(error);
+            Alert.fire({
+              title: errorTitle,
+              text: errorMsj,
+              icon: "error",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "Aceptar"
+            }).then((result) => {
+              if (result.isConfirmed) handleClose();
+            });
+          }
+        }
+      });
     }
-});
+  });
 
-useEffect(() => {
+  useEffect(() => {
     const fetchMaterial = async () => {
-        const response = await AxiosClient({
-            method: "GET",
-            url: "/personal/teacher",
-        });
-        if (!response.error) {
-            setMaestros(response);
-            return response;
-        }
+      const response = await AxiosClient({
+        method: "GET",
+        url: "/personal/teacher",
+      });
+      if (!response.error) {
+        console.log(response);
+        setMaestros(response);
+        return response;
+      }
     };
     fetchMaterial();
-}, []);
-useEffect(() => {
+  }, []);
+  useEffect(() => {
     const fetchMaterial = async () => {
-        const response = await AxiosClient({
-            method: "GET",
-            url: "/instrumento",
-        });
-        if (!response.error) {
-            setInstrumentos(response);
-            return response;
-        }
+      const response = await AxiosClient({
+        method: "GET",
+        url: "/instrumento",
+      });
+      if (!response.error) {
+        setInstrumentos(response);
+        return response;
+      }
     };
     fetchMaterial();
-}, []);
-useEffect(() => {
+  }, []);
+  useEffect(() => {
     const fetchMaterial = async () => {
-        const response = await AxiosClient({
-            method: "GET",
-            url: "/promocion",
-        });
-        if (!response.error) {
-            setPromociones(response);
-            return response;
-        }
+      const response = await AxiosClient({
+        method: "GET",
+        url: "/promocion",
+      });
+      if (!response.error) {
+        setPromociones(response);
+        return response;
+      }
     };
     fetchMaterial();
-}, []);
+  }, []);
 
   React.useMemo(() => {
-    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, maestro_id, instrumento_id, promocion_id, dia, hora  } = objeto;
+    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, maestro_id, instrumento_id, promocion_id, dia, hora } = objeto;
     form.values.id = personal_id;
     form.values.name = name;
     form.values.email = email;
-    form.values.fechaNacimiento = fechaNacimiento;
+    form.values.fechaNacimiento = fechaNacimiento ? fechaNacimiento.substring(0, 10) : fechaNacimiento;
     form.values.nivel = nivel;
     form.values.domicilio = domicilio;
     form.values.municipio = municipio;
@@ -300,7 +301,7 @@ useEffect(() => {
                   >
                     <option value="">Selecciona un Maestro</option>
                     {maestros.map((item) => (
-                      <option key={item.id} value={item.id}>
+                      <option key={item.id} value={item.user_id}>
                         {item.name}
                       </option>
                     ))}

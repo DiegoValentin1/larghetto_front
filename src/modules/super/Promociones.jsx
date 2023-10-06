@@ -6,36 +6,26 @@ import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
 import FeatherIcon from "feather-icons-react/build/FeatherIcon";
 import '../../utils/styles/DataTable.css'
-import { AddTeeForm } from './SuperForms/AddTeeForm';
-import { EditTeeForm } from './SuperForms/EditTeeForm';
-import { AddMaestroForm } from './SuperForms/AddMaestroForm';
-import { EditMaestroForm } from './SuperForms/EditMaestroForm';
+import { AddBridaForm } from './SuperForms/AddInstrumentoForm';
+import { EditBridaForm } from './SuperForms/EditInstrumentoForm';
+import { AddPromocionForm } from './SuperForms/AddPromocionForm';
+import { EditPromocionForm } from './SuperForms/EditPromocionForm';
 
 
 
 
-export default function SuperMaterialesTee() {
+export default function Promociones() {
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
-            name: 'Nombre',
-            selector: 'name',
+            name: 'Promoción',
+            selector: 'promocion',
             sortable: true
         },
         {
-            name: 'Email',
-            selector: 'email',
-            sortable: true,
-        },
-        {
-            name: 'Telefono',
-            selector: 'telefono',
-            sortable: true,
-        },
-        {
-            name: 'Domicilio',
-            selector: 'domicilio',
-            sortable: true,
+            name: 'Porcentaje de Descuento',
+            selector: (row)=>`${row.descuento}%`,
+            sortable: true
         },
         {
             name: 'Status',
@@ -63,12 +53,12 @@ export default function SuperMaterialesTee() {
                     {
                         row.status ? (<div style={{ paddingLeft: 10 }}>
                             <FaTrashAlt className='DataIcon' onClick={() => {
-                                changeStatus(row.user_id);
+                                changeStatus(row.id);
                             }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                         </div>) : (
                             <div style={{ paddingLeft: 10 }}>
                                 <FaPlus className='DataIcon' onClick={() => {
-                                    changeStatus(row.user_id);
+                                    changeStatus(row.id);
                                 }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                             </div>
                         )
@@ -87,7 +77,7 @@ export default function SuperMaterialesTee() {
     const changeStatus = async (id) => {
         try {
             const response = await AxiosClient({
-                url: "/personal/" + id,
+                url: "/promocion/" + id,
                 method: "DELETE",
             });
             if (!response.error) {
@@ -113,7 +103,7 @@ export default function SuperMaterialesTee() {
     const cargarDatos = async () => {
         try {
             const response = await AxiosClient({
-                url: "/personal/teacher",
+                url: "/promocion",
                 method: "GET",
             });
             console.log(response);
@@ -163,7 +153,7 @@ export default function SuperMaterialesTee() {
                                 <div style={{ display: "flex", flexDirection: "row" }}>
 
                                     <div style={{ width: "95%", paddingTop: 3 }}>
-                                        Maestros
+                                        Promociones
                                     </div>
 
                                     <div >
@@ -186,9 +176,10 @@ export default function SuperMaterialesTee() {
             </div>
 
 
-            <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            <AddPromocionForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
+            <EditPromocionForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
         </>
 
     )
 }
+

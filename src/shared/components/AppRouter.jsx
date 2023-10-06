@@ -14,6 +14,7 @@ import SuperMateriales from "../../modules/super/SuperMaterialesCamisa";
 import SuperMaterialesBrida from "../../modules/super/Instrumentos";
 import SuperMaterialesTee from "../../modules/super/Maestros";
 import PdfTemplate from "../../modules/user/PDF/PdfTemplate";
+import Promociones from "../../modules/super/Promociones";
 
 export const AppRouter = () => {
   // const { user } = useContext(AuthContext);
@@ -43,9 +44,9 @@ export const AppRouter = () => {
                     <Route path="/" element={<AppLayout option={2}/>}>
                     {/* <Route index element={<SuperDashBoard/>} /> */}
                     <Route index element={<Users/>} />
-                    <Route path="materiales-brida-extremo" element={<SuperMaterialesBrida/>} />
-                    <Route path="materiales-tee-reduccion" element={<SuperMaterialesTee/>} />
-                    <Route path="materiales-camisa-interior" element={<SuperMateriales/>} />
+                    <Route path="instrumentos" element={<SuperMaterialesBrida/>} />
+                    <Route path="maestros" element={<SuperMaterialesTee/>} />
+                    <Route path="promociones" element={<Promociones/>} />
                     <Route index element={<Loader/>} />
                     <Route path="*" element={<>SUPER</>} />
                     </Route>
