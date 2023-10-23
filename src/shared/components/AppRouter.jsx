@@ -17,6 +17,7 @@ import PdfTemplate from "../../modules/user/PDF/PdfTemplate";
 import Promociones from "../../modules/super/Promociones";
 import Encargados from "../../modules/super/Encargados";
 import Recepcionistas from "../../modules/super/Recepcionistas";
+import SuperDashboard from "../../modules/super/Components/SuperDashboard";
 
 export const AppRouter = () => {
   const { user } = useContext(AuthContext);
@@ -48,7 +49,8 @@ export const AppRouter = () => {
                     <Routes>
                       <Route path="/" element={<AppLayout option={2} />}>
                         {/* <Route index element={<SuperDashBoard/>} /> */}
-                        <Route index element={<Users />} />
+                        <Route index element={<SuperDashboard/>} />
+                        <Route path="alumnos" element={<Users />} />
                         <Route path="instrumentos" element={<SuperMaterialesBrida />} />
                         <Route path="maestros" element={<SuperMaterialesTee />} />
                         <Route path="promociones" element={<Promociones />} />

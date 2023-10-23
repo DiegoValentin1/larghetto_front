@@ -10,6 +10,7 @@ import { GiGuitarBassHead } from 'react-icons/gi'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 import { TbDiscount2Off } from 'react-icons/tb'
 import { RiAdminLine } from 'react-icons/ri'
+import { AiOutlineBarChart } from 'react-icons/ai'
 
 
 const SuperSidebar = () => {
@@ -42,8 +43,8 @@ const SuperSidebar = () => {
                 <div className="profilePictureContainer">
                     <img className='profilePicture' src={require('../../utils/img/profilePicture.jpg')} alt="" />
                 </div>
-                {/* <Link to='/' className="home icon" data-label="Home"><FeatherIcon icon={'home'} /></Link> */}
-                <Link to='/' className="user icon" data-label="Alumnos"><FeatherIcon icon={'users'} /></Link>
+                <Link to='/' className="home icon" data-label="Home"><AiOutlineBarChart style={{ height: 28, width: 28 }}/></Link>
+                <Link to='/alumnos' className="user icon" data-label="Alumnos"><FeatherIcon icon={'users'} /></Link>
                 <Link to='maestros' className="sliders icon" data-label="Maestros" ><FaChalkboardTeacher style={{ height: 28, width: 28 }}/> </Link>
                 <Link to='instrumentos' className="sliders icon" data-label="Instrumentos" style={{ fontSize:"1.5rem"}}><GiGuitarBassHead style={{ height: 28, width: 28 }}/> </Link>
                 <Link to='promociones' className="sliders icon" data-label="Promociones" ><TbDiscount2Off style={{ height: 28, width: 28 }}/> </Link>

@@ -6,6 +6,7 @@ import FeatherIcon from 'feather-icons-react'
 import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts';
 import '../../../utils/styles/UserNuevoTrabajo.css';
+import { TbHomeSearch} from 'react-icons/tb'
 
 export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const [menor, setMenor] = useState(false);
@@ -22,6 +23,8 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
                 password: yup.string().required("Campo obligatorio").min(8, "Minimo 8 caracteres"),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
+                comprobante: yup.string().required("Campo obligatorio"),
+                fecha_inicio: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
                 domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
@@ -72,6 +75,7 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
+                fecha_inicio: yup.string().required("Campo obligatorio"),
                 domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -100,7 +104,7 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/teacher",
-                            data: JSON.stringify({ ...values, role: "MAESTRO" }),
+                            data: JSON.stringify({ ...values, role: "MAESTRO", comprobante: values.comprobante ? 1 : 0}),
                         });
                         console.log(response);
                         if (!response.error) {
@@ -191,7 +195,7 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
         </Modal.Header>
         <Modal.Body>
             <Form onSubmit={form.handleSubmit}>
-                <div className="InputContainer3">
+                <div className="InputContainer4">
                     <Form.Group className='mb-3'>
                         <Form.Label htmlFor='name'>Nombre</Form.Label>
                         <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
@@ -211,6 +215,13 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         <Form.Control type='email' name='email' placeholder="correo@dominio.com" value={form.values.email} onChange={form.handleChange} />
                         {
                             form.errors.email && (<span className='error-text'>{form.errors.email}</span>)
+                        }
+                    </Form.Group>
+                    <Form.Group className='mb-3'>
+                        <Form.Label htmlFor='fecha_inicio'>Fecha de Inicio</Form.Label>
+                        <Form.Control type='date' name='fecha_inicio' placeholder="" value={form.values.fecha_inicio} onChange={form.handleChange} />
+                        {
+                            form.errors.fecha_inicio && (<span className='error-text'>{form.errors.fecha_inicio}</span>)
                         }
                     </Form.Group>
                     {/* <Form.Group className="mb-3">
@@ -305,28 +316,40 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         )}
                     </Form.Group> */}
                 </div>
-                <div className="InputContainer3">
-                    <Form.Group className='mb-3'>
-                        <Form.Label htmlFor='clabe'>Clabe</Form.Label>
-                        <Form.Control name='clabe' placeholder="123456789012345678" value={form.values.clabe} onChange={form.handleChange} />
-                        {
-                            form.errors.clabe && (<span className='error-text'>{form.errors.clabe}</span>)
-                        }
-                    </Form.Group>
-                    <Form.Group className='mb-3'>
-                        <Form.Label htmlFor='cuenta'>Cuenta</Form.Label>
-                        <Form.Control name='cuenta' placeholder="1234567890123456" value={form.values.cuenta} onChange={form.handleChange} />
-                        {
-                            form.errors.cuenta && (<span className='error-text'>{form.errors.cuenta}</span>)
-                        }
-                    </Form.Group>
-                    <Form.Group className='mb-3'>
-                        <Form.Label htmlFor='banco'>Banco</Form.Label>
-                        <Form.Control name='banco' placeholder="BBVA" value={form.values.banco} onChange={form.handleChange} />
-                        {
-                            form.errors.banco && (<span className='error-text'>{form.errors.banco}</span>)
-                        }
-                    </Form.Group>
+                <div className="InputContainer4-2">
+                    <div className="InputContainer3" style={{ width: "89%" }}>
+                        <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='clabe'>Clabe</Form.Label>
+                            <Form.Control name='clabe' placeholder="123456789012345678" value={form.values.clabe} onChange={form.handleChange} />
+                            {
+                                form.errors.clabe && (<span className='error-text'>{form.errors.clabe}</span>)
+                            }
+                        </Form.Group>
+                        <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='cuenta'>Cuenta</Form.Label>
+                            <Form.Control name='cuenta' placeholder="1234567890123456" value={form.values.cuenta} onChange={form.handleChange} />
+                            {
+                                form.errors.cuenta && (<span className='error-text'>{form.errors.cuenta}</span>)
+                            }
+                        </Form.Group>
+                        <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='banco'>Banco</Form.Label>
+                            <Form.Control name='banco' placeholder="BBVA" value={form.values.banco} onChange={form.handleChange} />
+                            {
+                                form.errors.banco && (<span className='error-text'>{form.errors.banco}</span>)
+                            }
+                        </Form.Group>
+                    </div>
+                    <div className="InputContainer1" style={{ width: "10%" }}>
+                        <Form.Group className='mb-3' id='ComprobanteInput'>
+                            <Form.Label htmlFor='comprobante'>
+                                <TbHomeSearch className='DataIcon'style={{ height: 20, width: 25, marginBottom: 0 }} /></Form.Label>
+                            <Form.Check id='CheckInput' name='comprobante' placeholder="" value={form.values.comprobante} onChange={form.handleChange} />
+                            {
+                                form.errors.comprobante && (<span className='error-text'>{form.errors.comprobante}</span>)
+                            }
+                        </Form.Group>
+                    </div>
                 </div>
                 {/* <div className="InputContainer4-2">
                     <div className="InputContainer5">

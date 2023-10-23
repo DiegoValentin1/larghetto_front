@@ -217,7 +217,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
         <Modal.Body>
             <Form onSubmit={form.handleSubmit}>
                 <div className="InputContainer4-2">
-                    <div className="InputContainer4" style={{ width: "89%", gridTemplateColumns: "repeat(3, 1fr)" }}>
+                    <div className="InputContainer4" style={{ width: "80%" }}>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='name'>Nombre</Form.Label>
                             <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
@@ -238,113 +238,6 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                             {
                                 form.errors.email && (<span className='error-text'>{form.errors.email}</span>)
                             }
-                        </Form.Group>
-                        {/* <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
-                            <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
-                            {
-                                form.errors.password && (<span className='error-text'>{form.errors.password}</span>)
-                            }
-                        </Form.Group> */}
-                    </div>
-                    <div className="InputContainer1" style={{ width: "10%" }}>
-                        <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='nivel'>Nivel</Form.Label>
-                            <Form.Control name='nivel' placeholder="1" value={form.values.nivel} onChange={form.handleChange} />
-                            {
-                                form.errors.nivel && (<span className='error-text'>{form.errors.nivel}</span>)
-                            }
-                        </Form.Group>
-                    </div>
-                </div>
-                <div className="InputContainer4-2">
-                    <div className="InputContainer4" style={{ width: "89%" }}>
-                        <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='domicilio'>Domicilio</Form.Label>
-                            <Form.Control name='domicilio' placeholder="Calle #34" value={form.values.domicilio} onChange={form.handleChange} />
-                            {
-                                form.errors.domicilio && (<span className='error-text'>{form.errors.domicilio}</span>)
-                            }
-                        </Form.Group>
-                        <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='municipio'>Municipio</Form.Label>
-                            <Form.Control name='municipio' placeholder="Temixco" value={form.values.municipio} onChange={form.handleChange} />
-                            {
-                                form.errors.municipio && (<span className='error-text'>{form.errors.municipio}</span>)
-                            }
-                        </Form.Group>
-                        <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='telefono'>Telefono</Form.Label>
-                            <Form.Control type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
-                            {
-                                form.errors.telefono && (<span className='error-text'>{form.errors.telefono}</span>)
-                            }
-                        </Form.Group>
-                        <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='contactoEmergencia'>Contacto de Emergencia</Form.Label>
-                            <Form.Control type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
-                            {
-                                form.errors.contactoEmergencia && (<span className='error-text'>{form.errors.contactoEmergencia}</span>)
-                            }
-                        </Form.Group>
-                    </div>
-                    <div className="InputContainer1" style={{ width: "10%" }}>
-                        <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='mensualidad'>Mensualidad</Form.Label>
-                            <Form.Control name='mensualidad' placeholder="400" value={form.values.mensualidad} onChange={form.handleChange} />
-                            {
-                                form.errors.mensualidad && (<span className='error-text'>{form.errors.mensualidad}</span>)
-                            }
-                        </Form.Group>
-                    </div>
-                </div>
-                <div className="InputContainer4-2">
-                    <div className="InputContainer5">
-                        <Form.Group className="mb-3">
-                            <Form.Label htmlFor="maestro">Maestro</Form.Label>
-                            <div className="InputSelect">
-                                <Form.Select
-                                    className="TeeRedInputCompleto"
-                                    placeholder=""
-                                    name="maestro"
-                                    value={form.values.maestro}
-                                    onChange={form.handleChange}
-                                >
-                                    <option value="">Selecciona un Maestro</option>
-                                    {maestros.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </div>
-
-                            {form.errors.maestro && (
-                                <span className="error-text">{form.errors.maestro}</span>
-                            )}
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label htmlFor="instrumento">Instrumento</Form.Label>
-                            <div className="InputSelect">
-                                <Form.Select
-                                    className="TeeRedInputCompleto"
-                                    placeholder=""
-                                    name="instrumento"
-                                    value={form.values.instrumento}
-                                    onChange={form.handleChange}
-                                >
-                                    <option value="">Selecciona un Instrumento</option>
-                                    {instrumentos.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.instrumento}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </div>
-
-                            {form.errors.instrumento && (
-                                <span className="error-text">{form.errors.instrumento}</span>
-                            )}
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label htmlFor="promocion">Promocion</Form.Label>
@@ -369,62 +262,181 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                                 <span className="error-text">{form.errors.promocion}</span>
                             )}
                         </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label htmlFor="dia">Día</Form.Label>
-                            <div className="InputSelect">
-                                <Form.Select
-                                    className="TeeRedInputCompleto"
-                                    placeholder=""
-                                    name="dia"
-                                    value={form.values.dia}
-                                    onChange={form.handleChange}
-                                >
-                                    <option value="">Selecciona un Día</option>
-                                    <option value="Lunes">Lunes</option>
-                                    <option value="Martes">Martes</option>
-                                    <option value="Miercoles">Miercoles</option>
-                                    <option value="Jueves">Jueves</option>
-                                    <option value="Viernes">Viernes</option>
-                                    <option value="Sabado">Sabado</option>
-                                    <option value="Domingo">Domingo</option>
-                                </Form.Select>
-                            </div>
-
-                            {form.errors.dia && (
-                                <span className="error-text">{form.errors.dia}</span>
-                            )}
+                        {/* <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
+                            <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
+                            {
+                                form.errors.password && (<span className='error-text'>{form.errors.password}</span>)
+                            }
+                        </Form.Group> */}
+                    </div>
+                    <div className="InputContainer1" style={{ width: "20%" }}>
+                        <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='nivel'>Nivel</Form.Label>
+                            <Form.Control name='nivel' placeholder="1" value={form.values.nivel} onChange={form.handleChange} />
+                            {
+                                form.errors.nivel && (<span className='error-text'>{form.errors.nivel}</span>)
+                            }
                         </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label htmlFor="hora">Horario</Form.Label>
-                            <div className="InputSelect">
-                                <Form.Select
-                                    className="TeeRedInputCompleto"
-                                    placeholder=""
-                                    name="hora"
-                                    value={form.values.hora}
-                                    onChange={form.handleChange}
-                                >
-                                    <option value="">Selecciona un Horario</option>
-                                    <option value="08:00">08:00</option>
-                                    <option value="09:00">09:00</option>
-                                    <option value="10:00">10:00</option>
-                                    <option value="11:00">11:00</option>
-                                    <option value="12:00">12:00</option>
-                                    <option value="13:00">13:00</option>
-                                    <option value="14:00">14:00</option>
-                                    <option value="15:00">15:00</option>
-                                    <option value="16:00">16:00</option>
-                                    <option value="17:00">17:00</option>
-                                    <option value="18:00">18:00</option>
-                                </Form.Select>
-                            </div>
-
-                            {form.errors.hora && (
-                                <span className="error-text">{form.errors.hora}</span>
-                            )}
+                        <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='mensualidad'>Mensualidad</Form.Label>
+                            <Form.Control name='mensualidad' placeholder="400" value={form.values.mensualidad} onChange={form.handleChange} />
+                            {
+                                form.errors.mensualidad && (<span className='error-text'>{form.errors.mensualidad}</span>)
+                            }
                         </Form.Group>
                     </div>
                 </div>
+                <div className="InputContainer4-2">
+                    <div className="InputContainer2Columns" style={{ width: "80%"}}>
+                        <div className="InputContainer4" style={{ height: "50%" }}>
+                            <Form.Group className='mb-3'>
+                                <Form.Label htmlFor='domicilio'>Domicilio</Form.Label>
+                                <Form.Control name='domicilio' placeholder="Calle #34" value={form.values.domicilio} onChange={form.handleChange} />
+                                {
+                                    form.errors.domicilio && (<span className='error-text'>{form.errors.domicilio}</span>)
+                                }
+                            </Form.Group>
+                            <Form.Group className='mb-3'>
+                                <Form.Label htmlFor='municipio'>Municipio</Form.Label>
+                                <Form.Control name='municipio' placeholder="Temixco" value={form.values.municipio} onChange={form.handleChange} />
+                                {
+                                    form.errors.municipio && (<span className='error-text'>{form.errors.municipio}</span>)
+                                }
+                            </Form.Group>
+                            <Form.Group className='mb-3'>
+                                <Form.Label htmlFor='telefono'>Telefono</Form.Label>
+                                <Form.Control type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
+                                {
+                                    form.errors.telefono && (<span className='error-text'>{form.errors.telefono}</span>)
+                                }
+                            </Form.Group>
+                            <Form.Group className='mb-3'>
+                                <Form.Label htmlFor='contactoEmergencia'>Contacto de Emergencia</Form.Label>
+                                <Form.Control type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
+                                {
+                                    form.errors.contactoEmergencia && (<span className='error-text'>{form.errors.contactoEmergencia}</span>)
+                                }
+                            </Form.Group>
+                        </div>
+                        <div className="InputContainer4" style={{ height: "50%" }}>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="maestro">Maestro</Form.Label>
+                                <div className="InputSelect">
+                                    <Form.Select
+                                        className="TeeRedInputCompleto"
+                                        placeholder=""
+                                        name="maestro"
+                                        value={form.values.maestro}
+                                        onChange={form.handleChange}
+                                    >
+                                        <option value="">Selecciona un Maestro</option>
+                                        {maestros.map((item) => (
+                                            <option key={item.id} value={item.id}>
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </div>
+
+                                {form.errors.maestro && (
+                                    <span className="error-text">{form.errors.maestro}</span>
+                                )}
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="instrumento">Instrumento</Form.Label>
+                                <div className="InputSelect">
+                                    <Form.Select
+                                        className="TeeRedInputCompleto"
+                                        placeholder=""
+                                        name="instrumento"
+                                        value={form.values.instrumento}
+                                        onChange={form.handleChange}
+                                    >
+                                        <option value="">Selecciona un Instrumento</option>
+                                        {instrumentos.map((item) => (
+                                            <option key={item.id} value={item.id}>
+                                                {item.instrumento}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </div>
+
+                                {form.errors.instrumento && (
+                                    <span className="error-text">{form.errors.instrumento}</span>
+                                )}
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="dia">Día</Form.Label>
+                                <div className="InputSelect">
+                                    <Form.Select
+                                        className="TeeRedInputCompleto"
+                                        placeholder=""
+                                        name="dia"
+                                        value={form.values.dia}
+                                        onChange={form.handleChange}
+                                    >
+                                        <option value="">Selecciona un Día</option>
+                                        <option value="Lunes">Lunes</option>
+                                        <option value="Martes">Martes</option>
+                                        <option value="Miercoles">Miercoles</option>
+                                        <option value="Jueves">Jueves</option>
+                                        <option value="Viernes">Viernes</option>
+                                        <option value="Sabado">Sabado</option>
+                                        <option value="Domingo">Domingo</option>
+                                    </Form.Select>
+                                </div>
+
+                                {form.errors.dia && (
+                                    <span className="error-text">{form.errors.dia}</span>
+                                )}
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="hora">Horario</Form.Label>
+                                <div className="InputSelect">
+                                    <Form.Select
+                                        className="TeeRedInputCompleto"
+                                        placeholder=""
+                                        name="hora"
+                                        value={form.values.hora}
+                                        onChange={form.handleChange}
+                                    >
+                                        <option value="">Selecciona un Horario</option>
+                                        <option value="08:00">08:00</option>
+                                        <option value="09:00">09:00</option>
+                                        <option value="10:00">10:00</option>
+                                        <option value="11:00">11:00</option>
+                                        <option value="12:00">12:00</option>
+                                        <option value="13:00">13:00</option>
+                                        <option value="14:00">14:00</option>
+                                        <option value="15:00">15:00</option>
+                                        <option value="16:00">16:00</option>
+                                        <option value="17:00">17:00</option>
+                                        <option value="18:00">18:00</option>
+                                    </Form.Select>
+                                </div>
+
+                                {form.errors.hora && (
+                                    <span className="error-text">{form.errors.hora}</span>
+                                )}
+                            </Form.Group>
+                        </div>
+                    </div>
+                    <div className="InputTextArea" style={{ width: "20%" }}>
+                        <Form.Group className='mb-3 AlumnoGroupTextArea'>
+                            <Form.Label htmlFor='observaciones'>Observaciones</Form.Label>
+                            <Form.Control className='AlumnoTextArea' as='textarea' name='observaciones' placeholder="Escriba las observaciones" value={form.values.observaciones} onChange={form.handleChange} />
+                            {
+                                form.errors.observaciones && (<span className='error-text'>{form.errors.observaciones}</span>)
+                            }
+                        </Form.Group>
+                    </div>
+                </div>
+                {/* <div className="InputContainer4-2">
+                    <div className="InputContainer5">
+
+                    </div>
+                </div> */}
                 {
                     menor ?
                         <div className="InputContainer4">

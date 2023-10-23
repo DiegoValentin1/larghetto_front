@@ -38,6 +38,23 @@ export default function SuperMaterialesTee() {
             sortable: true,
         },
         {
+            name: 'Fecha de Inicio',
+            selector: (row)=>row.fecha_inicio ? row.fecha_inicio.substring(0,10) : "",
+            sortable: true,
+        },
+        {
+            name: 'C. de Domicilio',
+            selector: 'comprobante',
+            sortable: true,
+            cell: (row) => {
+                if (row.comprobante) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#40DC51", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#DC3030", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                }
+            }
+        },
+        {
             name: 'Status',
             selector: 'status',
             sortable: true,
