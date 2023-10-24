@@ -218,6 +218,10 @@ input[type=number] {
     margin: 0;
 }
 
+.AlumnoInfoObservaciones{
+    height: 80%;
+}
+
 .AlumnoInfoInfoCentro{
     width: 100%;
     height: 15%;
@@ -297,15 +301,37 @@ input[type=number] {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
     cursor: pointer;
     transition: transform 0.3s;
     border-radius: 0.5rem;
 }
 
+.diaActivo{
+}
+
+.diaInactivo{
+    background-color: #cccccc;
+    cursor: not-allowed;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.diaInactivo:hover{
+    transform: scale(1.00) !important;
+}
+
+.diaCumplido{
+    background-color: rgb(61, 173, 61);
+    color: #ececec;
+}
+
+.diaFalta{
+    background-color: rgb(204, 37, 59);
+    color: #ececec;
+}
+
 .CalendarioDia:hover{
     transform: scale(1.06);
-    background-color: #e1e1e1;
 }
 
 .CalendarioCirculo{

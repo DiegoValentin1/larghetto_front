@@ -98,7 +98,8 @@ export default function SuperDashboard() {
 
     const [isEditing, setIsEditting] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [datos, setDatos] = useState([]);
+    const [alumnosActivos, setAlumnosActivos] = useState(0);
+    const [logs, setLogs] = useState([]);
 
     const changeStatus = async (id) => {
         try {
@@ -129,12 +130,33 @@ export default function SuperDashboard() {
     const cargarDatos = async () => {
         try {
             const response = await AxiosClient({
-                url: "/personal/teacher",
+                url: "/personal/alumno/activos",
                 method: "GET",
             });
             console.log(response);
             if (!response.error) {
-                setDatos(response);
+                setAlumnosActivos(response[0].alumnosActivos);
+            }
+        } catch (err) {
+            Alert.fire({
+                title: "VERIFICAR DATOS",
+                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Aceptar",
+            });
+            console.log(err);
+        }
+    }
+    const cargarLogs = async () => {
+        try {
+            const response = await AxiosClient({
+                url: "/instrumento/lastest",
+                method: "GET",
+            });
+            console.log(response);
+            if (!response.error) {
+                setLogs(response);
             }
         } catch (err) {
             Alert.fire({
@@ -148,6 +170,7 @@ export default function SuperDashboard() {
         }
     }
     useEffect(() => {
+        cargarLogs();
         cargarDatos();
     }, []);
 
@@ -160,10 +183,10 @@ export default function SuperDashboard() {
                             <div className="DashboardTitle">Estadisticas</div>
                             <div className="ChartBox">
                                 <div className="ChartContainer" onClick={() => setIsOpen(true)}>
-                                    <Bar data={{ labels: ["Junio", "Julio", "Agosto"], datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} />
+                                    <Bar data={{ labels: ["Agosto", "Septiembre", "Octubre"], datasets: [{ label: "Alumnos Inscritos", data: [4, 5, alumnosActivos] }] }} />
                                 </div>
                                 <div className="ChartContainer">
-                                    <Bar data={{ labels: ["Junio", "Julio", "Agosto"], datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} />
+                                    {/* <Bar data={{ labels: ["Junio", "Julio", "Agosto"], datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} /> */}
                                 </div>
                                 <div className="ChartContainer"></div>
                             </div>
@@ -171,7 +194,12 @@ export default function SuperDashboard() {
                         <div className="ContainerLogs DashboardContainer">
                             <div className="DashboardTitle">Logs</div>
                             <div className="ChartBox">
-                                <div className="ChartContainer"></div>
+                                <div className="ChartContainer" style={{padding:"0.5rem"}}>
+                                    <div style={{fontSize:"14px"}}>{`${logs[0] ? logs[0].fecha.substring(0,10) : ""}  ${logs[0] ?logs[0].autor : ""} ${logs[0] ?logs[0].accion : ""}`} </div>
+                                    <div style={{fontSize:"14px"}}>{`${logs[1] ? logs[1].fecha.substring(0,10) : ""}  ${logs[1] ?logs[1].autor : ""}  ${logs[1] ?logs[1].accion : ""}`}</div>
+                                    <div style={{fontSize:"14px"}}>{`${logs[2] ? logs[2].fecha.substring(0,10) : ""}  ${logs[2] ?logs[2].autor : ""}  ${logs[2] ?logs[2].accion : ""}`}</div>
+                                    <div style={{fontSize:"14px"}}>{`${logs[3] ? logs[3].fecha.substring(0,10) : ""}  ${logs[3] ?logs[3].autor : ""}  ${logs[3] ?logs[3].accion : ""}`}</div>
+                                </div>
                                 <div className="ChartContainer"></div>
                                 <div className="ChartContainer"></div>
                             </div>
@@ -181,7 +209,7 @@ export default function SuperDashboard() {
             </div>
 
 
-            <ChartAlumnos isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
+            <ChartAlumnos alumnosActivos={alumnosActivos} isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
             {/* <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/> */}
         </>
 

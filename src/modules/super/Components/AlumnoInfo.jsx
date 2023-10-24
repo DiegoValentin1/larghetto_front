@@ -8,146 +8,13 @@ import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, err
 import '../../../utils/styles/UserNuevoTrabajo.css';
 import { FaUserGraduate } from 'react-icons/fa'
 
-export const AlumnoInfo = ({ isOpen, cargarDatos, onClose, objeto }) => {
-    const [menor, setMenor] = useState(false);
-    const [maestros, setMaestros] = useState([]);
-    const [instrumentos, setInstrumentos] = useState([]);
-    const [horarios, setHorarios] = useState([]);
-    const [promociones, setPromociones] = useState([]);
-
+export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambiarColor, asistencias, setDiasMes }) => {
     console.log(objeto);
-
-    const form = useFormik({
-        initialValues: {
-            email: "",
-            password: "",
-            rol: "",
-            nombre: ""
-        },
-        validationSchema:
-            yup.object().shape({
-                nombre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-                email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
-                password: yup.string().required("Campo obligatorio").min(8, "Minimo 8 caracteres"),
-                fechaNacimiento: yup.string().required("Campo obligatorio"),
-                nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-                municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-                telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-                contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-                mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-                maestro: yup.string().required("Campo obligatorio"),
-                instrumento: yup.string().required("Campo obligatorio"),
-                promocion: yup.string().required("Campo obligatorio"),
-                dia: yup.string().required("Campo obligatorio"),
-                hora: yup.string().required("Campo obligatorio")
-            }),
-        onSubmit: async (values) => {
-            return Alert.fire({
-                title: confirmTitle,
-                text: confirmMsj,
-                icon: "warning",
-                confirmButtonColor: "#009574",
-                confirmButtonText: "Aceptar",
-                cancelButtonColor: '#DD6B55',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true,
-                backdrop: true,
-                showCancelButton: true,
-                showLoaderOnConfirm: true,
-                allowOutsideClick: () => !Alert.isLoading,
-                preConfirm: async () => {
-                    try {
-                        console.log(JSON.stringify({
-                            email: values.email,
-                            password: values.password,
-                            rol: values.rol,
-                            name: values.nombre
-                        }));
-                        const response = await AxiosClient({
-                            method: "POST",
-                            url: "/personal/alumno",
-                            data: JSON.stringify({
-                                email: values.email,
-                                password: values.password,
-                                role: "ALUMNO",
-                                name: values.nombre,
-                                empresa: values.empresa
-                            }),
-                        });
-                        console.log(response);
-                        if (!response.error) {
-                            cargarDatos();
-                            Alert.fire({
-                                title: successTitle,
-                                text: succesMsj,
-                                icon: "success",
-                                confirmButtonColor: "#3085d6",
-                                confirmButtonText: "Aceptar"
-                            }).then((result) => {
-                                if (result.isConfirmed) handleClose();
-                            });
-                        }
-                        return response;
-                    } catch (error) {
-                        console.log(error);
-                        Alert.fire({
-                            title: errorTitle,
-                            text: errorMsj,
-                            icon: "error",
-                            confirmButtonColor: "#3085d6",
-                            confirmButtonText: "Aceptar"
-                        }).then((result) => {
-                            if (result.isConfirmed) handleClose();
-                        });
-                    }
-                }
-            });
-        }
-    });
-
+    
     useEffect(() => {
-        const fetchMaterial = async () => {
-            const response = await AxiosClient({
-                method: "GET",
-                url: "/personal/teacher",
-            });
-            if (!response.error) {
-                setMaestros(response);
-                return response;
-            }
-        };
-        fetchMaterial();
-    }, []);
-    useEffect(() => {
-        const fetchMaterial = async () => {
-            const response = await AxiosClient({
-                method: "GET",
-                url: "/instrumento",
-            });
-            if (!response.error) {
-                setInstrumentos(response);
-                return response;
-            }
-        };
-        fetchMaterial();
-    }, []);
-    useEffect(() => {
-        const fetchMaterial = async () => {
-            const response = await AxiosClient({
-                method: "GET",
-                url: "/promocion",
-            });
-            if (!response.error) {
-                setPromociones(response);
-                return response;
-            }
-        };
-        fetchMaterial();
-    }, []);
+    }, [objeto]);
 
     const handleClose = () => {
-        form.resetForm();
         onClose();
     }
     return <Modal
@@ -194,8 +61,11 @@ export const AlumnoInfo = ({ isOpen, cargarDatos, onClose, objeto }) => {
                             </div>
                         </div>
                         <div className="AlumnoInfoLeft" style={{ paddingLeft: "3.5rem", flexDirection: "column", paddingTop: "0.5rem" }}>
-                            <div className="AlumnoInfoTitleInfo" style={{ height: "7%", marginBottom: "8.8rem" }}>
-                                <p style={{ fontSize: "24px", height: "100%" }}>{objeto.name}</p>
+                            <div className="AlumnoInfoTitleInfo" style={{ height: "40%" }}>
+                                <p style={{ fontSize: "24px", height: "25%" }}>{objeto.name}</p>
+                                <div className="AlumnoInfoObservaciones">
+                                    {objeto.observaciones}
+                                </div>
                             </div>
                             <div className="AlumnoInfoInfoCentro">
                                 <div className="AlumnoInfoTitleInfo" style={{ height: "100%", width: "50%" }}>
@@ -258,71 +128,60 @@ export const AlumnoInfo = ({ isOpen, cargarDatos, onClose, objeto }) => {
                         <div className="CalendarioTitulo">
                             <div className="CalendarioTituloMes">Octubre</div>
                             <div className="CalendarioTituloDias">
-                                <div className="CalendarioTituloDia">L</div>
-                                <div className="CalendarioTituloDia">M</div>
-                                <div className="CalendarioTituloDia">M</div>
-                                <div className="CalendarioTituloDia">J</div>
-                                <div className="CalendarioTituloDia">V</div>
-                                <div className="CalendarioTituloDia">S</div>
-                                <div className="CalendarioTituloDia">D</div>
+                                <div className="CalendarioTituloDia">{diasSemana ? diasSemana[0][0] : ""}</div>
+                                <div className="CalendarioTituloDia">{diasSemana ? diasSemana[1][0] : ""}</div>
+                                <div className="CalendarioTituloDia">{diasSemana ? diasSemana[2][0] : ""}</div>
+                                <div className="CalendarioTituloDia">{diasSemana ? diasSemana[3][0] : ""}</div>
+                                <div className="CalendarioTituloDia">{diasSemana ? diasSemana[4][0] : ""}</div>
+                                <div className="CalendarioTituloDia">{diasSemana ? diasSemana[5][0] : ""}</div>
+                                <div className="CalendarioTituloDia">{diasSemana ? diasSemana[6][0] : ""}</div>
                             </div>
                         </div>
                         <div className="CalendarioDiasMain">
                             <div className="CalendarioDias">
-                                <div className="CalendarioDia">1</div>
-                                <div className="CalendarioDia">2</div>
-                                <div className="CalendarioDia">3</div>
-                                <div className="CalendarioDia">4</div>
-                                <div className="CalendarioDia">5</div>
-                                <div className="CalendarioDia">6</div>
-                                <div className="CalendarioDia">7</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[0].activo : ""}`} onClick={diasMes[0].status != 0 ? () => cambiarColor(diasMes[0].dia) : () => 1}>{diasMes ? diasMes[0].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[1].activo : ""}`} onClick={diasMes[1].status != 0 ? () => cambiarColor(diasMes[1].dia) : () => 1}>{diasMes ? diasMes[1].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[2].activo : ""}`} onClick={diasMes[2].status != 0 ? () => cambiarColor(diasMes[2].dia) : () => 1}>{diasMes ? diasMes[2].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[3].activo : ""}`} onClick={diasMes[3].status != 0 ? () => cambiarColor(diasMes[3].dia) : () => 1}>{diasMes ? diasMes[3].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[4].activo : ""}`} onClick={diasMes[4].status != 0 ? () => cambiarColor(diasMes[4].dia) : () => 1}>{diasMes ? diasMes[4].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[5].activo : ""}`} onClick={diasMes[5].status != 0 ? () => cambiarColor(diasMes[5].dia) : () => 1}>{diasMes ? diasMes[5].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[6].activo : ""}`} onClick={diasMes[6].status != 0 ? () => cambiarColor(diasMes[6].dia) : () => 1}>{diasMes ? diasMes[6].dia : ""}</div>
                             </div>
                             <div className="CalendarioDias">
-                                <div className="CalendarioDia">8</div>
-                                <div className="CalendarioDia">9</div>
-                                <div className="CalendarioDia">10</div>
-                                <div className="CalendarioDia">11</div>
-                                <div className="CalendarioDia">12</div>
-                                <div className="CalendarioDia">13</div>
-                                <div className="CalendarioDia">14</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[7].activo : ""}`} onClick={diasMes[7].status != 0 ? () => cambiarColor(diasMes[7].dia) : () => 1}>{diasMes ? diasMes[7].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[8].activo : ""}`} onClick={diasMes[8].status != 0 ? () => cambiarColor(diasMes[8].dia) : () => 1}>{diasMes ? diasMes[8].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[9].activo : ""}`} onClick={diasMes[9].status != 0 ? () => cambiarColor(diasMes[9].dia) : () => 1}>{diasMes ? diasMes[9].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[10].activo : ""}`} onClick={diasMes[10].status != 0 ? () => cambiarColor(diasMes[10].dia) : () => 1}>{diasMes ? diasMes[10].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[11].activo : ""}`} onClick={diasMes[11].status != 0 ? () => cambiarColor(diasMes[11].dia) : () => 1}>{diasMes ? diasMes[11].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[12].activo : ""}`} onClick={diasMes[12].status != 0 ? () => cambiarColor(diasMes[12].dia) : () => 1}>{diasMes ? diasMes[12].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[13].activo : ""}`} onClick={diasMes[13].status != 0 ? () => cambiarColor(diasMes[13].dia) : () => 1}>{diasMes ? diasMes[13].dia : ""}</div>
                             </div>
                             <div className="CalendarioDias">
-                                <div className="CalendarioDia">15</div>
-                                <div className="CalendarioDia">16</div>
-                                <div className="CalendarioDia">17</div>
-                                <div className="CalendarioDia">18</div>
-                                <div className="CalendarioDia">19</div>
-                                <div className="CalendarioDia">20</div>
-                                <div className="CalendarioDia">21</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[14].activo : ""}`} onClick={diasMes[14].status != 0 ? () => cambiarColor(diasMes[14].dia) : () => 1}>{diasMes ? diasMes[14].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[15].activo : ""}`} onClick={diasMes[15].status != 0 ? () => cambiarColor(diasMes[15].dia) : () => 1}>{diasMes ? diasMes[15].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[16].activo : ""}`} onClick={diasMes[16].status != 0 ? () => cambiarColor(diasMes[16].dia) : () => 1}>{diasMes ? diasMes[16].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[17].activo : ""}`} onClick={diasMes[17].status != 0 ? () => cambiarColor(diasMes[17].dia) : () => 1}>{diasMes ? diasMes[17].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[18].activo : ""}`} onClick={diasMes[18].status != 0 ? () => cambiarColor(diasMes[18].dia) : () => 1}>{diasMes ? diasMes[18].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[19].activo : ""}`} onClick={diasMes[19].status != 0 ? () => cambiarColor(diasMes[19].dia) : () => 1}>{diasMes ? diasMes[19].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[20].activo : ""}`} onClick={diasMes[20].status != 0 ? () => cambiarColor(diasMes[20].dia) : () => 1}>{diasMes ? diasMes[20].dia : ""}</div>
                             </div>
                             <div className="CalendarioDias">
-                                <div className="CalendarioDia">22</div>
-                                <div className="CalendarioDia">23</div>
-                                <div className="CalendarioDia">24</div>
-                                <div className="CalendarioDia">25</div>
-                                <div className="CalendarioDia">26</div>
-                                <div className="CalendarioDia">27</div>
-                                <div className="CalendarioDia">28</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[21].activo : ""}`} onClick={diasMes[21].status != 0 ? () => cambiarColor(diasMes[21].dia) : () => 1}>{diasMes ? diasMes[21].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[22].activo : ""}`} onClick={diasMes[22].status != 0 ? () => cambiarColor(diasMes[22].dia) : () => 1}>{diasMes ? diasMes[22].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[23].activo : ""}`} onClick={diasMes[23].status != 0 ? () => cambiarColor(diasMes[23].dia) : () => 1}>{diasMes ? diasMes[23].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[24].activo : ""}`} onClick={diasMes[24].status != 0 ? () => cambiarColor(diasMes[24].dia) : () => 1}>{diasMes ? diasMes[24].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[25].activo : ""}`} onClick={diasMes[25].status != 0 ? () => cambiarColor(diasMes[25].dia) : () => 1}>{diasMes ? diasMes[25].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[26].activo : ""}`} onClick={diasMes[26].status != 0 ? () => cambiarColor(diasMes[26].dia) : () => 1}>{diasMes ? diasMes[26].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[27].activo : ""}`} onClick={diasMes[27].status != 0 ? () => cambiarColor(diasMes[27].dia) : () => 1}>{diasMes ? diasMes[27].dia : ""}</div>
                             </div>
-                            <div className="CalendarioDias" style={{justifyContent:"start"}}>
-                                <div className="CalendarioDia">29</div>
-                                <div className="CalendarioDia">30</div>
-                                <div className="CalendarioDia">31</div>
-                                {/* <div className="CalendarioDia">4</div>
-                                <div className="CalendarioDia">5</div>
-                                <div className="CalendarioDia">6</div>
-                                <div className="CalendarioDia">7</div> */}
+                            <div className="CalendarioDias" style={{ justifyContent: "start" }}>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[28].activo : ""}`} onClick={diasMes[28].status != 0 ? () => cambiarColor(diasMes[28].dia) : () => 1}>{diasMes ? diasMes[28].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[29].activo : ""}`} onClick={diasMes[29].status != 0 ? () => cambiarColor(diasMes[29].dia) : () => 1}>{diasMes ? diasMes[29].dia : ""}</div>
+                                <div className={`CalendarioDia ${diasMes[0].activo ? diasMes[30].activo : ""}`} onClick={diasMes[30].status != 0 ? () => cambiarColor(diasMes[30].dia) : () => 1}>{diasMes ? diasMes[30].dia : ""}</div>
                             </div>
                             <div className="CalendarioDias">
-                                {/* <div className="CalendarioDia">1</div>
-                                <div className="CalendarioDia">2</div>
-                                <div className="CalendarioDia">3</div>
-                                <div className="CalendarioDia">4</div>
-                                <div className="CalendarioDia">5</div>
-                                <div className="CalendarioDia">6</div>
-                                <div className="CalendarioDia">7</div> */}
                             </div>
-                            <div className="CalendarioDias" style={{borderBottom:"0px"}}>
+                            <div className="CalendarioDias" style={{ borderBottom: "0px" }}>
                                 Asistencia <div className='CalendarioCirculo' style={{ backgroundColor: "green" }}></div> Ausencia <div className='CalendarioCirculo' style={{ backgroundColor: "red" }}></div> Neutral <div className='CalendarioCirculo'></div>
                             </div>
                         </div>

@@ -10,7 +10,7 @@ import { TbHomeSearch } from 'react-icons/tb';
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
 
-export const ChartAlumnos = ({ isOpen, cargarDatos, onClose, option }) => {
+export const ChartAlumnos = ({ isOpen, cargarDatos, onClose, option, alumnosActivos }) => {
   const data = [
     {
       name: 'Page A',
@@ -67,7 +67,7 @@ export const ChartAlumnos = ({ isOpen, cargarDatos, onClose, option }) => {
     </Modal.Header>
     <Modal.Body>
       <div style={{width:"100%", display:"flex", justifyContent:"center", alignItems:"center"}}>
-        <Bar data={{ labels: ["Junio", "Julio", "Agosto"], datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} />
+      <Bar data={{ labels: ["Agosto", "Septiembre", "Octubre"], datasets: [{ label: "Alumnos Inscritos", data: [4, 5, alumnosActivos] }] }} />
       </div>
     </Modal.Body>
   </Modal>
