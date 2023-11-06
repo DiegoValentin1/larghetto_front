@@ -33,3 +33,28 @@
 .rdt_Pagination{
     background-color: #f6f6f6 !important;
 }
+
+.StatusMenu{
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    transition: transform 0.3s;
+}
+
+.StatusMenu:hover{
+    transform: scale(1.07);
+}
+
+.StatusMenuOption{
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.StatusMenuOption:hover{
+    transform: scale(1.3);
+}
+
+
+.modal::-webkit-scrollbar-thumb {
+    background-color: #641616; /* Color de la barra del scrollbar */
+    border-radius: 6px; /* Radio de borde de la barra del scrollbar */
+  }

@@ -180,7 +180,7 @@ export default function SuperDashboard() {
                 <div>
                     <div className="App">
                         <div className="ContainerCharts DashboardContainer">
-                            <div className="DashboardTitle">Estadisticas</div>
+                            <div className="DashboardTitle">Estadísticas</div>
                             <div className="ChartBox">
                                 <div className="ChartContainer" onClick={() => setIsOpen(true)}>
                                     <Bar data={{ labels: ["Agosto", "Septiembre", "Octubre"], datasets: [{ label: "Alumnos Inscritos", data: [4, 5, alumnosActivos] }] }} />

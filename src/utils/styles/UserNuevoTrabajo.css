@@ -28,10 +28,11 @@
     align-items: start;
 }
 
-#ComprobanteInput{
+#ComprobanteInput {
     margin: 0 !important;
 }
-#CheckInput{
+
+#CheckInput {
     margin-left: 20%;
     margin-top: 30%;
 }
@@ -72,19 +73,18 @@
     gap: 10px;
 }
 
-.InputTextArea{
-    
+.InputTextArea {
+    height: 7%;
+    padding: 0;
 }
 
-.AlumnoTextArea{
+.AlumnoTextArea {
     resize: none;
     height: 80%;
 }
 
-.AlumnoGroupTextArea{
+.AlumnoGroupTextArea {
     height: 100%;
-    padding-bottom: 16%;
-    padding-top: 3%;
 }
 
 .InputContainer4-2 {
@@ -92,7 +92,7 @@
     flex-direction: row;
 }
 
-.InputContainer2Columns{
+.InputContainer2Columns {
     display: flex;
     flex-direction: column;
     width: 80%;
@@ -118,6 +118,19 @@
 
 .mi-modal-personalizado .modal-body {
     padding: 10px;
+    padding-top: 0;
+}
+
+.modalAlumnoActualizar .modal-content {
+    width: 87vw;
+    margin: 0;
+    height: 90vh;
+    margin-top: 0vh;
+    border: none;
+}
+
+.modalAlumnoActualizar .modal-body {
+
     padding-top: 0;
 }
 
@@ -150,7 +163,7 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-.AlumnoInfoMain{
+.AlumnoInfoMain {
     background-color: rgb(255, 255, 255);
     height: 100%;
     width: 100%;
@@ -159,7 +172,7 @@ input[type=number] {
     flex-direction: row;
 }
 
-.AlumnoInfoLeft{
+.AlumnoInfoLeft {
     display: flex;
     justify-content: start;
     align-items: start;
@@ -168,7 +181,7 @@ input[type=number] {
     border: solid 0px red;
 }
 
-.AlumnoInfoRight{
+.AlumnoInfoRight {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -177,7 +190,7 @@ input[type=number] {
     border: solid 0px red;
 }
 
-.AlumnoInfoBottomInfo{
+.AlumnoInfoBottomInfo {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -188,7 +201,7 @@ input[type=number] {
     padding-left: 0.5rem;
 }
 
-.AlumnoInfoProfilePicture{
+.AlumnoInfoProfilePicture {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -199,7 +212,7 @@ input[type=number] {
     margin-bottom: 1rem;
 }
 
-.AlumnoInfoTitleInfo{
+.AlumnoInfoTitleInfo {
     width: 100%;
     border: solid 0px red;
     height: 20%;
@@ -207,29 +220,29 @@ input[type=number] {
     flex-direction: column;
 }
 
-.AlumnoInfoTitleInfo p:first-child{
+.AlumnoInfoTitleInfo p:first-child {
     font-weight: bold;
     height: 35%;
     margin: 0;
 }
 
-.AlumnoInfoTitleInfo p:nth-child(2){
+.AlumnoInfoTitleInfo p:nth-child(2) {
     height: 65%;
     margin: 0;
 }
 
-.AlumnoInfoObservaciones{
+.AlumnoInfoObservaciones {
     height: 80%;
 }
 
-.AlumnoInfoInfoCentro{
+.AlumnoInfoInfoCentro {
     width: 100%;
     height: 15%;
     display: flex;
     flex-direction: row;
 }
 
-.CalendarioMain{
+.CalendarioMain {
     height: 90%;
     width: 100%;
     /* border: dotted 3px #333; */
@@ -242,11 +255,11 @@ input[type=number] {
     transition: transform 0.3s;
 }
 
-.CalendarioMain:hover{
+.CalendarioMain:hover {
     transform: scale(1.01);
 }
 
-.CalendarioTitulo{
+.CalendarioTitulo {
     padding-top: 0.5rem;
     background-color: #ebebeb;
     width: 100%;
@@ -258,30 +271,31 @@ input[type=number] {
     border-top-right-radius: 1rem;
 }
 
-.CalendarioTituloMes{
+.CalendarioTituloMes {
     font-weight: 500;
     font-size: 20px;
     padding-bottom: 0.5rem;
 }
 
-.CalendarioTituloDias{
+.CalendarioTituloDias {
     width: 100%;
     display: flex;
     flex-direction: row;
 }
-.CalendarioTituloDia{
+
+.CalendarioTituloDia {
     width: 14.28%;
     text-align: center;
     font-size: 12px;
 }
 
-.CalendarioDiasMain{
+.CalendarioDiasMain {
     height: 70%;
     width: 100%;
     border-top: solid 1px #333;
 }
 
-.CalendarioDias{
+.CalendarioDias {
     width: 100%;
     height: 16.6%;
     display: flex;
@@ -292,7 +306,7 @@ input[type=number] {
     padding-inline: 0rem;
 }
 
-.CalendarioDia{
+.CalendarioDia {
     height: 100%;
     width: 14.28%;
     margin: 0;
@@ -307,34 +321,33 @@ input[type=number] {
     border-radius: 0.5rem;
 }
 
-.diaActivo{
-}
+.diaActivo {}
 
-.diaInactivo{
+.diaInactivo {
     background-color: #cccccc;
     cursor: not-allowed;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.diaInactivo:hover{
+.diaInactivo:hover {
     transform: scale(1.00) !important;
 }
 
-.diaCumplido{
+.diaCumplido {
     background-color: rgb(61, 173, 61);
     color: #ececec;
 }
 
-.diaFalta{
+.diaFalta {
     background-color: rgb(204, 37, 59);
     color: #ececec;
 }
 
-.CalendarioDia:hover{
+.CalendarioDia:hover {
     transform: scale(1.06);
 }
 
-.CalendarioCirculo{
+.CalendarioCirculo {
     width: 4%;
     height: 54%;
     border-radius: 100%;
@@ -342,4 +355,111 @@ input[type=number] {
     margin-left: 3px;
     background-color: white;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.InstrumentosAdd {
+    width: 20%;
+    height: 100%;
+    border: solid 1px green;
+    display: flex;
+    border-radius: 0.5rem;
+    color: green;
+    padding-left: 10;
+    padding-right: 10;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.InstrumentosAdd:hover {
+    transform: scale(1.01);
+    background-color: green;
+    color: white;
+}
+
+.InstrumentosSub {
+    width: 20%;
+    height: 100%;
+    border: solid 1px red;
+    display: flex;
+    border-radius: 0.5rem;
+    color: red;
+    padding-left: 10;
+    padding-right: 10;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-right: 1rem;
+}
+
+.InstrumentosSub:hover {
+    transform: scale(1.01);
+    background-color: red;
+    color: white;
+}
+
+.MaestroInstrumentosContainer {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+    
+}
+
+.MaestroInstrumentosContainer>div:first-child {
+    margin-right: 20px;
+}
+
+.InstrumentosContainer {
+    width: 35%;
+    height: auto;
+    min-height: 30vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    border-radius: 1rem;
+    padding: 5px;
+
+}
+
+.InstrumentosContainer div {
+    flex-basis: calc(33.33% - 10px);
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.InstrumentosInstrumento {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
+    text-align: center;
+    padding: 2%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.InstrumentosInstrumento:hover{
+    transform: scale(1.08);
+    background-color: #333;
+    color: #f2f2f2;
+}
+
+.InstrumentosInstrumentoTitulo{
+    width: 100%;
+    height: 10%;
+    border-bottom: #333 solid 1px;
+    text-align: center;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    
 }

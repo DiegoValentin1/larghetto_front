@@ -12,14 +12,15 @@ import Alert, {
   errorMsj,
   errorTitle,
 } from "../../../shared/plugins/alerts";
-import { TbHomeSearch} from 'react-icons/tb'
+import { TbHomeSearch } from 'react-icons/tb'
 
 export const EditMaestroForm = ({
   isOpen,
   cargarDatos,
   onClose,
   objeto,
-  option
+  option,
+  maIn,
 }) => {
   console.log(objeto)
   const [menor, setMenor] = useState(false);
@@ -27,6 +28,11 @@ export const EditMaestroForm = ({
   const [instrumentos, setInstrumentos] = useState([]);
   const [horarios, setHorarios] = useState([]);
   const [promociones, setPromociones] = useState([]);
+  const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
+
+  useEffect(()=>{
+    setMaestroInstrumentos(maIn);
+  }, [maIn])
 
   const form = useFormik({
     initialValues: {
@@ -114,6 +120,7 @@ export const EditMaestroForm = ({
         setMaestros(response);
         return response;
       }
+
     };
     fetchMaterial();
   }, []);
@@ -160,20 +167,40 @@ export const EditMaestroForm = ({
     form.values.banco = banco;
     form.values.fecha_inicio = fecha_inicio ? fecha_inicio.substring(0, 10) : fecha_inicio;
     form.values.comprobante = comprobante == 1 ? true : false;
+    console.log(maestroInstrumentos)
   }, [objeto]);
 
   const handleClose = () => {
     form.resetForm();
     onClose();
   };
+
+  const handleAddInstrumento = (nombreInstrumento) => {
+    const objetoEnLista1 = instrumentos.find(objeto => objeto.instrumento === nombreInstrumento);
+    var temp = [...maestroInstrumentos]
+    if (objetoEnLista1) {
+      temp.push({ ...objetoEnLista1 });
+      setMaestroInstrumentos(temp);
+    }
+  }
+
+  const handleSubInstrumento = (nombreInstrumento) => {
+    const index = maestroInstrumentos.indexOf(maestroInstrumentos.find(objeto => objeto.instrumento === nombreInstrumento));
+    const temp = [...maestroInstrumentos]
+    if (index !== -1) {
+      temp.splice(index, 1);
+      setMaestroInstrumentos(temp);
+    }
+  }
+
   return (
     <Modal
       backdrop='static'
       keyboard={false}
       show={isOpen}
       onHide={handleClose}
-      style={{ width: "90vw", display: "flex", alignContent: "center", justifyItems: "center", marginLeft: "5vw", padding: "0" }}
-      dialogClassName="mi-modal-personalizado"
+      style={{ width: "90vw", display: "flex", alignContent: "start", justifyItems: "start", marginLeft: "5vw", padding: "0", height: "auto", backgroundColor: "white", borderRadius: "1rem", marginTop: "1rem" }}
+      dialogClassName="modalAlumnoActualizar"
       id="modalAlumnoR"
     >
       <Modal.Header closeButton >
@@ -181,6 +208,7 @@ export const EditMaestroForm = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={form.handleSubmit}>
+          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos del Maestro</div>
           <div className="InputContainer4">
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='name'>Nombre</Form.Label>
@@ -302,6 +330,7 @@ export const EditMaestroForm = ({
                         )}
                     </Form.Group> */}
           </div>
+          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos Bancarios</div>
           <div className="InputContainer4-2">
             <div className="InputContainer3" style={{ width: "89%" }}>
               <Form.Group className='mb-3'>
@@ -335,6 +364,27 @@ export const EditMaestroForm = ({
                   form.errors.comprobante && (<span className='error-text'>{form.errors.comprobante}</span>)
                 }
               </Form.Group>
+            </div>
+          </div>
+          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Instrumentos</div>
+          <div className="MaestroInstrumentosContainer">
+            <div className="InstrumentosContainer">
+              <p className="InstrumentosInstrumentoTitulo">Instrumentos No Impartidos</p>
+              {instrumentos.filter(objeto1 =>
+                !maestroInstrumentos.some(objeto2 => objeto1.instrumento === objeto2.instrumento)
+              ).map((item) => (
+                <div className="InstrumentosInstrumento" key={item.id} onClick={() => handleAddInstrumento(item.instrumento)}>
+                  {item.instrumento}
+                </div>
+              ))}
+            </div>
+            <div className="InstrumentosContainer">
+              <p className="InstrumentosInstrumentoTitulo">Instrumentos Impartidos</p>
+              {maestroInstrumentos.map((item) => (
+                <div className="InstrumentosInstrumento" key={item.id} onClick={()=>handleSubInstrumento(item.instrumento)}>
+                  {item.instrumento}
+                </div>
+              ))}
             </div>
           </div>
           {/* <div className="InputContainer4-2">

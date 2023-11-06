@@ -67,7 +67,7 @@ export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambi
                                     {objeto.observaciones}
                                 </div>
                             </div>
-                            <div className="AlumnoInfoInfoCentro">
+                            {/* <div className="AlumnoInfoInfoCentro">
                                 <div className="AlumnoInfoTitleInfo" style={{ height: "100%", width: "50%" }}>
                                     <p style={{}}>Instrumento</p>
                                     <p style={{}}>{objeto.instrumento}</p>
@@ -76,7 +76,7 @@ export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambi
                                     <p style={{}}>Maestro</p>
                                     <p style={{}}>{objeto.maestro}</p>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="AlumnoInfoInfoCentro">
                                 <div className="AlumnoInfoTitleInfo" style={{ height: "100%", width: "50%" }}>
                                     <p style={{}}>Mensualidad</p>

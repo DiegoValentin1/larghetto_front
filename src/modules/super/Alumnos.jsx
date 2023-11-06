@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
 import { AiOutlineInfoCircle } from 'react-icons/ai'
+import { IoMdRepeat } from 'react-icons/io'
 import "bootstrap/dist/css/bootstrap.min.css";
 import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
@@ -17,6 +18,8 @@ import { AlumnoInfo } from './Components/AlumnoInfo';
 
 export default function Users() {
     const [selectedObject, setSelectedObject] = useState({});
+    const [selectedStudentId, setSelectedStudentId] = useState(0);
+    const [showStatusMenu, setShowStatusMenu] = useState(false);
     const session = JSON.parse(localStorage.getItem('user') || null);
     const columns = [
         {
@@ -31,33 +34,38 @@ export default function Users() {
         },
         {
             name: 'Mensualidad',
-            selector: (row) => row.mensualidad - (row.mensualidad * (row.descuento / 100)),
+            selector: (row) => row.mensualidad && (row.mensualidad - (row.mensualidad * (row.descuento / 100))).toFixed(2),
             sortable: true,
         },
         {
-            name: 'Proximo Pago',
+            name: 'Próximo Pago',
             selector: (row) => { return row.proximo_pago.substring(0, 10) },
             sortable: true,
         },
         {
-            name: 'Instrumento',
-            selector: 'instrumento',
-            sortable: true,
-        },
-        {
-            name: 'Maestro',
-            selector: 'maestro',
-            sortable: true,
-        },
-        {
             name: 'Status',
-            selector: 'status',
+            selector: 'estado',
             sortable: true,
             cell: (row) => {
-                if (row.status) {
+                if (row.estado == 1) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#A0A2A2", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                }
+                else if (row.estado == 2) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#F0BA14", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else if (row.estado == 3) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#14F0B7", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else if (row.estado == 4) {
                     return <div style={{ marginLeft: "0.8rem", backgroundColor: "#40DC51", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
-                } else {
-                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#DC3030", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else if (row.estado == 5) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#ED2C75", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else if (row.estado == 6) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#1F175A", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else if (row.estado == 7) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#DAE175", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else if (row.estado == 8) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#702390", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+                } else if (row.estado == 0) {
+                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
                 }
             }
         },
@@ -66,7 +74,7 @@ export default function Users() {
             cell: (row) => (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
                     <div style={{ paddingRight: "10px" }}>
-                        <AiOutlineInfoCircle className='DataIcon' onClick={ async() => {
+                        <AiOutlineInfoCircle className='DataIcon' onClick={async () => {
                             await cargarAsistenciaAlumnos(row.user_id);
                             setSelectedObject(row);
                             setListaMes(cambiarColores(row.dia));
@@ -85,20 +93,12 @@ export default function Users() {
                             setIsEditting(true);
                         }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                     </div>
-                    {
-                        row.status ? (<div style={{ paddingLeft: 10 }}>
-                            <FaTrashAlt className='DataIcon' onClick={() => {
-                                changeStatus(row.user_id);
-                            }} style={{ height: 20, width: 25, marginBottom: 0 }} />
-                        </div>) : (
-                            <div style={{ paddingLeft: 10 }}>
-                                <FaPlus className='DataIcon' onClick={() => {
-                                    changeStatus(row.user_id);
-                                }} style={{ height: 20, width: 25, marginBottom: 0 }} />
-                            </div>
-                        )
-                    }
-
+                    <div style={{ paddingLeft: 10 }}>
+                        <IoMdRepeat className='DataIcon' onClick={() => {
+                            setSelectedStudentId(row.alu_id)
+                            setShowStatusMenu(!showStatusMenu);
+                        }} style={{ height: 20, width: 25, marginBottom: 0 }} />
+                    </div>
                 </div>
             ),
         },
@@ -118,7 +118,7 @@ export default function Users() {
         var contador = 0;
 
         for (let dia = 1; dia <= 31; dia++) {
-            const display = "flex";
+            var display = "flex";
 
             const esDiaValido = dia <= obtenerDiasEnMes(new Date().getFullYear(), new Date().getMonth() + 1);
 
@@ -165,13 +165,24 @@ export default function Users() {
         return listaDiasSemana;
     }
 
-
-    const changeStatus = async (id) => {
+    const changeStatus2 = async (id) => {
         try {
             const response = await AxiosClient({
                 url: "/personal/",
                 method: "DELETE",
-                data: JSON.stringify({id:id, autor:session ? session.data.name : "", accion:"CAMBIAR STATUS ALUMNO"})
+                data: JSON.stringify({ id: id, autor: session ? session.data.name : "", accion: "CAMBIAR STATUS ALUMNO" })
+            });
+        } catch (err) {
+        }
+    }
+
+
+    const changeStatus = async (id, estado) => {
+        try {
+            const response = await AxiosClient({
+                url: "/personal/alumno/",
+                method: "DELETE",
+                data: JSON.stringify({ id: id, estado: estado })
             });
             if (!response.error) {
                 Alert.fire({
@@ -226,7 +237,7 @@ export default function Users() {
             const response = await AxiosClient({
                 url: "/personal/alumno/asistencias",
                 method: "POST",
-                data: JSON.stringify({id_alumno:id})
+                data: JSON.stringify({ id_alumno: id })
             });
             console.log(response);
             if (!response.error) {
@@ -267,7 +278,7 @@ export default function Users() {
 
         let count = 0;
 
-        
+
 
         nuevaLista.forEach((element) => {
             const status = element.status;
@@ -302,9 +313,9 @@ export default function Users() {
         setListaMes(nuevaLista);
     }
 
-    const cambiarColores =  (dia) => {
+    const cambiarColores = (dia) => {
         const nuevaLista = generarListaMes(dia);
-        
+
         let count = 0;
         nuevaLista.forEach((element, index) => {
             const status = element.status;
@@ -390,6 +401,37 @@ export default function Users() {
                                     <div >
                                         <FeatherIcon className='DataIcon' icon={'user-plus'} onClick={() => setIsOpen(true)} style={{ height: 40, width: 40 }} />
                                     </div>
+
+                                    {showStatusMenu && <div className='StatusMenu' style={{ position: "absolute", width: "20rem", height: "2rem", backgroundColor: "#f0f0f0", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)", borderRadius: "0.8rem", right: 100 }} onClick={() => setShowStatusMenu(false)}>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#A0A2A2", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 1);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#F0BA14", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 2);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#14F0B7", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 3);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#40DC51", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 4);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#ED2C75", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 5);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#1F175A", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 6);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#DAE175", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 7);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#702390", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 8);
+                                        }}></div>
+                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                            changeStatus(selectedStudentId, 0);
+                                        }}></div>
+                                    </div>}
+
                                 </div>
                             }
                             columns={columns}

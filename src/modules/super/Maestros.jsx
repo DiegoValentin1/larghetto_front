@@ -10,6 +10,8 @@ import { AddTeeForm } from './SuperForms/AddTeeForm';
 import { EditTeeForm } from './SuperForms/EditTeeForm';
 import { AddMaestroForm } from './SuperForms/AddMaestroForm';
 import { EditMaestroForm } from './SuperForms/EditMaestroForm';
+import { AiOutlineBarChart } from 'react-icons/ai'
+import { MaestroChart } from './SuperForms/MaestroChart';
 
 
 
@@ -39,7 +41,7 @@ export default function SuperMaterialesTee() {
         },
         {
             name: 'Fecha de Inicio',
-            selector: (row)=>row.fecha_inicio ? row.fecha_inicio.substring(0,10) : "",
+            selector: (row) => row.fecha_inicio ? row.fecha_inicio.substring(0, 10) : "",
             sortable: true,
         },
         {
@@ -71,9 +73,17 @@ export default function SuperMaterialesTee() {
             cell: (row) => (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
                     <div style={{ paddingRight: 10 }}>
+                        <AiOutlineBarChart className='DataIcon' onClick={() => {
+                            setSelectedObject(row);
+                            setIsChart(true);
+                        }} style={{ height: 25, width: 30, marginBottom: 0 }} />
+                    </div>
+                    <div style={{ paddingRight: 10 }}>
                         <FaEdit className='DataIcon' onClick={() => {
 
                             setSelectedObject(row);
+                            filtrarInstrumentos(instrumentosMaestros.filter(objeto => objeto.maestro_id === row.user_id))
+
                             setIsEditting(true);
                         }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                     </div>
@@ -96,10 +106,17 @@ export default function SuperMaterialesTee() {
         },
     ];
 
+    const filtrarInstrumentos = (lista)=>{
+        setMaestroInstrumentos(lista);
+    }
+
 
     const [isEditing, setIsEditting] = useState(false);
+    const [isChart, setIsChart] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [datos, setDatos] = useState([]);
+    const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
+    const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
 
     const changeStatus = async (id) => {
         try {
@@ -148,6 +165,23 @@ export default function SuperMaterialesTee() {
             console.log(err);
         }
     }
+
+    useEffect(() => {
+        const fetchMaterial = async () => {
+            const response = await AxiosClient({
+                method: "GET",
+                url: "/instrumento/teacher",
+            });
+            if (!response.error) {
+                console.log(response)
+                setInstrumentosMaestros(response);
+                return response;
+            }
+        };
+        fetchMaterial();
+    }, []);
+
+
     const aplicarEstilosAlSiguienteDiv = () => {
         const div1 = document.querySelector('.ktEZNl');
         const div2 = div1.nextElementSibling;
@@ -163,7 +197,7 @@ export default function SuperMaterialesTee() {
         cargarDatos();
     }, []);
 
-    useEffect(()=>aplicarEstilosAlSiguienteDiv());
+    useEffect(() => aplicarEstilosAlSiguienteDiv());
 
 
 
@@ -204,7 +238,8 @@ export default function SuperMaterialesTee() {
 
 
             <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos}/>
+            <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />
         </>
 
     )

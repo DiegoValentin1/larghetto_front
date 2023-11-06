@@ -12,6 +12,10 @@ import Alert, {
   errorMsj,
   errorTitle,
 } from "../../../shared/plugins/alerts";
+import { FaPlus } from 'react-icons/fa'
+import { BiMinus } from 'react-icons/bi'
+
+import "../../../utils/styles/DataTable.css"
 
 export const EditUserForm = ({
   isOpen,
@@ -25,6 +29,7 @@ export const EditUserForm = ({
   const [maestros, setMaestros] = useState([]);
   const [instrumentos, setInstrumentos] = useState([]);
   const [horarios, setHorarios] = useState([]);
+  const [numInstrumentos, setNumInstrumentos] = useState(1);
   const [promociones, setPromociones] = useState([]);
 
   const form = useFormik({
@@ -37,7 +42,7 @@ export const EditUserForm = ({
     },
     validationSchema: menor ?
       yup.object().shape({
-        name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        name: yup.string().required("Campo obligatorio").min(2, "Minimo 2 caracteres"),
         email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
         fechaNacimiento: yup.string().required("Campo obligatorio"),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
@@ -46,11 +51,7 @@ export const EditUserForm = ({
         telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-        maestro: yup.string().required("Campo obligatorio"),
-        instrumento: yup.string().required("Campo obligatorio"),
         promocion: yup.string().required("Campo obligatorio"),
-        dia: yup.string().required("Campo obligatorio"),
-        hora: yup.string().required("Campo obligatorio"),
         nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         nombrePadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
@@ -58,7 +59,7 @@ export const EditUserForm = ({
       })
       :
       yup.object().shape({
-        name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        name: yup.string().required("Campo obligatorio").min(2, "Minimo 2 caracteres"),
         email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
         fechaNacimiento: yup.string().required("Campo obligatorio"),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
@@ -67,11 +68,7 @@ export const EditUserForm = ({
         telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-        maestro: yup.string().required("Campo obligatorio"),
-        instrumento: yup.string().required("Campo obligatorio"),
         promocion: yup.string().required("Campo obligatorio"),
-        dia: yup.string().required("Campo obligatorio"),
-        hora: yup.string().required("Campo obligatorio")
       }),
     onSubmit: async (values) => {
       return Alert.fire({
@@ -89,11 +86,19 @@ export const EditUserForm = ({
         allowOutsideClick: () => !Alert.isLoading,
         preConfirm: async () => {
           try {
+            var clases
+            if (numInstrumentos == 1) {
+              clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }]
+            } else if (numInstrumentos == 2) {
+              clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }, { maestro: values.maestro2, instrumento: values.instrumento2, dia: values.dia2, hora: values.hora2 }]
+            } else if (numInstrumentos == 3) {
+              clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }, { maestro: values.maestro2, instrumento: values.instrumento2, dia: values.dia2, hora: values.hora2 }, {maestro:values.maestro3, instrumento:values.instrumento3, dia:values.dia3, hora:values.hora3}]
+            }
             console.log(JSON.stringify({ ...values, role: "ALUMNO" }));
             const response = await AxiosClient({
               method: "PUT",
               url: "/personal/alumno",
-              data: JSON.stringify({ ...values, role: "ALUMNO" }),
+              data: JSON.stringify({ ...values, role: "ALUMNO", clases, user_id:objeto.user_id }),
             });
             console.log(response);
             if (!response.error) {
@@ -168,7 +173,7 @@ export const EditUserForm = ({
   }, []);
 
   React.useMemo(() => {
-    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, maestro_id, instrumento_id, promocion_id, dia, hora, observaciones } = objeto;
+    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, promocion_id, observaciones } = objeto;
     form.values.id = personal_id;
     form.values.name = name;
     form.values.email = email;
@@ -179,13 +184,64 @@ export const EditUserForm = ({
     form.values.telefono = telefono;
     form.values.contactoEmergencia = contactoEmergencia;
     form.values.mensualidad = mensualidad;
-    form.values.maestro = maestro_id;
-    form.values.instrumento = instrumento_id;
     form.values.promocion = promocion_id;
-    form.values.dia = dia;
-    form.values.hora = hora ? hora.substring(0,5) : hora;
+    // form.values.hora = hora ? hora.substring(0, 5) : hora;
     form.values.observaciones = observaciones;
+
+    const fetchMaterial = async () => {
+      const response = await AxiosClient({
+        method: "GET",
+        url: `/instrumento/${objeto.user_id ? objeto.user_id : 1}`,
+      });
+      if (!response.error) {
+        console.log(response);
+            if (response.length > 0) {
+              form.values.maestro1 = response[0].id_maestro;
+              form.values.instrumento1 = response[0].id_instrumento;
+              form.values.hora1 = response[0].hora;
+              form.values.dia1 = response[0].dia;
+            }
+            if(response.length > 1){
+              form.values.maestro2 = response[1].id_maestro;
+              form.values.instrumento2 = response[1].id_instrumento;
+              form.values.hora2 = response[1].hora;
+              form.values.dia2 = response[1].dia;
+            }
+
+            if(response.length > 2){
+              form.values.maestro3 = response[2].id_maestro;
+              form.values.instrumento3 = response[2].id_instrumento;
+              form.values.hora3 = response[2].hora;
+              form.values.dia3 = response[2].dia;
+            }
+          console.log(form.values);
+          setNumInstrumentos(response.length);
+        return response;
+      }
+    };
+    fetchMaterial();
   }, [objeto]);
+
+  const handleInstrumentosNumber = () => {
+    if (numInstrumentos < 3) {
+      setNumInstrumentos(numInstrumentos + 1)
+    } else {
+      Alert.fire({
+        title: "Limite de Instrumentos",
+        text: "El limite de instrumentos permitido es de 3",
+        icon: "warning",
+        confirmButtonColor: "#009574",
+        confirmButtonText: "Aceptar",
+        cancelButtonColor: '#DD6B55',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        backdrop: true,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Alert.isLoading,
+      });
+    }
+  }
 
   const handleClose = () => {
     form.resetForm();
@@ -197,8 +253,8 @@ export const EditUserForm = ({
       keyboard={false}
       show={isOpen}
       onHide={handleClose}
-      style={{ width: "90vw", display: "flex", alignContent: "center", justifyItems: "center", marginLeft: "5vw", padding: "0" }}
-      dialogClassName="mi-modal-personalizado"
+      style={{ width: "90vw", display: "flex", alignContent: "start", justifyItems: "start", marginLeft: "5vw", padding: "0", height: "auto", backgroundColor: "white", borderRadius: "1rem", marginTop: "1rem" }}
+      dialogClassName="modalAlumnoActualizar"
       id="modalAlumnoR"
     >
       <Modal.Header closeButton >
@@ -206,6 +262,7 @@ export const EditUserForm = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={form.handleSubmit}>
+          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos del Alumno</div>
           <div className="InputContainer4-2">
             <div className="InputContainer4" style={{ width: "80%" }}>
               <Form.Group className='mb-3'>
@@ -277,47 +334,173 @@ export const EditUserForm = ({
               </Form.Group>
             </div>
           </div>
-          <div className="InputContainer4-2">
-            <div className="InputContainer2Columns" style={{ width: "80%" }}>
-              <div className="InputContainer4" style={{ height: "50%" }}>
-                <Form.Group className='mb-3'>
-                  <Form.Label htmlFor='domicilio'>Domicilio</Form.Label>
-                  <Form.Control name='domicilio' placeholder="Calle #34" value={form.values.domicilio} onChange={form.handleChange} />
-                  {
-                    form.errors.domicilio && (<span className='error-text'>{form.errors.domicilio}</span>)
-                  }
-                </Form.Group>
-                <Form.Group className='mb-3'>
-                  <Form.Label htmlFor='municipio'>Municipio</Form.Label>
-                  <Form.Control name='municipio' placeholder="Temixco" value={form.values.municipio} onChange={form.handleChange} />
-                  {
-                    form.errors.municipio && (<span className='error-text'>{form.errors.municipio}</span>)
-                  }
-                </Form.Group>
-                <Form.Group className='mb-3'>
-                  <Form.Label htmlFor='telefono'>Telefono</Form.Label>
-                  <Form.Control type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
-                  {
-                    form.errors.telefono && (<span className='error-text'>{form.errors.telefono}</span>)
-                  }
-                </Form.Group>
-                <Form.Group className='mb-3'>
-                  <Form.Label htmlFor='contactoEmergencia'>Contacto de Emergencia</Form.Label>
-                  <Form.Control type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
-                  {
-                    form.errors.contactoEmergencia && (<span className='error-text'>{form.errors.contactoEmergencia}</span>)
-                  }
-                </Form.Group>
+          <div className="InputContainer4" style={{ height: "50%" }}>
+            <Form.Group className='mb-3'>
+              <Form.Label htmlFor='domicilio'>Domicilio</Form.Label>
+              <Form.Control name='domicilio' placeholder="Calle #34" value={form.values.domicilio} onChange={form.handleChange} />
+              {
+                form.errors.domicilio && (<span className='error-text'>{form.errors.domicilio}</span>)
+              }
+            </Form.Group>
+            <Form.Group className='mb-3'>
+              <Form.Label htmlFor='municipio'>Municipio</Form.Label>
+              <Form.Control name='municipio' placeholder="Temixco" value={form.values.municipio} onChange={form.handleChange} />
+              {
+                form.errors.municipio && (<span className='error-text'>{form.errors.municipio}</span>)
+              }
+            </Form.Group>
+            <Form.Group className='mb-3'>
+              <Form.Label htmlFor='telefono'>Telefono</Form.Label>
+              <Form.Control type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
+              {
+                form.errors.telefono && (<span className='error-text'>{form.errors.telefono}</span>)
+              }
+            </Form.Group>
+            <Form.Group className='mb-3'>
+              <Form.Label htmlFor='contactoEmergencia'>Contacto de Emergencia</Form.Label>
+              <Form.Control type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
+              {
+                form.errors.contactoEmergencia && (<span className='error-text'>{form.errors.contactoEmergencia}</span>)
+              }
+            </Form.Group>
+          </div>
+          <div className="InputTextArea" style={{ width: "100%" }}>
+
+            <Form.Group className='mb-3 AlumnoGroupTextArea'>
+              <Form.Label htmlFor='observaciones'>Observaciones</Form.Label>
+              <Form.Control className='AlumnoTextArea' as='textarea' name='observaciones' placeholder="Escriba las observaciones" value={form.values.observaciones} onChange={form.handleChange} />
+              {
+                form.errors.observaciones && (<span className='error-text'>{form.errors.observaciones}</span>)
+              }
+            </Form.Group>
+          </div>
+          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black", display: "flex", paddingBottom: "5px" }}>
+            <div style={{ width: "58%" }}>Instrumentos</div>
+            <div className="InstrumentosSub" onClick={() => numInstrumentos > 1 && setNumInstrumentos(numInstrumentos - 1)}>
+              {/* <BiMinus className='DataIcon' style={{ height: 20, width: 25 }} /> */}
+              Disminuir Instrumentos
+            </div>
+            <div className="InstrumentosAdd" onClick={() => handleInstrumentosNumber()}>
+              Añadir Instrumentos
+              {/* <FaPlus className='DataIcon' onClick={() => {
+              }} style={{ height: 20, width: 25,color: "green" }} /> */}
+            </div>
+          </div>
+          <div className="InputContainer4" style={{ height: "100%" }}>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="maestro">Maestro</Form.Label>
+              <div className="InputSelect">
+                <Form.Select
+                  className="TeeRedInputCompleto"
+                  placeholder=""
+                  name="maestro1"
+                  value={form.values.maestro1}
+                  onChange={form.handleChange}
+                >
+                  <option value="">Selecciona un Maestro</option>
+                  {maestros.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </Form.Select>
               </div>
-              <div className="InputContainer4" style={{ height: "50%" }}>
+
+              {form.errors.maestro1 && (
+                <span className="error-text">{form.errors.maestro1}</span>
+              )}
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="instrumento">Instrumento</Form.Label>
+              <div className="InputSelect">
+                <Form.Select
+                  className="TeeRedInputCompleto"
+                  placeholder=""
+                  name="instrumento1"
+                  value={form.values.instrumento1}
+                  onChange={form.handleChange}
+                >
+                  <option value="">Selecciona un Instrumento</option>
+                  {instrumentos.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.instrumento}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+
+              {form.errors.instrumento1 && (
+                <span className="error-text">{form.errors.instrumento1}</span>
+              )}
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="dia">Día</Form.Label>
+              <div className="InputSelect">
+                <Form.Select
+                  className="TeeRedInputCompleto"
+                  placeholder=""
+                  name="dia1"
+                  value={form.values.dia1}
+                  onChange={form.handleChange}
+                >
+                  <option value="">Selecciona un Día</option>
+                  <option value="Lunes">Lunes</option>
+                  <option value="Martes">Martes</option>
+                  <option value="Miercoles">Miercoles</option>
+                  <option value="Jueves">Jueves</option>
+                  <option value="Viernes">Viernes</option>
+                  <option value="Sabado">Sabado</option>
+                  <option value="Domingo">Domingo</option>
+                </Form.Select>
+              </div>
+
+              {form.errors.dia1 && (
+                <span className="error-text">{form.errors.dia1}</span>
+              )}
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="hora">Horario</Form.Label>
+              <div className="InputSelect">
+                <Form.Select
+                  className="TeeRedInputCompleto"
+                  placeholder=""
+                  name="hora1"
+                  value={form.values.hora1}
+                  onChange={form.handleChange}
+                >
+                  <option value="">Selecciona un Horario</option>
+                  <option value="08:00">08:00</option>
+                  <option value="09:00">09:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="11:00">11:00</option>
+                  <option value="12:00">12:00</option>
+                  <option value="13:00">13:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="15:00">15:00</option>
+                  <option value="16:00">16:00</option>
+                  <option value="17:00">17:00</option>
+                  <option value="18:00">18:00</option>
+                </Form.Select>
+              </div>
+
+              {form.errors.hora1 && (
+                <span className="error-text">{form.errors.hora1}</span>
+              )}
+            </Form.Group>
+          </div>
+          {
+            numInstrumentos > 1 &&
+            <div className="InputContainer4-2" style={{ display: "flex", alignItems: "center", justifyContent: "start" }}>
+
+              <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro">Maestro</Form.Label>
                   <div className="InputSelect">
                     <Form.Select
                       className="TeeRedInputCompleto"
                       placeholder=""
-                      name="maestro"
-                      value={form.values.maestro}
+                      name="maestro2"
+                      value={form.values.maestro2}
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Maestro</option>
@@ -329,8 +512,8 @@ export const EditUserForm = ({
                     </Form.Select>
                   </div>
 
-                  {form.errors.maestro && (
-                    <span className="error-text">{form.errors.maestro}</span>
+                  {form.errors.maestro2 && (
+                    <span className="error-text">{form.errors.maestro2}</span>
                   )}
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -339,8 +522,8 @@ export const EditUserForm = ({
                     <Form.Select
                       className="TeeRedInputCompleto"
                       placeholder=""
-                      name="instrumento"
-                      value={form.values.instrumento}
+                      name="instrumento2"
+                      value={form.values.instrumento2}
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
@@ -352,8 +535,8 @@ export const EditUserForm = ({
                     </Form.Select>
                   </div>
 
-                  {form.errors.instrumento && (
-                    <span className="error-text">{form.errors.instrumento}</span>
+                  {form.errors.instrumento2 && (
+                    <span className="error-text">{form.errors.instrumento2}</span>
                   )}
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -362,8 +545,8 @@ export const EditUserForm = ({
                     <Form.Select
                       className="TeeRedInputCompleto"
                       placeholder=""
-                      name="dia"
-                      value={form.values.dia}
+                      name="dia2"
+                      value={form.values.dia2}
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Día</option>
@@ -377,8 +560,8 @@ export const EditUserForm = ({
                     </Form.Select>
                   </div>
 
-                  {form.errors.dia && (
-                    <span className="error-text">{form.errors.dia}</span>
+                  {form.errors.dia2 && (
+                    <span className="error-text">{form.errors.dia2}</span>
                   )}
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -387,8 +570,8 @@ export const EditUserForm = ({
                     <Form.Select
                       className="TeeRedInputCompleto"
                       placeholder=""
-                      name="hora"
-                      value={form.values.hora}
+                      name="hora2"
+                      value={form.values.hora2}
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Horario</option>
@@ -406,27 +589,132 @@ export const EditUserForm = ({
                     </Form.Select>
                   </div>
 
-                  {form.errors.hora && (
-                    <span className="error-text">{form.errors.hora}</span>
+                  {form.errors.hora2 && (
+                    <span className="error-text">{form.errors.hora2}</span>
                   )}
                 </Form.Group>
               </div>
             </div>
-            <div className="InputTextArea" style={{ width: "20%" }}>
-              <Form.Group className='mb-3 AlumnoGroupTextArea'>
-                <Form.Label htmlFor='observaciones'>Observaciones</Form.Label>
-                <Form.Control className='AlumnoTextArea' as='textarea' name='observaciones' placeholder="Escriba las observaciones" value={form.values.observaciones} onChange={form.handleChange} />
-                {
-                  form.errors.observaciones && (<span className='error-text'>{form.errors.observaciones}</span>)
-                }
-              </Form.Group>
+          }
+          {
+            numInstrumentos > 2 &&
+            <div className="InputContainer4-2">
+              <div className="InputContainer4" style={{ width: "100%" }}>
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="maestro">Maestro</Form.Label>
+                  <div className="InputSelect">
+                    <Form.Select
+                      className="TeeRedInputCompleto"
+                      placeholder=""
+                      name="maestro3"
+                      value={form.values.maestro3}
+                      onChange={form.handleChange}
+                    >
+                      <option value="">Selecciona un Maestro</option>
+                      {maestros.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </div>
+
+                  {form.errors.maestro3 && (
+                    <span className="error-text">{form.errors.maestro3}</span>
+                  )}
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="instrumento">Instrumento</Form.Label>
+                  <div className="InputSelect">
+                    <Form.Select
+                      className="TeeRedInputCompleto"
+                      placeholder=""
+                      name="instrumento3"
+                      value={form.values.instrumento3}
+                      onChange={form.handleChange}
+                    >
+                      <option value="">Selecciona un Instrumento</option>
+                      {instrumentos.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.instrumento}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </div>
+
+                  {form.errors.instrumento3 && (
+                    <span className="error-text">{form.errors.instrumento3}</span>
+                  )}
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="dia">Día</Form.Label>
+                  <div className="InputSelect">
+                    <Form.Select
+                      className="TeeRedInputCompleto"
+                      placeholder=""
+                      name="dia3"
+                      value={form.values.dia3}
+                      onChange={form.handleChange}
+                    >
+                      <option value="">Selecciona un Día</option>
+                      <option value="Lunes">Lunes</option>
+                      <option value="Martes">Martes</option>
+                      <option value="Miercoles">Miercoles</option>
+                      <option value="Jueves">Jueves</option>
+                      <option value="Viernes">Viernes</option>
+                      <option value="Sabado">Sabado</option>
+                      <option value="Domingo">Domingo</option>
+                    </Form.Select>
+                  </div>
+
+                  {form.errors.dia3 && (
+                    <span className="error-text">{form.errors.dia3}</span>
+                  )}
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="hora">Horario</Form.Label>
+                  <div className="InputSelect">
+                    <Form.Select
+                      className="TeeRedInputCompleto"
+                      placeholder=""
+                      name="hora3"
+                      value={form.values.hora3}
+                      onChange={form.handleChange}
+                    >
+                      <option value="">Selecciona un Horario</option>
+                      <option value="08:00">08:00</option>
+                      <option value="09:00">09:00</option>
+                      <option value="10:00">10:00</option>
+                      <option value="11:00">11:00</option>
+                      <option value="12:00">12:00</option>
+                      <option value="13:00">13:00</option>
+                      <option value="14:00">14:00</option>
+                      <option value="15:00">15:00</option>
+                      <option value="16:00">16:00</option>
+                      <option value="17:00">17:00</option>
+                      <option value="18:00">18:00</option>
+                    </Form.Select>
+                  </div>
+
+                  {form.errors.hora3 && (
+                    <span className="error-text">{form.errors.hora3}</span>
+                  )}
+                </Form.Group>
+              </div>
             </div>
-          </div>
+          }
+
+
+
           {/* <div className="InputContainer4-2">
                     <div className="InputContainer5">
 
                     </div>
                 </div> */}
+          {
+            menor &&
+            <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos de los Tutores</div>
+          }
           {
             menor ?
               <div className="InputContainer4">
