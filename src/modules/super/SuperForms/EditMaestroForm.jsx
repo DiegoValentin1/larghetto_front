@@ -77,7 +77,7 @@ export const EditMaestroForm = ({
             const response = await AxiosClient({
               method: "PUT",
               url: "/personal/teacher",
-              data: JSON.stringify({ ...values, role: "MAESTRO", comprobante: values.comprobante ? 1 : 0 }),
+              data: JSON.stringify({ ...values, user_id:objeto.user_id, maestroInstrumentos, role: "MAESTRO", comprobante: values.comprobante ? 1 : 0 }),
             });
             console.log(response);
             if (!response.error) {
@@ -128,7 +128,7 @@ export const EditMaestroForm = ({
     const fetchMaterial = async () => {
       const response = await AxiosClient({
         method: "GET",
-        url: "/instrumento",
+        url: "/instrumento/dos",
       });
       if (!response.error) {
         setInstrumentos(response);
@@ -191,6 +191,7 @@ export const EditMaestroForm = ({
       temp.splice(index, 1);
       setMaestroInstrumentos(temp);
     }
+    console.log(maestroInstrumentos)
   }
 
   return (

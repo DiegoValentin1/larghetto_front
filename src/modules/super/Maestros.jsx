@@ -179,7 +179,7 @@ export default function SuperMaterialesTee() {
             }
         };
         fetchMaterial();
-    }, []);
+    }, [isEditing, isOpen]);
 
 
     const aplicarEstilosAlSiguienteDiv = () => {

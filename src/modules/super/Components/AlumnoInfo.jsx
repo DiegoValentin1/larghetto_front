@@ -6,13 +6,39 @@ import FeatherIcon from 'feather-icons-react'
 import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts';
 import '../../../utils/styles/UserNuevoTrabajo.css';
-import { FaUserGraduate } from 'react-icons/fa'
+import { FaUserGraduate } from 'react-icons/fa';
+import { IoMdRepeat } from 'react-icons/io';
 
 export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambiarColor, asistencias, setDiasMes }) => {
     console.log(objeto);
-    
+
+    const [clases, setClases] = useState([]);
+    const [dia, setDia] = useState(new Date().getDate());
+
+    const cargarClases = async () => {
+        try {
+            const response = await AxiosClient({
+                url: "/personal/clases/" + objeto.user_id,
+                method: "GET",
+            });
+            console.log(response);
+            if (!response.error) {
+                setClases(response);
+            }
+        } catch (err) {
+            Alert.fire({
+                title: "VERIFICAR DATOS",
+                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Aceptar",
+            });
+            console.log(err);
+        }
+    }
     useEffect(() => {
-    }, [objeto]);
+        cargarClases();
+    }, [isOpen]);
 
     const handleClose = () => {
         onClose();
@@ -22,15 +48,15 @@ export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambi
         keyboard={false}
         show={isOpen}
         onHide={handleClose}
-        style={{ width: "90vw", display: "flex", alignContent: "center", justifyItems: "center", marginLeft: "5vw", padding: "0" }}
-        dialogClassName="mi-modal-personalizado"
+        style={{ width: "90vw", display: "flex", alignContent: "start", justifyItems: "start", marginLeft: "5vw", padding: "0", height: "auto", backgroundColor: "white", borderRadius: "1rem", marginTop: "1rem", overflow: "hidden" }}
+        dialogClassName="modalAlumnoActualizar"
         id="modalAlumnoR"
     >
         <Modal.Header closeButton >
             <Modal.Title>Información Del Alumno</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <div className='AlumnoInfoMain'>
+            <div className='AlumnoInfoMain' style={{ paddingRight: "0px" }}>
                 <div className="AlumnoInfoLeft"  >
                     <div className="AlumnoInfoMain" style={{ padding: 0 }}>
                         <div className="AlumnoInfoRight" style={{ flexDirection: "column" }}>
@@ -120,11 +146,106 @@ export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambi
                         </div>
                     </div>
                 </div>
-                <div className="AlumnoInfoRight" style={{ borderLeft: "solid 2px #333", flexDirection: "column", justifyContent: "start", paddingTop: "0.5rem", paddingLeft: "1.5rem", paddingBottom: "1.5rem" }}>
-                    <div className="AlumnoInfoTitleInfo" style={{ height: "7%", textAlign: "center", marginBottom: "3rem" }}>
+                <div className="AlumnoInfoRight" style={{ borderLeft: "solid 2px #333", flexDirection: "column", justifyContent: "start", paddingTop: "0.5rem", paddingLeft: "0.5rem", paddingBottom: "0.5rem" }}>
+                    <div className="AlumnoInfoTitleInfo" style={{ height: "7%", textAlign: "center", marginBottom: "1rem" }}>
                         <p style={{ fontSize: "24px", height: "100%" }}>Control de Asistencias</p>
                     </div>
-                    <div className='CalendarioMain'>
+
+                    <div className="PanelAsistencias">
+                        {clases.map((item, index) => (
+                            <div className="PanelClase" key={item.id}>
+                                <div className="PanelDiaTitulo" >
+                                    <div>{item.instrumento}</div>
+                                    <div>{item.name}</div>
+                                </div>
+                                <div className="PanelDia">
+                                    <div className="PanelDiaFecha">Martes | 11 | 08:00</div>
+                                    <div className="PanelDiaAsistencia">FALTA</div>
+                                    <div className="PanelDiaCambiarAsistencia">
+                                        <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        {/* <div className="PanelClase">
+                            <div className="PanelDiaTitulo" >Canto</div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia">FALTA</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia">FALTA</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia">FALTA</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia">FALTA</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia">FALTA</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                        </div> */}
+                        <div className="PanelClase">
+                            <div className="PanelDiaTitulo" >Reposiciones</div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333" }}>Reposición</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333" }}>Reposición</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333" }}>Reposición</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333" }}>Reposición</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                            <div className="PanelDia">
+                                <div className="PanelDiaFecha">2023-11-2</div>
+                                <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333" }}>Reposición</div>
+                                <div className="PanelDiaCambiarAsistencia">
+                                    <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* <div className='CalendarioMain'>
                         <div className="CalendarioTitulo">
                             <div className="CalendarioTituloMes">Octubre</div>
                             <div className="CalendarioTituloDias">
@@ -185,7 +306,7 @@ export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambi
                                 Asistencia <div className='CalendarioCirculo' style={{ backgroundColor: "green" }}></div> Ausencia <div className='CalendarioCirculo' style={{ backgroundColor: "red" }}></div> Neutral <div className='CalendarioCirculo'></div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </Modal.Body>

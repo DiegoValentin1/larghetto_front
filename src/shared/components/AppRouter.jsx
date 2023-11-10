@@ -38,7 +38,7 @@ export const AppRouter = () => {
                     <Route index element={<Users/>} />
                     <Route path="instrumentos" element={<SuperMaterialesBrida/>} />
                     <Route path="maestros" element={<SuperMaterialesTee/>} />
-                    <Route path="promociones" element={<Promociones/>} />
+                    {/* <Route path="promociones" element={<Promociones/>} /> */}
                     <Route path="recepcionistas" element={<Recepcionistas/>} />
                     </Route>
                   </Routes>

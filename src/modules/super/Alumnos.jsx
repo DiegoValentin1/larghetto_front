@@ -427,9 +427,13 @@ export default function Users() {
                                         <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#702390", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 0);
-                                        }}></div>
+                                        {
+                                            !(session.data.role === "RECEPCION" || session.data.role === "ENCARGADO" && new Date().getDate() > 15) ? 
+                                            <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                                changeStatus(selectedStudentId, 0);
+                                            }}></div> :
+                                            ""
+                                        }
                                     </div>}
 
                                 </div>

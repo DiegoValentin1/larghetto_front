@@ -43,7 +43,7 @@ const AdminSidebar = () => {
                 <Link to='/' className="user icon" data-label="Alumnos"><FeatherIcon icon={'users'} /></Link>
                 <Link to='maestros' className="sliders icon" data-label="Maestros" ><FaChalkboardTeacher style={{ height: 28, width: 28 }}/> </Link>
                 <Link to='instrumentos' className="sliders icon" data-label="Instrumentos" style={{ fontSize:"1.5rem"}}><GiGuitarBassHead style={{ height: 28, width: 28 }}/> </Link>
-                <Link to='promociones' className="sliders icon" data-label="Promociones" ><TbDiscount2Off style={{ height: 28, width: 28 }}/> </Link>
+                {/* <Link to='promociones' className="sliders icon" data-label="Promociones" ><TbDiscount2Off style={{ height: 28, width: 28 }}/> </Link> */}
                 <Link to='recepcionistas' className="sliders icon" data-label="Recepcionistas" ><IoWoman style={{ height: 28, width: 28 }}/> </Link>
                 
             </div>
