@@ -75,9 +75,8 @@ export default function Users() {
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
                     <div style={{ paddingRight: "10px" }}>
                         <AiOutlineInfoCircle className='DataIcon' onClick={async () => {
-                            await cargarAsistenciaAlumnos(row.user_id);
+                            
                             setSelectedObject(row);
-                            setListaMes(cambiarColores(row.dia));
                             setIdUser(row.user_id);
                             console.log(row);
                             console.log(selectedObject);
@@ -109,61 +108,8 @@ export default function Users() {
     const [isInfo, setIsInfo] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [datos, setDatos] = useState([]);
-    const [asistencias, setAsistencias] = useState([]);
     const [idUser, setIdUser] = useState();
 
-
-    function generarListaMes(diaActivo) {
-        const lista = [];
-        var contador = 0;
-
-        for (let dia = 1; dia <= 31; dia++) {
-            var display = "flex";
-
-            const esDiaValido = dia <= obtenerDiasEnMes(new Date().getFullYear(), new Date().getMonth() + 1);
-
-            if (!esDiaValido) {
-                display = "none";
-            }
-
-            var activo = diaActivo === obtenerNombreDia(dia) ? "diaActivo" : "diaInactivo";
-            const status = diaActivo === obtenerNombreDia(dia) ? 1 : 0;
-
-
-
-            lista.push({ dia: dia.toString(), display, activo, status });
-        }
-        console.log(lista);
-
-        return lista;
-    }
-
-    function obtenerDiasEnMes(año, mes) {
-        return new Date(año, mes, 0).getDate();
-    }
-
-    function obtenerNombreDia(dia) {
-        const diasSemana = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
-        const fecha = new Date(new Date().getFullYear(), new Date().getMonth(), dia);
-        return diasSemana[fecha.getDay()];
-    }
-
-    const ObtenerDia = () => {
-        const fechaActual = new Date();
-        const primerDiaDelMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
-        const diaSemana = primerDiaDelMes.getDay();
-        const nombresDiasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-        const listaDiasSemana = [];
-        for (let i = diaSemana; i < 7; i++) {
-            listaDiasSemana.push(nombresDiasSemana[i]);
-        }
-        if (diaSemana > 0) {
-            for (let i = 0; i < diaSemana; i++) {
-                listaDiasSemana.push(nombresDiasSemana[i]);
-            }
-        }
-        return listaDiasSemana;
-    }
 
     const changeStatus2 = async (id) => {
         try {
@@ -202,141 +148,6 @@ export default function Users() {
             });
             console.log(err);
         }
-    }
-
-    const [listaMes, setListaMes] = useState(generarListaMes("Lunes"));
-
-    const cambiarAsistencias = async (id, uno, dos, tres, cuatro, cinco) => {
-        try {
-            const response = await AxiosClient({
-                url: "/personal/alumno/asistencias",
-                method: "PUT",
-                data: JSON.stringify({
-                    id_alumno: id,
-                    dia1: uno,
-                    dia2: dos,
-                    dia3: tres,
-                    dia4: cuatro,
-                    dia5: cinco
-                })
-            });
-        } catch (err) {
-            Alert.fire({
-                title: "VERIFICAR DATOS",
-                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "Aceptar",
-            });
-            console.log(err);
-        }
-    }
-
-    const cargarAsistenciaAlumnos = async (id) => {
-        try {
-            const response = await AxiosClient({
-                url: "/personal/alumno/asistencias",
-                method: "POST",
-                data: JSON.stringify({ id_alumno: id })
-            });
-            console.log(response);
-            if (!response.error) {
-                console.log(response);
-                setAsistencias(response);
-            }
-        } catch (err) {
-            Alert.fire({
-                title: "VERIFICAR DATOS",
-                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "Aceptar",
-            });
-            console.log(err);
-        }
-    }
-
-    const cambiarColor = async (dia) => {
-        const nuevaLista = [...listaMes];
-        const tempStatus = nuevaLista[dia - 1].status;
-        if (tempStatus == 1) {
-            nuevaLista[dia - 1].status = 2;
-            nuevaLista[dia - 1].activo = "diaCumplido"
-        } else if (tempStatus == 2) {
-            nuevaLista[dia - 1].status = 3;
-            nuevaLista[dia - 1].activo = "diaFalta"
-        } else if (tempStatus == 3) {
-            nuevaLista[dia - 1].status = 1;
-            nuevaLista[dia - 1].activo = "diaActivo"
-        }
-
-        let status1 = 0;
-        let status2 = 0;
-        let status3 = 0;
-        let status4 = 0;
-        let status5 = 0;
-
-        let count = 0;
-
-
-
-        nuevaLista.forEach((element) => {
-            const status = element.status;
-            if (status !== 0) {
-                count++;
-                switch (count) {
-                    case 1:
-                        status1 = status;
-                        break;
-                    case 2:
-                        status2 = status;
-                        break;
-                    case 3:
-                        status3 = status;
-                        break;
-                    case 4:
-                        status4 = status;
-                        break;
-                    case 5:
-                        status5 = status;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        await cambiarAsistencias(idUser, status1, status2, status3, status4, status5);
-
-
-
-        setListaMes(nuevaLista);
-    }
-
-    const cambiarColores = (dia) => {
-        const nuevaLista = generarListaMes(dia);
-
-        let count = 0;
-        nuevaLista.forEach((element, index) => {
-            const status = element.status;
-            if (status !== 0) {
-                console.log()
-                count++;
-                if (asistencias[`dia${count}`] == 1) {
-                    nuevaLista[index].status = 1;
-                    nuevaLista[index].activo = "diaActivo";
-                } else if (asistencias[`dia${count}`] == 2) {
-                    nuevaLista[index].status = 2;
-                    nuevaLista[index].activo = "diaCumplido";
-                } else if (asistencias[`dia${count}`] == 3) {
-                    nuevaLista[index].status = 3;
-                    nuevaLista[index].activo = "diaFalta";
-                }
-            }
-        });
-        console.log("nuevaaaaaaa")
-        console.log(nuevaLista);
-        return nuevaLista;
     }
 
     const cargarDatos = async () => {
@@ -455,7 +266,7 @@ export default function Users() {
 
             <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
             <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />
-            <AlumnoInfo asistencias={asistencias} setDiasMes={setListaMes} cambiarColor={cambiarColor} diasMes={listaMes} diasSemana={ObtenerDia()} isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />
+            <AlumnoInfo  isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />
         </>
 
     )

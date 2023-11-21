@@ -11,7 +11,7 @@ import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
 
 export const MaestroChart = ({ isOpen, cargarDatos, onClose, option, objeto }) => {
-    const {maestros, setMaestros} = useState({});
+    const {maestros, setMaestros} = useState([]);
     useEffect(() => {
         const fetchMaterial = async () => {
             const response = await AxiosClient({

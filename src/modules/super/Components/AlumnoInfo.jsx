@@ -9,10 +9,11 @@ import '../../../utils/styles/UserNuevoTrabajo.css';
 import { FaUserGraduate } from 'react-icons/fa';
 import { IoMdRepeat } from 'react-icons/io';
 
-export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambiarColor, asistencias, setDiasMes }) => {
+export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
     console.log(objeto);
 
     const [clases, setClases] = useState([]);
+    const [asistencias, setAsistencias] = useState([]);
     const [dia, setDia] = useState(new Date().getDate());
 
     const cargarClases = async () => {
@@ -26,23 +27,113 @@ export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambi
                 setClases(response);
             }
         } catch (err) {
-            Alert.fire({
-                title: "VERIFICAR DATOS",
-                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "Aceptar",
-            });
+
             console.log(err);
         }
     }
+    const cargarAsistencias = async () => {
+        try {
+            const response = await AxiosClient({
+                url: "/personal/alumno/asistencias/" + objeto.user_id,
+                method: "GET",
+            });
+            console.log(response);
+            if (!response.error) {
+                setAsistencias(response.map(json => json.fecha.substring(0, 10)));
+            }
+        } catch (err) {
+
+            console.log(err);
+        }
+    }
+    const saveAsistencia = async (id_alumno, fecha) => {
+        try {
+            const response = await AxiosClient({
+                method: "POST",
+                url: "/personal/alumno/asistencias",
+                data: JSON.stringify({ id_alumno, fecha }),
+            });
+            console.log(response);
+            if (!response.error) {
+                Alert.fire({
+                    title: "Asistencia Guardada",
+                    text: "La asistencia se registro correctamente",
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "Aceptar"
+                })
+                cargarAsistencias();
+            }
+        } catch (err) {
+
+            console.log(err);
+        }
+    }
+    const removeAsistencia = async (id_alumno, fecha) => {
+        try {
+            const response = await AxiosClient({
+                url: "/personal/alumno/asistencias/" + id_alumno + "/" + fecha,
+                method: "DELETE",
+            });
+            console.log(response);
+            if (!response.error) {
+                Alert.fire({
+                    title: "Asistencia removida",
+                    text: "La asistencia se removio correctamente",
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "Aceptar"
+                })
+                cargarAsistencias();
+            }
+        } catch (err) {
+
+            console.log(err);
+        }
+    }
+
+
     useEffect(() => {
         cargarClases();
+        cargarAsistencias();
     }, [isOpen]);
+
+    function fechasEnDiaDeLaSemana(dia) {
+        const fechaActual = new Date();
+
+        const año = fechaActual.getFullYear();
+        const mes = fechaActual.getMonth() + 1;
+
+        const primerDiaDelMes = new Date(año, mes - 1, 1);
+
+        let diaDeLaSemana = primerDiaDelMes.getDay();
+
+        const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+
+        const indiceDia = diasSemana.indexOf(dia.toLowerCase());
+
+        let diferenciaDias = indiceDia - diaDeLaSemana;
+        if (diferenciaDias < 0) {
+            diferenciaDias += 7;
+        }
+
+        const fechaPrimerDiaProporcionado = new Date(año, mes - 1, 1 + diferenciaDias);
+
+        const fechasEnDia = [];
+
+        while (fechaPrimerDiaProporcionado.getMonth() === mes - 1) {
+            const fechaFormateada = fechaPrimerDiaProporcionado.toISOString().split('T')[0];
+            fechasEnDia.push(fechaFormateada);
+            fechaPrimerDiaProporcionado.setDate(fechaPrimerDiaProporcionado.getDate() + 7);
+        }
+
+        return fechasEnDia;
+    }
 
     const handleClose = () => {
         onClose();
     }
+
     return <Modal
         backdrop='static'
         keyboard={false}
@@ -158,13 +249,17 @@ export const AlumnoInfo = ({ isOpen, diasMes, diasSemana, onClose, objeto, cambi
                                     <div>{item.instrumento}</div>
                                     <div>{item.name}</div>
                                 </div>
-                                <div className="PanelDia">
-                                    <div className="PanelDiaFecha">Martes | 11 | 08:00</div>
-                                    <div className="PanelDiaAsistencia">FALTA</div>
-                                    <div className="PanelDiaCambiarAsistencia">
-                                        <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                {fechasEnDiaDeLaSemana(item.dia).map((item2, index2) => (
+                                    <div className="PanelDia" key={item.id * 27 + index2}>
+                                        <div className="PanelDiaFecha">{item.dia} | {item2 ? item2.substring(8, 10) : ""} | {item.hora}</div>
+                                        {asistencias.includes(item2) ? 
+                                        <div className="PanelDiaAsistencia asiste" onClick={()=>removeAsistencia(objeto.user_id, item2)}>ASISTE</div> : 
+                                        <div className="PanelDiaAsistencia falta" onClick={()=>saveAsistencia(objeto.user_id, item2)}>FALTA</div>}
+                                        {/* <div className="PanelDiaCambiarAsistencia">
+                                            <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                        </div> */}
                                     </div>
-                                </div>
+                                ))}
                             </div>
                         ))}
                         {/* <div className="PanelClase">

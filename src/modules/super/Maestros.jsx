@@ -11,7 +11,9 @@ import { EditTeeForm } from './SuperForms/EditTeeForm';
 import { AddMaestroForm } from './SuperForms/AddMaestroForm';
 import { EditMaestroForm } from './SuperForms/EditMaestroForm';
 import { AiOutlineBarChart } from 'react-icons/ai'
+import { MdOutlineAttachMoney } from "react-icons/md";
 import { MaestroChart } from './SuperForms/MaestroChart';
+import { MaestroPayment } from './Components/MaestroPayment';
 
 
 
@@ -35,27 +37,22 @@ export default function SuperMaterialesTee() {
             sortable: true,
         },
         {
-            name: 'Domicilio',
-            selector: 'domicilio',
-            sortable: true,
-        },
-        {
             name: 'Fecha de Inicio',
             selector: (row) => row.fecha_inicio ? row.fecha_inicio.substring(0, 10) : "",
             sortable: true,
         },
-        {
-            name: 'C. de Domicilio',
-            selector: 'comprobante',
-            sortable: true,
-            cell: (row) => {
-                if (row.comprobante) {
-                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#40DC51", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
-                } else {
-                    return <div style={{ marginLeft: "0.8rem", backgroundColor: "#DC3030", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
-                }
-            }
-        },
+        // {
+        //     name: 'C. de Domicilio',
+        //     selector: 'comprobante',
+        //     sortable: true,
+        //     cell: (row) => {
+        //         if (row.comprobante) {
+        //             return <div style={{ marginLeft: "0.8rem", backgroundColor: "#40DC51", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+        //         } else {
+        //             return <div style={{ marginLeft: "0.8rem", backgroundColor: "#DC3030", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
+        //         }
+        //     }
+        // },
         {
             name: 'Status',
             selector: 'status',
@@ -76,7 +73,13 @@ export default function SuperMaterialesTee() {
                         <AiOutlineBarChart className='DataIcon' onClick={() => {
                             setSelectedObject(row);
                             setIsChart(true);
-                        }} style={{ height: 25, width: 30, marginBottom: 0 }} />
+                        }} style={{ height: 25, width: 25, marginBottom: 0 }} />
+                    </div>
+                    <div style={{ paddingRight: 10 }}>
+                        <MdOutlineAttachMoney className='DataIcon' onClick={() => {
+                            setSelectedObject(row);
+                            setIsPayment(true);
+                        }} style={{ height: 25, width: 25, marginBottom: 0 }} />
                     </div>
                     <div style={{ paddingRight: 10 }}>
                         <FaEdit className='DataIcon' onClick={() => {
@@ -113,6 +116,7 @@ export default function SuperMaterialesTee() {
 
     const [isEditing, setIsEditting] = useState(false);
     const [isChart, setIsChart] = useState(false);
+    const [isPayment, setIsPayment] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [datos, setDatos] = useState([]);
     const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
@@ -240,6 +244,7 @@ export default function SuperMaterialesTee() {
             <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
             <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos}/>
             <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />
+            <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />
         </>
 
     )

@@ -517,7 +517,7 @@ input[type=number] {
 
 .PanelDiaFecha{
     /* border: solid red 1px; */
-    width: 60%;
+    width: 70%;
     height: 100%;
     display: flex;
     justify-content: start;
@@ -526,13 +526,28 @@ input[type=number] {
 
 .PanelDiaAsistencia{
     /* border: solid red 1px; */
-    background-color: red;
     color: #f2f2f2;
     width: 25%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+    transition: 0.5s;
+    
+}
+
+.PanelDiaAsistencia:hover{
+    transform: scale(1.1);
+    border-radius: 0.5rem;
+}
+
+.asiste{
+    background-color: green;
+}
+
+.falta{
+    background-color: red;
 }
 
 .PanelDiaCambiarAsistencia{
@@ -542,4 +557,212 @@ input[type=number] {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.MaestroTablaPagoMain{
+    width: 100%;
+    height: 17%;
+    display: flex;
+    flex-direction: row;
+}
+
+.MaestroPagoLeft{
+    width: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #60D05E;
+}
+
+.MaestroPagoLeft > div:first-child{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    font-weight: bold;
+}
+.MaestroPagoLeft > div:last-child{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    color: white;
+}
+
+.MaestroPagoRight{
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    font-weight: bold;
+}
+.MaestroPagoRight > div:first-child{
+    height: 50%;
+    width: 100%;
+    background-color: #3D843B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.MaestroPago{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    background-color: #4DA54B;
+    justify-content: center;
+    align-items: center;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.MaestroPago > div:first-child{
+    width: 10%;
+}
+
+.MaestroPago > div:last-child{
+    width: 90%;
+    display: flex;
+    justify-content: end;
+}
+
+/* -------------------------------------------------------- */
+
+.PagoPorAlumnosMain{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.PagoPorAlumnosTitulo{
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    background-color: #EF8E27;
+}
+
+.PagoAlumnosHeaders{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    font-weight: bold;
+    background-color: #FBB265;
+}
+
+.PagoAlumnosHeaders > div{
+    width: 25%;
+    text-align: center;
+}
+
+.PagoAlumnosHeaders > div:first-child{
+    width: 5%;
+}
+
+.PagoAlumnosHeaders > div:nth-child(2){
+    width: 35%;
+}
+
+.PagoAlumnosHeaders > div:last-child{
+    width: 35%;
+}
+
+.PagoAlumnoRow{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: #F1E091;
+}
+
+.PagoAlumnoRow > div{
+    width: 25%;
+    text-align: center;
+}
+
+.PagoAlumnoRow > div:first-child{
+    width: 5%;
+}
+
+.PagoAlumnoRow > div:nth-child(2){
+    width: 35%;
+}
+
+.PagoAlumnoRow > div:last-child{
+    width: 35%;
+}
+
+.PagoAlumnoTotal{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    font-weight: bold;
+    background-color: #FBB265;
+}
+
+.PagoAlumnoTotal > div:first-child{
+    width: 5%;
+}
+
+.PagoAlumnoTotal > div:nth-child(2){
+    width: 35%;
+    text-align: center;
+    background-color: #FBB265;
+}
+
+.PagoAlumnoTotal > div:last-child{
+    width: 25%;
+    text-align: center;
+    background-color: #FBB265;
+}
+
+
+/*--------------------------------------------------------------------------------------*/
+
+.DescuentoRow{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: #FFCDAC;
+}
+
+.DescuentoRow > div{
+    width: 25%;
+    text-align: center;
+}
+
+.DescuentoRow > div:first-child{
+    width: 5%;
+}
+
+.DescuentoRow > div:nth-child(2){
+    width: 25%;
+}
+
+.DescuentoRow > div:last-child{
+    width: 70%;
+}
+
+.DescuentoTotal{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    font-weight: bold;
+    background-color: #FE7F70;
+}
+
+.DescuentoTotal > div:first-child{
+    width: 5%;
+}
+
+
+.DescuentoTotal > div:last-child{
+    width: 25%;
+    text-align: center;
+    background-color: #FE7F70;
 }
