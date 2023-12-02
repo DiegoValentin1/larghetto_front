@@ -111,23 +111,12 @@ export default function Users() {
     const [idUser, setIdUser] = useState();
 
 
-    const changeStatus2 = async (id) => {
-        try {
-            const response = await AxiosClient({
-                url: "/personal/",
-                method: "DELETE",
-                data: JSON.stringify({ id: id, autor: session ? session.data.name : "", accion: "CAMBIAR STATUS ALUMNO" })
-            });
-        } catch (err) {
-        }
-    }
-
-
     const changeStatus = async (id, estado) => {
+        console.log(id,estado);
         try {
             const response = await AxiosClient({
-                url: "/personal/alumno/",
-                method: "DELETE",
+                url: "/personal/alumno/eliminar",
+                method: "PUT",
                 data: JSON.stringify({ id: id, estado: estado })
             });
             if (!response.error) {

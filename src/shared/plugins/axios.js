@@ -1,6 +1,6 @@
 import instance from 'axios';
 const AxiosClient = instance.create({
-    baseURL: 'http://192.168.100.16:3001/api',
+    baseURL: 'http://192.168.100.22:3001/api',
 });
 
 const requestHandler = (request) => {

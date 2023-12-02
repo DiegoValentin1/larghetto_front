@@ -186,7 +186,7 @@ export default function SuperDashboard() {
                                     <Bar data={{ labels: ["Agosto", "Septiembre", "Octubre"], datasets: [{ label: "Alumnos Inscritos", data: [4, 5, alumnosActivos] }] }} />
                                 </div>
                                 <div className="ChartContainer">
-                                    {/* <Bar data={{ labels: ["Junio", "Julio", "Agosto"], datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} /> */}
+                                    <Bar data={{ labels: ["Junio", "Julio", "Agosto"], datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} />
                                 </div>
                                 <div className="ChartContainer"></div>
                             </div>
