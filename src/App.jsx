@@ -1,7 +1,7 @@
-import { authReducer } from "./modules/auth/authReducer";
-import { useEffect, useReducer } from "react";
-import { AuthContext } from "./modules/auth/authContext";
-import { AppRouter } from "./shared/components/AppRouter";
+const { authReducer } = require("./modules/auth/authReducer");
+const { useEffect, useReducer } = require("react");
+const { AuthContext } = require("./modules/auth/authContext");
+const { AppRouter } = require("./shared/components/AppRouter");
 
 const init = () => {
     return JSON.parse(
