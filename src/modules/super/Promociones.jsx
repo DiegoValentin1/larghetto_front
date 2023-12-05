@@ -15,6 +15,9 @@ import { EditPromocionForm } from './SuperForms/EditPromocionForm';
 
 
 export default function Promociones() {
+    useEffect(()=>{
+        console.log("Activoooo");
+    }, []);
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
@@ -24,7 +27,7 @@ export default function Promociones() {
         },
         {
             name: 'Porcentaje de Descuento',
-            selector: (row)=>`${row.descuento}%`,
+            selector: (row) => `${row.descuento}%`,
             sortable: true
         },
         {
@@ -136,7 +139,7 @@ export default function Promociones() {
         cargarDatos();
     }, []);
 
-    useEffect(()=>aplicarEstilosAlSiguienteDiv());
+    useEffect(() => aplicarEstilosAlSiguienteDiv());
 
 
 
@@ -176,8 +179,8 @@ export default function Promociones() {
             </div>
 
 
-            <AddPromocionForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditPromocionForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            {isOpen && <AddPromocionForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
+            {isEditing && <EditPromocionForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
         </>
 
     )

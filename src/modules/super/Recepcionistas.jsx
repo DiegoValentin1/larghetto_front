@@ -19,6 +19,9 @@ import { EditRecepcionistaForm } from './SuperForms/EditEncargadoForm copy';
 
 
 export default function Recepcionistas() {
+    useEffect(()=>{
+        console.log("Activoooo");
+    }, []);
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
@@ -150,7 +153,7 @@ export default function Recepcionistas() {
         cargarDatos();
     }, []);
 
-    useEffect(()=>aplicarEstilosAlSiguienteDiv());
+    useEffect(() => aplicarEstilosAlSiguienteDiv());
 
 
 
@@ -190,8 +193,8 @@ export default function Recepcionistas() {
             </div>
 
 
-            <AddRecepcionistaForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditRecepcionistaForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            {isOpen && <AddRecepcionistaForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
+            {isEditing && <EditRecepcionistaForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
         </>
 
     )

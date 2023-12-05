@@ -17,6 +17,9 @@ import { EditEncargadoForm } from './SuperForms/EditEncargadoForm';
 
 
 export default function Encargados() {
+    useEffect(()=>{
+        console.log("Activoooo");
+    }, []);
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
@@ -188,8 +191,8 @@ export default function Encargados() {
             </div>
 
 
-            <AddEncargadoForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditEncargadoForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            {isOpen && <AddEncargadoForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
+            {isEditing && <EditEncargadoForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>}
         </>
 
     )

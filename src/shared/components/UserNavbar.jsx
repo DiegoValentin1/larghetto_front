@@ -7,7 +7,7 @@ import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, err
 
 const UserNavbar = () => {
     useEffect(() => {
-        const ws = new WebSocket('ws://localhost:8080');
+        const ws = new WebSocket('ws://104.237.128.187:8095');
         ws.onopen = () => {
           console.log('Conexión WebSocket establecida');
         };

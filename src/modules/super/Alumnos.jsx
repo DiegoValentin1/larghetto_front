@@ -103,6 +103,10 @@ export default function Users() {
         },
     ];
 
+    useEffect(()=>{
+        console.log("Activoooo");
+    }, []);
+
 
     const [isEditing, setIsEditting] = useState(false);
     const [isInfo, setIsInfo] = useState(false);
@@ -253,9 +257,9 @@ export default function Users() {
             </div>
 
 
-            <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />
-            <AlumnoInfo  isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />
+            {isOpen && <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
+            {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
+            {isInfo && <AlumnoInfo  isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
         </>
 
     )

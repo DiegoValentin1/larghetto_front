@@ -13,6 +13,9 @@ import { EditBridaForm } from './SuperForms/EditInstrumentoForm';
 
 
 export default function SuperMaterialesBrida() {
+    useEffect(()=>{
+        console.log("Activoooo");
+    }, []);
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
@@ -129,7 +132,7 @@ export default function SuperMaterialesBrida() {
         cargarDatos();
     }, []);
 
-    useEffect(()=>aplicarEstilosAlSiguienteDiv());
+    useEffect(() => aplicarEstilosAlSiguienteDiv());
 
 
 
@@ -169,8 +172,9 @@ export default function SuperMaterialesBrida() {
             </div>
 
 
-            <AddBridaForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditBridaForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/>
+            {isOpen && <AddBridaForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
+}            
+            {isEditing && <EditBridaForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
         </>
 
     )

@@ -19,6 +19,9 @@ import { MaestroPayment } from './Components/MaestroPayment';
 
 
 export default function SuperMaterialesTee() {
+    useEffect(()=>{
+        console.log("Activoooo");
+    }, []);
     const [selectedObject, setSelectedObject] = useState({});
     const columns = [
         {
@@ -109,7 +112,7 @@ export default function SuperMaterialesTee() {
         },
     ];
 
-    const filtrarInstrumentos = (lista)=>{
+    const filtrarInstrumentos = (lista) => {
         setMaestroInstrumentos(lista);
     }
 
@@ -241,10 +244,10 @@ export default function SuperMaterialesTee() {
             </div>
 
 
-            <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos}/>
-            <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />
-            <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />
+            {isOpen && <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
+            {isEditing && <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos} />}
+            {isChart && <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />}
+            {isPayment && <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />}
         </>
 
     )
