@@ -169,7 +169,7 @@ export default function Users() {
 
     const aplicarEstilosAlSiguienteDiv = () => {
         const div1 = document.querySelector('.ktEZNl');
-        const div2 = div1.nextElementSibling;
+        const div2 = div1 && div1.nextElementSibling;
 
         if (div2) {
             div2.style.width = '89.2%';
