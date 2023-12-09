@@ -15,11 +15,15 @@ import { AlumnoInfo } from './Components/AlumnoInfo';
 
 
 
-
 export default function Users() {
     const [selectedObject, setSelectedObject] = useState({});
     const [selectedStudentId, setSelectedStudentId] = useState(0);
+    const [totalMensualidad, setTotalMensualidad] = useState(0);
+    const [contador, setContador] = useState(0);
+    const [inner, setInner] = useState("");
+    const [totalStatus, setTotalStatus] = useState({});
     const [showStatusMenu, setShowStatusMenu] = useState(false);
+    const [showFilter, setShowFilter] = useState(false);
     const session = JSON.parse(localStorage.getItem('user') || null);
     const columns = [
         {
@@ -75,7 +79,7 @@ export default function Users() {
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
                     <div style={{ paddingRight: "10px" }}>
                         <AiOutlineInfoCircle className='DataIcon' onClick={async () => {
-                            
+
                             setSelectedObject(row);
                             setIdUser(row.user_id);
                             console.log(row);
@@ -103,7 +107,9 @@ export default function Users() {
         },
     ];
 
-    useEffect(()=>{
+    
+
+    useEffect(() => {
         console.log("Activoooo");
     }, []);
 
@@ -112,11 +118,24 @@ export default function Users() {
     const [isInfo, setIsInfo] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [datos, setDatos] = useState([]);
+    const [filtrados, setFiltrados] = useState([]);
     const [idUser, setIdUser] = useState();
+
+    const handleInputChange = (event) => {
+        const valorInput = event.target.value;
+        setShowFilter(valorInput.lenght === 0 ? false : true)
+        console.log('Valor actual del input:', valorInput);
+        setFiltrados( datos.filter(item => {
+            return (
+                (item.matricula && item.matricula.toLowerCase().includes(valorInput.toLowerCase())) ||
+                (item.name && item.name.toLowerCase().includes(valorInput.toLowerCase()))
+            );
+          }));
+    }
 
 
     const changeStatus = async (id, estado) => {
-        console.log(id,estado);
+        console.log(id, estado);
         try {
             const response = await AxiosClient({
                 url: "/personal/alumno/eliminar",
@@ -153,6 +172,26 @@ export default function Users() {
             if (!response.error) {
                 console.log(response);
                 setDatos(response);
+                setTotalMensualidad(response.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
+                console.log(response.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
+                setTotalStatus(response.reduce((contador, item) => {
+                    const estado = item.estado;
+                    if (contador[estado] !== undefined) {
+                        contador[estado]++;
+                    } else {
+                        contador[estado] = 1;
+                    }
+                    return contador;
+                }, {}));
+                console.log(response.reduce((contador, item) => {
+                    const estado = item.estado;
+                    if (contador[estado] !== undefined) {
+                        contador[estado]++;
+                    } else {
+                        contador[estado] = 1;
+                    }
+                    return contador;
+                }, {}))
             }
         } catch (err) {
             Alert.fire({
@@ -172,6 +211,51 @@ export default function Users() {
         const div2 = div1 && div1.nextElementSibling;
 
         if (div2) {
+            // div2.innerHTML = `
+            // <div style='width:100%;height:5vh; display:flex; flex-direction:row;'>
+            //     <div  style='width:27%;height:100%;'></div>
+            //     <div  style='width:20%;height:100%;display:flex;align-items: end;'>Total Mensualidad: ${totalMensualidad}</div>
+            //     <div  style='width:40%;height:100%;display:flex; flex-direction:row;justify-content: center;align-items: center;'>
+            //         <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #A0A2A2; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[1] ? totalStatus[1] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #F0BA14; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[2] ? totalStatus[2] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #14F0B7; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[3] ? totalStatus[3] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #40DC51; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[4] ? totalStatus[4] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #ED2C75; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[5] ? totalStatus[5] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #1F175A; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[6] ? totalStatus[6] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #DAE175; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[7] ? totalStatus[7] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: #702390; padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[8] ? totalStatus[8] : "0"}</div>
+            //     <div
+            //         style="margin-top: 0.4rem; margin-left: 0.6rem; background-color: rgb(220, 48, 48); padding: 0.6rem; border-radius: 0.5rem; width: 1rem; height: 1rem;"
+            //     ></div>
+            //     <div style={{paddingTop:"0.35rem",paddingLeft:"0.35rem"}}>${totalStatus[0] ? totalStatus[0] : "0"}</div>
+
+            //     </div>
+            // </div>
+            // ` + inner;
             div2.style.width = '89.2%';
             div2.style.bottom = '4.5%';
             div2.style.right = '2%';
@@ -179,10 +263,11 @@ export default function Users() {
         }
     };
     useEffect(() => {
+
         cargarDatos();
     }, []);
 
-    useEffect(() => aplicarEstilosAlSiguienteDiv());
+    useEffect(() => { aplicarEstilosAlSiguienteDiv(); });
 
 
 
@@ -198,13 +283,64 @@ export default function Users() {
 
                                 <div style={{ display: "flex", flexDirection: "row" }}>
 
-                                    <div style={{ width: "95%", paddingTop: 3 }}>
+                                    <div style={{ width: "15%", paddingTop: 3 }}>
                                         Alumnos
                                     </div>
 
+                                    <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row" }}>
+                                        <div style={{ width: "auto", height: "100%", display: "flex", alignItems: "end", fontSize: "18px", borderBottom: "1px solid black", marginRight: "3rem" }}>Total Mensualidad: ${totalMensualidad}</div>
+                                        <div style={{ width: "60%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", fontSize: "18px" }}>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#A0A2A2", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[1] ? totalStatus[1] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#F0BA14", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[2] ? totalStatus[2] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#14F0B7", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[3] ? totalStatus[3] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#40DC51", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[4] ? totalStatus[4] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#ED2C75", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[5] ? totalStatus[5] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#1F175A", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[6] ? totalStatus[6] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#DAE175", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[7] ? totalStatus[7] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#702390", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[8] ? totalStatus[8] : "0"}</div>
+                                            <div
+                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                            ></div>
+                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[0] ? totalStatus[0] : "0"}</div>
+
+                                        </div>
+                                    </div>
+
+                                    <input
+                                    className='inputSearch'
+                                        type="text"
+                                        placeholder="Buscar..."
+                                        onChange={(event) => handleInputChange(event)}
+                                    />
                                     <div >
                                         <FeatherIcon className='DataIcon' icon={'user-plus'} onClick={() => setIsOpen(true)} style={{ height: 40, width: 40 }} />
                                     </div>
+
+
 
                                     {showStatusMenu && <div className='StatusMenu' style={{ position: "absolute", width: "20rem", height: "2rem", backgroundColor: "#f0f0f0", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)", borderRadius: "0.8rem", right: 100 }} onClick={() => setShowStatusMenu(false)}>
                                         <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#A0A2A2", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
@@ -232,18 +368,18 @@ export default function Users() {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
                                         {
-                                            !(session.data.role === "RECEPCION" || session.data.role === "ENCARGADO" && new Date().getDate() > 15) ? 
-                                            <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                                changeStatus(selectedStudentId, 0);
-                                            }}></div> :
-                                            ""
+                                            !(session.data.role === "RECEPCION" || session.data.role === "ENCARGADO" && new Date().getDate() > 15) ?
+                                                <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
+                                                    changeStatus(selectedStudentId, 0);
+                                                }}></div> :
+                                                ""
                                         }
                                     </div>}
 
                                 </div>
                             }
                             columns={columns}
-                            data={datos}
+                            data={showFilter ? filtrados : datos}
                             pagination
                             highlightOnHover
                             paginationPerPage={8}
@@ -251,15 +387,22 @@ export default function Users() {
                                 rowsPerPageText: '',
                                 noRowsPerPage: true,
                             }}
+
                         />
                     </div>
                 </div>
             </div>
 
 
+
+
+
+
+
+
             {isOpen && <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
             {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
-            {isInfo && <AlumnoInfo  isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
+            {isInfo && <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
         </>
 
     )

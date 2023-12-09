@@ -1,3 +1,29 @@
+.totalMain{
+    width: 100vw;
+    border-radius: 1px red solid;
+    justify-content: center;
+    align-items: center;
+}
+.hola{
+    height: 50%;
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inputSearch{
+    border-radius: 0.5rem;
+    margin-right: 3rem;
+    font-size: 16px;
+    padding: 5px;
+    background-color: transparent;
+    border: solid black 1px;
+}
+
+
 .DataIcon {
     cursor: pointer;
     transition: transform 0.3s ease;

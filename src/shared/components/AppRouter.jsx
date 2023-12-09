@@ -72,15 +72,12 @@ export const AppRouter = () => {
               )
             ) : (
               <>
-                <PublicNavbar />
-                <Container style={{ marginTop: "20px" }}>
                   <Routes>
                     <Route path="auth" element={<LoginScreen/>} />
                     <Route path="contact" element={<>Contact</>} />
                     <Route index element={<LoginScreen/>} />
                     <Route path="*" element={<>404</>} />
                   </Routes>
-                </Container>
               </>
             )
           }
