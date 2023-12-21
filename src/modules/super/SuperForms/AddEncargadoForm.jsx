@@ -163,6 +163,29 @@ export const AddEncargadoForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         }
                     </Form.Group>
                 </div>
+                <div className="InputContainer4" style={{ width: "100%" }}>
+                    <Form.Group className='mb-3'>
+                        <Form.Label htmlFor='campus'>Campus</Form.Label>
+                        <div className="InputSelect">
+                                <Form.Select
+                                    className="TeeRedInputCompleto"
+                                    placeholder=""
+                                    name="campus"
+                                    value={form.values.campus}
+                                    onChange={form.handleChange}
+                                >
+                                    <option value="">Selecciona un Campus</option>
+                                    
+                                        <option value="bugambilias">Bugambilias</option>
+                                        <option value="centro">Centro</option>
+                                        <option value="cuautla">Cuautla</option>
+                                </Form.Select>
+                            </div>
+                        {
+                            form.errors.campus && (<span className='error-text'>{form.errors.campus}</span>)
+                        }
+                    </Form.Group>
+                </div>
                 {/* <div className="InputContainer3">
                     <Form.Group className='mb-3'>
                         <Form.Label htmlFor='clabe'>Clabe</Form.Label>

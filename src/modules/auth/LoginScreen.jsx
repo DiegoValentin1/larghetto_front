@@ -72,7 +72,7 @@ export const LoginScreen = () => {
     },
   });
   useEffect(() => {
-    document.title = "MPGIA | Login";
+    document.title = "Larghetto";
   }, []);
   // if (user.isLogged) {
   //   return <Navigate to={"/"} />;
@@ -136,7 +136,7 @@ export const LoginScreen = () => {
                         <Form.Group className="form-outline mb-4">
                           <div className="text-center pt-1 pb-1">
                           <a href="#!" className="text-muted">
-                            ¿HAS OLVIDADO TU CONTRASEÑA?
+                            {/* ¿HAS OLVIDADO TU CONTRASEÑA? */}
                           </a>
                           </div>
                         </Form.Group>

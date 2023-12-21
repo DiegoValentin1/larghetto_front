@@ -97,7 +97,7 @@ export const EditEncargadoForm = ({
   });
 
   React.useMemo(() => {
-    const { id, name, email, fechaNacimiento, domicilio, municipio, telefono, contactoEmergencia} = objeto;
+    const { id, name, email, fechaNacimiento, domicilio, municipio, telefono, contactoEmergencia, campus} = objeto;
 
     form.values.id = id;
     form.values.name = name;
@@ -106,6 +106,7 @@ export const EditEncargadoForm = ({
     form.values.domicilio = domicilio;
     form.values.municipio = municipio;
     form.values.telefono = telefono;
+    form.values.campus = campus;
     form.values.contactoEmergencia = contactoEmergencia;
   }, [objeto]);
 
@@ -128,7 +129,7 @@ export const EditEncargadoForm = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={form.handleSubmit}>
-          <div className="InputContainer4">
+          <div className="InputContainer3">
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='name'>Nombre</Form.Label>
               <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
@@ -150,13 +151,7 @@ export const EditEncargadoForm = ({
                 form.errors.email && (<span className='error-text'>{form.errors.email}</span>)
               }
             </Form.Group>
-            <Form.Group className='mb-3'>
-              <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
-              <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
-              {
-                form.errors.password && (<span className='error-text'>{form.errors.password}</span>)
-              }
-            </Form.Group>
+            
           </div>
           <div className="InputContainer4" style={{ width: "100%" }}>
             <Form.Group className='mb-3'>
@@ -188,6 +183,29 @@ export const EditEncargadoForm = ({
               }
             </Form.Group>
           </div>
+          <div className="InputContainer4" style={{ width: "100%" }}>
+                    <Form.Group className='mb-3'>
+                        <Form.Label htmlFor='campus'>Campus</Form.Label>
+                        <div className="InputSelect">
+                                <Form.Select
+                                    className="TeeRedInputCompleto"
+                                    placeholder=""
+                                    name="campus"
+                                    value={form.values.campus}
+                                    onChange={form.handleChange}
+                                >
+                                    <option value="">Selecciona un Campus</option>
+                                    
+                                        <option value="bugambilias">Bugambilias</option>
+                                        <option value="centro">Centro</option>
+                                        <option value="cuautla">Cuautla</option>
+                                </Form.Select>
+                            </div>
+                        {
+                            form.errors.campus && (<span className='error-text'>{form.errors.campus}</span>)
+                        }
+                    </Form.Group>
+                </div>
           {/* <div className="InputContainer3">
                     <Form.Group className='mb-3'>
                         <Form.Label htmlFor='clabe'>Clabe</Form.Label>

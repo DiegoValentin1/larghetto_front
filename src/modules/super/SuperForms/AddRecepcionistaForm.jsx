@@ -9,6 +9,7 @@ import '../../../utils/styles/UserNuevoTrabajo.css';
 
 export const AddRecepcionistaForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const [menor, setMenor] = useState(false);
+    const session = JSON.parse(localStorage.getItem('user') || null);
     let schema;
 
     const form = useFormik({
@@ -52,7 +53,7 @@ export const AddRecepcionistaForm = ({ isOpen, cargarDatos, onClose, option }) =
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/user",
-                            data: JSON.stringify({ ...values, role: "RECEPCION" }),
+                            data: JSON.stringify({ ...values, role: "RECEPCION", campus:session.data.campus }),
                         });
                         console.log(response);
                         if (!response.error) {

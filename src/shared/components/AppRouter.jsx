@@ -17,7 +17,7 @@ import SuperDashboard from "../../modules/super/Components/SuperDashboard";
 export const AppRouter = () => {
   const { user } = useContext(AuthContext);
   // const user = {data:{role:"SUPER"}, isLogged:true};
-  // console.log(user.data.role);
+  // console.log(user);
   return (
     <Router>
       <Routes>

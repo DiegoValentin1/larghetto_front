@@ -31,6 +31,8 @@ export const EditUserForm = ({
   const [horarios, setHorarios] = useState([]);
   const [numInstrumentos, setNumInstrumentos] = useState(1);
   const [promociones, setPromociones] = useState([]);
+  const [pagos, setPagos] = useState([]);
+  const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
 
   const form = useFormik({
     initialValues: {
@@ -92,13 +94,14 @@ export const EditUserForm = ({
             } else if (numInstrumentos == 2) {
               clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }, { maestro: values.maestro2, instrumento: values.instrumento2, dia: values.dia2, hora: values.hora2 }]
             } else if (numInstrumentos == 3) {
-              clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }, { maestro: values.maestro2, instrumento: values.instrumento2, dia: values.dia2, hora: values.hora2 }, {maestro:values.maestro3, instrumento:values.instrumento3, dia:values.dia3, hora:values.hora3}]
+              clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }, { maestro: values.maestro2, instrumento: values.instrumento2, dia: values.dia2, hora: values.hora2 }, { maestro: values.maestro3, instrumento: values.instrumento3, dia: values.dia3, hora: values.hora3 }]
             }
             console.log(JSON.stringify({ ...values, role: "ALUMNO" }));
+            console.log("Holaaaaa", clases, numInstrumentos)
             const response = await AxiosClient({
               method: "PUT",
               url: "/personal/alumno",
-              data: JSON.stringify({ ...values, role: "ALUMNO", clases, user_id:objeto.user_id }),
+              data: JSON.stringify({ ...values, role: "ALUMNO", clases, user_id: objeto.user_id, pagos }),
             });
             console.log(response);
             if (!response.error) {
@@ -135,6 +138,37 @@ export const EditUserForm = ({
     const fetchMaterial = async () => {
       const response = await AxiosClient({
         method: "GET",
+        url: "/instrumento/teacher",
+      });
+      if (!response.error) {
+        console.log(response)
+        setInstrumentosMaestros(response);
+        return response;
+      }
+    };
+    fetchMaterial();
+  }, []);
+
+  useEffect(() => {
+    const fetchMaterial = async () => {
+      const response = await AxiosClient({
+        method: "GET",
+        url: "/stats/pagos/" + objeto.user_id,
+      });
+      if (!response.error) {
+        console.log(response)
+        setPagos(response.map((item)=> item.fecha.slice(0,10)));
+        console.log(response.map((item)=> item.fecha.slice(0,10)));
+        handleInputPago(response.map((item)=> item.fecha.slice(0,10)));
+      }
+    };
+    fetchMaterial();
+  }, []);
+
+  useEffect(() => {
+    const fetchMaterial = async () => {
+      const response = await AxiosClient({
+        method: "GET",
         url: "/personal/teacher",
       });
       if (!response.error) {
@@ -145,6 +179,7 @@ export const EditUserForm = ({
     };
     fetchMaterial();
   }, [isOpen]);
+
   useEffect(() => {
     const fetchMaterial = async () => {
       const response = await AxiosClient({
@@ -152,12 +187,54 @@ export const EditUserForm = ({
         url: "/instrumento",
       });
       if (!response.error) {
+        console.log(response);
         setInstrumentos(response);
         return response;
       }
     };
     fetchMaterial();
   }, []);
+
+  const manejarCambioCheckbox = (event, mes) => {
+    const { checked } = event.target;
+
+    if (checked) {
+      const nuevaFecha = `2023-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
+      setPagos([...pagos, nuevaFecha]); // Agregar la fecha al array
+      console.log([...pagos, nuevaFecha]);
+    } else {
+      const fechaRemovida = `2023-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
+      setPagos(pagos.filter(fecha => fecha !== fechaRemovida)); // Remover la fecha del array
+      console.log(pagos.filter(fecha => fecha !== fechaRemovida));
+    }
+  };
+
+  const handleInputPago = (listaFechas) => {
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  
+    // Encontrar el mes más alto en la lista de fechas
+    let mesMasAlto = 0;
+    for (let i = 0; i < listaFechas.length; i++) {
+      const fecha = new Date(listaFechas[i]);
+      const mes = fecha.getMonth() + 2;
+      console.log(fecha, mes, mesMasAlto)
+      if (mes > mesMasAlto) {
+        mesMasAlto = mes;
+      }
+    }
+  
+    // Marcar y habilitar los checkboxes
+    for (let i = 1; i <= 12; i++) {
+      const checkbox = document.getElementById('pago' + i);
+      if (i <= mesMasAlto || i < new Date().getMonth() + 1) {
+        checkbox.checked = listaFechas.some(fecha => new Date(fecha).getMonth() + 2 === i);
+        checkbox.disabled = true;
+      } else {
+        checkbox.disabled = false;
+      }
+    }
+  }
+
   useEffect(() => {
     const fetchMaterial = async () => {
       const response = await AxiosClient({
@@ -170,6 +247,7 @@ export const EditUserForm = ({
       }
     };
     fetchMaterial();
+    
   }, []);
 
   React.useMemo(() => {
@@ -191,35 +269,35 @@ export const EditUserForm = ({
     const fetchMaterial = async () => {
       const response = await AxiosClient({
         method: "GET",
-        url: `/instrumento/${objeto.user_id ? objeto.user_id : 1}`,
+        url: `/instrumento/${objeto.user_id}`,
       });
       if (!response.error) {
         console.log(response);
-            if (response.length > 0) {
-              form.values.maestro1 = response[0].id_maestro;
-              form.values.instrumento1 = response[0].id_instrumento;
-              form.values.hora1 = response[0].hora;
-              form.values.dia1 = response[0].dia;
-            }
-            if(response.length > 1){
-              form.values.maestro2 = response[1].id_maestro;
-              form.values.instrumento2 = response[1].id_instrumento;
-              form.values.hora2 = response[1].hora;
-              form.values.dia2 = response[1].dia;
-            }
+        if (response.length > 0) {
+          form.values.maestro1 = response[0].id_maestro;
+          form.values.instrumento1 = response[0].id_instrumento;
+          form.values.hora1 = response[0].hora;
+          form.values.dia1 = response[0].dia;
+        }
+        if (response.length > 1) {
+          form.values.maestro2 = response[1].id_maestro;
+          form.values.instrumento2 = response[1].id_instrumento;
+          form.values.hora2 = response[1].hora;
+          form.values.dia2 = response[1].dia;
+        }
 
-            if(response.length > 2){
-              form.values.maestro3 = response[2].id_maestro;
-              form.values.instrumento3 = response[2].id_instrumento;
-              form.values.hora3 = response[2].hora;
-              form.values.dia3 = response[2].dia;
-            }
-          console.log(form.values);
-          setNumInstrumentos(response.length);
+        if (response.length > 2) {
+          form.values.maestro3 = response[2].id_maestro;
+          form.values.instrumento3 = response[2].id_instrumento;
+          form.values.hora3 = response[2].hora;
+          form.values.dia3 = response[2].dia;
+        }
+        console.log(form.values);
+        setNumInstrumentos(response.length > 0 ? response.length : 1);
         return response;
       }
     };
-    fetchMaterial();
+    objeto.user_id && fetchMaterial();
   }, [objeto]);
 
   const handleInstrumentosNumber = () => {
@@ -242,6 +320,8 @@ export const EditUserForm = ({
       });
     }
   }
+
+
 
   const handleClose = () => {
     form.resetForm();
@@ -373,6 +453,39 @@ export const EditUserForm = ({
                 form.errors.observaciones && (<span className='error-text'>{form.errors.observaciones}</span>)
               }
             </Form.Group>
+          </div>
+          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black", display: "flex", paddingBottom: "5px" }}>
+            <div style={{ width: "58%" }}>Pagos Por Mes</div>
+          </div>
+          <div className="InputContainer12" style={{ height: "50%" }}>
+            <div>
+              <div>Enero</div>
+              <div>Febrero</div>
+              <div>Marzo</div>
+              <div>Abril</div>
+              <div>Mayo</div>
+              <div>Junio</div>
+              <div>Julio</div>
+              <div>Agosto</div>
+              <div>Septiembre</div>
+              <div>Octubre</div>
+              <div>Noviembre</div>
+              <div>Diciembre</div>
+            </div>
+            <div>
+              <input type="checkbox" name="" id="pago1" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '01')} />
+              <input type="checkbox" name="" id="pago2" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '02')} />
+              <input type="checkbox" name="" id="pago3" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '03')}/>
+              <input type="checkbox" name="" id="pago4" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '04')}/>
+              <input type="checkbox" name="" id="pago5" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '05')}/>
+              <input type="checkbox" name="" id="pago6" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '06')}/>
+              <input type="checkbox" name="" id="pago7" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '07')}/>
+              <input type="checkbox" name="" id="pago8" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '08')}/>
+              <input type="checkbox" name="" id="pago9" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '09')}/>
+              <input type="checkbox" name="" id="pago10" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '10')}/>
+              <input type="checkbox" name="" id="pago11" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '11')}/>
+              <input type="checkbox" name="" id="pago12" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '12')}/>
+            </div>
           </div>
           <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black", display: "flex", paddingBottom: "5px" }}>
             <div style={{ width: "58%" }}>Instrumentos</div>

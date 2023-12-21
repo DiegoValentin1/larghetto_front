@@ -14,6 +14,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const [horarios, setHorarios] = useState([]);
     const [promociones, setPromociones] = useState([]);
     const [numInstrumentos, setNumInstrumentos] = useState(1);
+    const session = JSON.parse(localStorage.getItem('user') || null);
     let schema;
 
     const handleInstrumentosNumber = () => {
@@ -143,11 +144,11 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         } else if (numInstrumentos == 3) {
                             clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }, { maestro: values.maestro2, instrumento: values.instrumento2, dia: values.dia2, hora: values.hora2 }, { maestro: values.maestro3, instrumento: values.instrumento3, dia: values.dia3, hora: values.hora3 }]
                         }
-                        console.log(JSON.stringify({ ...values, role: "ALUMNO" }));
+                        console.log(JSON.stringify({ ...values, role: "ALUMNO", clases, campus:session.data.campus }));
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/alumno",
-                            data: JSON.stringify({ ...values, role: "ALUMNO", clases }),
+                            data: JSON.stringify({ ...values, role: "ALUMNO", clases, campus:session.data.campus }),
                         });
                         console.log(response);
                         if (!response.error) {

@@ -23,6 +23,7 @@ export default function SuperMaterialesTee() {
         console.log("Activoooo");
     }, []);
     const [selectedObject, setSelectedObject] = useState({});
+    const session = JSON.parse(localStorage.getItem('user') || null);
     const columns = [
         {
             name: 'Nombre',
@@ -56,6 +57,12 @@ export default function SuperMaterialesTee() {
         //         }
         //     }
         // },
+        session.data.role === 'SUPER' && 
+        {
+            name: 'Campus',
+            selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
+            sortable: true,
+        },
         {
             name: 'Status',
             selector: 'status',
@@ -72,12 +79,12 @@ export default function SuperMaterialesTee() {
             name: '',
             cell: (row) => (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
-                    <div style={{ paddingRight: 10 }}>
+                    {/* <div style={{ paddingRight: 10 }}>
                         <AiOutlineBarChart className='DataIcon' onClick={() => {
                             setSelectedObject(row);
                             setIsChart(true);
                         }} style={{ height: 25, width: 25, marginBottom: 0 }} />
-                    </div>
+                    </div> */}
                     <div style={{ paddingRight: 10 }}>
                         <MdOutlineAttachMoney className='DataIcon' onClick={() => {
                             setSelectedObject(row);
@@ -124,6 +131,7 @@ export default function SuperMaterialesTee() {
     const [datos, setDatos] = useState([]);
     const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
     const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
+    
 
     const changeStatus = async (id) => {
         try {
@@ -159,7 +167,8 @@ export default function SuperMaterialesTee() {
             });
             console.log(response);
             if (!response.error) {
-                setDatos(response);
+                const responseCamp = session.data.role === 'SUPER' ? response : response.filter(item => item.campus === session.data.campus);
+                setDatos(responseCamp);
             }
         } catch (err) {
             Alert.fire({

@@ -30,6 +30,16 @@
     border-top-right-radius: 1rem;
     border-top-left-radius: 1rem;
     padding-left: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding-inline: 1px;
+}
+
+.DashboardTitle > div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ChartBox{

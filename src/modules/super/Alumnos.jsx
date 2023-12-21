@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, {useContext, useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
 import { AiOutlineInfoCircle } from 'react-icons/ai'
@@ -12,6 +12,7 @@ import { AddUserForm } from './SuperForms/AddAlumnoForm';
 import { Edit } from 'feather-icons-react/build/IconComponents';
 import { EditUserForm } from './SuperForms/EditAlumnoForm';
 import { AlumnoInfo } from './Components/AlumnoInfo';
+import { AuthContext } from '../auth/authContext';
 
 
 
@@ -24,7 +25,7 @@ export default function Users() {
     const [totalStatus, setTotalStatus] = useState({});
     const [showStatusMenu, setShowStatusMenu] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
-    const session = JSON.parse(localStorage.getItem('user') || null);
+    const { user } = useContext(AuthContext);
     const columns = [
         {
             name: 'Matricula',
@@ -44,6 +45,12 @@ export default function Users() {
         {
             name: 'Próximo Pago',
             selector: (row) => { return row.proximo_pago.substring(0, 10) },
+            sortable: true,
+        },
+        user.data.role === 'SUPER' && 
+        {
+            name: 'Campus',
+            selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
             sortable: true,
         },
         {
@@ -109,10 +116,6 @@ export default function Users() {
 
     
 
-    useEffect(() => {
-        console.log("Activoooo");
-    }, []);
-
 
     const [isEditing, setIsEditting] = useState(false);
     const [isInfo, setIsInfo] = useState(false);
@@ -171,10 +174,11 @@ export default function Users() {
             console.log(response);
             if (!response.error) {
                 console.log(response);
-                setDatos(response);
-                setTotalMensualidad(response.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
-                console.log(response.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
-                setTotalStatus(response.reduce((contador, item) => {
+                const responseCamp = user.data.role === 'SUPER' ? response : response.filter(item => item.campus === user.data.campus);
+                setDatos(responseCamp);
+                setTotalMensualidad(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
+                console.log(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
+                setTotalStatus(responseCamp.reduce((contador, item) => {
                     const estado = item.estado;
                     if (contador[estado] !== undefined) {
                         contador[estado]++;
@@ -183,7 +187,7 @@ export default function Users() {
                     }
                     return contador;
                 }, {}));
-                console.log(response.reduce((contador, item) => {
+                console.log(responseCamp.reduce((contador, item) => {
                     const estado = item.estado;
                     if (contador[estado] !== undefined) {
                         contador[estado]++;
@@ -368,7 +372,7 @@ export default function Users() {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
                                         {
-                                            !(session.data.role === "RECEPCION" || session.data.role === "ENCARGADO" && new Date().getDate() > 15) ?
+                                            !(user.data.role === "RECEPCION" || user.data.role === "ENCARGADO" && new Date().getDate() > 15) ?
                                                 <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                                     changeStatus(selectedStudentId, 0);
                                                 }}></div> :

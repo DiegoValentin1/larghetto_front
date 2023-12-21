@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Row, Form, Modal, FormGroup } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import FeatherIcon from 'feather-icons-react'
 import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts';
 import '../../../utils/styles/UserNuevoTrabajo.css';
-import { TbHomeSearch } from 'react-icons/tb'
-import { Bar } from 'react-chartjs-2'
-import { Chart as ChartJS } from 'chart.js/auto'
+import * as XLSX from 'xlsx';
 
 export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto }) => {
   const [descuentos2, setDescuentos2] = useState([]);
@@ -52,20 +47,87 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
       console.log(err);
     }
   }
+
+  const exportToExcel = async(descuentosEx, repoEx, talleresEx) => {
+    const tablaAlumnos = [
+      ['Pago Por Alumnos'],
+      [`Total Pago Por Alumnos`, alumnosMaestro.length * 300]
+    ]
+    alumnosMaestro.forEach((item, index)=>{
+      tablaAlumnos.splice(tablaAlumnos.length - 1, 0, [item.name, 300]);
+    });
+
+    const tablaDescuentos = [
+      ['Descuentos'],
+      ['Observaciones', 'Descuento'],
+      [`Total Descuentos`, descuentosEx.reduce((contador, item)=> contador = contador + parseFloat(item.cantidad),0)]
+    ]
+    descuentosEx.forEach((item, index)=>{
+      tablaDescuentos.splice(tablaDescuentos.length - 1, 0, [item.comentario, parseFloat(item.cantidad)]);
+    });
+
+    const tablaRepos = [
+      ['Reposiciones Externas'],
+      ['Nombre del Alumno', 'Pago Por Alumno'],
+      [`Total Pago De Reposiciones`, repoEx.reduce((contador, item)=> contador = contador + parseFloat(item.cantidad),0)]
+    ]
+    repoEx.forEach((item, index)=>{
+      tablaRepos.splice(tablaRepos.length - 1, 0, [item.nombre, parseFloat(item.cantidad)]);
+    });
+
+    const tablaTalleres = [
+      ['Talleres'],
+      ['Nombre del Taller', 'Pago Por Taller'],
+      [`Total Pago De Talleres`, talleresEx.reduce((contador, item)=> contador = contador + parseFloat(item.cantidad),0)]
+    ]
+    talleresEx.forEach((item, index)=>{
+      tablaTalleres.splice(tablaTalleres.length - 1, 0, [item.taller, parseFloat(item.cantidad)]);
+    });
+
+    const tables = [
+      // Datos de la primera tabla
+      [
+        ['CAMPUS CENTRO', 'TOTAL PAGO'],
+        [`${objeto.name}`, ((alumnosMaestro.length * 300) + repoEx.reduce((contador, item)=> contador = contador + parseFloat(item.cantidad),0) + talleresEx.reduce((contador, item)=> contador = contador + parseFloat(item.cantidad),0) ) - descuentosEx.reduce((contador, item)=> contador = contador + parseFloat(item.cantidad),0)],
+      ],
+      tablaAlumnos,
+      tablaDescuentos,
+      tablaRepos,
+      tablaTalleres
+      // ... Datos de otras tablas
+    ];
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([]);
+    let contador = 0;
+    let anterior = 0;
+    tables.forEach((table, index) => {
+      
+      XLSX.utils.sheet_add_aoa(ws, table, { origin: `A${index === 0 ? 0 : contador + 2}` });
+      contador=contador + table.length + 2;
+    });
+
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Nomina');
+    XLSX.writeFile(wb, `${objeto.name}${new Date().toISOString().slice(0,10)}.xlsx`);
+  };
+
+
   const actualizeDatos = async (descuentosList, repoList, tallerList) => {
     try {
       const response = await AxiosClient({
         url: "/personal/teacher/stats",
         method: "PUT",
-        data: JSON.stringify({descuentos:descuentosList, repos:repoList, talleres:tallerList, user_id:objeto.user_id})
+        data: JSON.stringify({ descuentos: descuentosList, repos: repoList, talleres: tallerList, user_id: objeto.user_id })
       });
       console.log(response);
       if (!response.error) {
+        cargarStats();
         Alert.fire({
           title: "EXITO",
           text: "Actualización Exitosa",
           icon: "success",
-      });
+        });
       }
     } catch (err) {
       Alert.fire({
@@ -135,6 +197,51 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
     const listaDescuentos3 = contenidoDivs3.map((item, index) => { return { cantidad: contenidoDivsL3[index], taller: item }; })
 
     actualizeDatos(listaDescuentos, listaDescuentos2, listaDescuentos3);
+    return listaDescuentos;
+  }
+
+  const obtenerContenidoDivsExcel = () => {
+    var sumaDesc = 0;
+    const descTotal = document.querySelector('.TotalDesc');
+    const divsDescuentoObservaciones = document.querySelectorAll('.DescObservaciones');
+    const divsDescuentoCantidad = document.querySelectorAll('.DescCantidad');
+    const contenidoDivs = [];
+    const contenidoDivsL = [];
+    divsDescuentoObservaciones.forEach((div) => {
+      contenidoDivs.push(div.textContent.trim());
+    });
+    divsDescuentoCantidad.forEach((div) => {
+      contenidoDivsL.push(div.textContent.trim());
+    });
+    const listaDescuentos = contenidoDivs.map((item, index) => { return { cantidad: contenidoDivsL[index], comentario: item }; })
+    console.log(listaDescuentos);
+
+    const divsDescuentoObservaciones2 = document.querySelectorAll('.repoName');
+    const divsDescuentoCantidad2 = document.querySelectorAll('.repoCant');
+    const contenidoDivs2 = [];
+    const contenidoDivsL2 = [];
+    divsDescuentoObservaciones2.forEach((div) => {
+      contenidoDivs2.push(div.textContent.trim());
+    });
+    divsDescuentoCantidad2.forEach((div) => {
+      contenidoDivsL2.push(div.textContent.trim());
+    });
+    const listaDescuentos2 = contenidoDivs2.map((item, index) => { return { cantidad: contenidoDivsL2[index], name: item }; })
+
+    const divsDescuentoObservaciones3 = document.querySelectorAll('.tallerName');
+    const divsDescuentoCantidad3 = document.querySelectorAll('.tallerCant');
+    const contenidoDivs3 = [];
+    const contenidoDivsL3 = [];
+    divsDescuentoObservaciones3.forEach((div) => {
+      contenidoDivs3.push(div.textContent.trim());
+    });
+    divsDescuentoCantidad3.forEach((div) => {
+      contenidoDivsL3.push(div.textContent.trim());
+    });
+    const listaDescuentos3 = contenidoDivs3.map((item, index) => { return { cantidad: contenidoDivsL3[index], taller: item }; })
+
+    actualizeDatos(listaDescuentos, listaDescuentos2, listaDescuentos3);
+    exportToExcel(listaDescuentos, listaDescuentos2, listaDescuentos3);
     return listaDescuentos;
   }
 
@@ -260,8 +367,11 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
     id="modalAlumnoR"
   >
     <Modal.Header closeButton >
-      <Modal.Title>Nómina Larghetto</Modal.Title>
+      <Modal.Title>
+        Larghetto Nomina
+      </Modal.Title>
     </Modal.Header>
+
     <Modal.Body>
       <div className='AlumnoInfoMain' style={{ paddingRight: "0px" }}>
         <div className="AlumnoInfoLeft"  >
@@ -293,14 +403,14 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
             <div className="AlumnoInfoMain" style={{ flexDirection: "column", paddingTop: "0.5rem" }}>
               <div className="MaestroTablaPagoMain">
                 <div className="MaestroPagoLeft">
-                  <div>CAMPUS CUERNAVACA CENTRO</div>
+                  <div>CAMPUS {objeto && objeto.campus.toUpperCase()}</div>
                   <div>{objeto.name && objeto.name}</div>
                 </div>
                 <div className="MaestroPagoRight">
                   <div>TOTAL PAGO</div>
                   <div className='MaestroPago'>
                     <div>$</div>
-                    <div>{((alumnosMaestro.length * 300) + (talleres.reduce((acumulador,elemento)=> acumulador + elemento.cantidad, 0)) + (reposiciones.reduce((acumulador,elemento)=> acumulador + elemento.cantidad, 0)))- descuentos2.reduce((acumulador,elemento)=> acumulador + elemento.cantidad, 0)}</div>
+                    <div>{((alumnosMaestro.length * 300) + (talleres.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)) + (reposiciones.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0))) - descuentos2.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
                   </div>
                 </div>
               </div>
@@ -347,7 +457,7 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
                 <div className="PagoAlumnoTotal" style={{ backgroundColor: "#8A9AEE" }}>
                   <div></div>
                   <div style={{ backgroundColor: "#8A9AEE" }}>Total Pago de Reposiciones</div>
-                  <div className='repoTotal' style={{ width: "35%", backgroundColor: "#8A9AEE" }} >{reposiciones.reduce((acumulador,elemento)=> acumulador + elemento.cantidad, 0)}</div>
+                  <div className='repoTotal' style={{ width: "35%", backgroundColor: "#8A9AEE" }} >{reposiciones.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
                 </div>
               </div>
 
@@ -372,7 +482,7 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
                 <div className="PagoAlumnoTotal" style={{ backgroundColor: "#76A5B9" }}>
                   <div></div>
                   <div style={{ backgroundColor: "#76A5B9" }}>Total Pago de Talleres</div>
-                  <div className='tallerTotal' style={{ width: "35%", backgroundColor: "#76A5B9" }} >{talleres.reduce((acumulador,elemento)=> acumulador + elemento.cantidad, 0)}</div>
+                  <div className='tallerTotal' style={{ width: "35%", backgroundColor: "#76A5B9" }} >{talleres.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
                 </div>
               </div>
 
@@ -398,13 +508,27 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
               </div>
             ))}
             <div className="DescuentoTotal">
-              <div style={{width:"5%"}}>T.</div>
-              <div style={{width:"25%", textAlign:"center"}} className='TotalDesc'>{descuentos2.reduce((acumulador,elemento)=> acumulador + elemento.cantidad, 0)}</div>
-              <div style={{width:"65%", textAlign:"right", cursor:"pointer"}}  onClick={() => obtenerContenidoDivs()}>Guardar</div>
+              <div style={{ width: "5%" }}>T.</div>
+              <div style={{ width: "25%", textAlign: "center" }} className='TotalDesc'>{descuentos2.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
+
             </div>
+
           </div>
         </div>
       </div>
     </Modal.Body>
+
+    <div style={{ height: "10%", width: "100%", display: "flex", justifyContent: "end", color: "#f2f2f2", position: "absolute", bottom: 0, fontSize: "25px", fontWeight: "bold" }}>
+      <div style={{ width: "68%" }}></div>
+      <div style={{ width: "30%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ width: "40%", textAlign: "right", cursor: "pointer", paddingInline: "0.5rem", backgroundColor: "green", borderRadius: "1rem", display: "flex", justifyContent: "center", alignItems: "center", marginLeft: "3rem" }} onClick={() => obtenerContenidoDivs()}>
+          Save
+        </div>
+        <div style={{ width: "40%", textAlign: "right", cursor: "pointer", paddingInline: "0.5rem", backgroundColor: "green", borderRadius: "1rem", display: "flex", justifyContent: "center", alignItems: "center", marginLeft: "3rem" }} onClick={() => obtenerContenidoDivsExcel()}>
+          Excel
+        </div>
+      </div>
+
+    </div>
   </Modal>
 };

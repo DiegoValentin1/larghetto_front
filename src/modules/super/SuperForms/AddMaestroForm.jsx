@@ -15,6 +15,7 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const [horarios, setHorarios] = useState([]);
     const [promociones, setPromociones] = useState([]);
     const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
+    const session = JSON.parse(localStorage.getItem('user') || null);
     let schema;
 
     useEffect(() => {
@@ -105,7 +106,7 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/teacher",
-                            data: JSON.stringify({ ...values, role: "MAESTRO", maestroInstrumentos, comprobante: values.comprobante ? 1 : 0}),
+                            data: JSON.stringify({ ...values, campus:session.data.campus, role: "MAESTRO", maestroInstrumentos, comprobante: values.comprobante ? 1 : 0}),
                         });
                         console.log(response);
                         if (!response.error) {

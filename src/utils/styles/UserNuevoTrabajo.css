@@ -46,6 +46,27 @@
     gap: 10px;
 }
 
+.InputContainer12 {
+    padding: 0.5rem;
+    height: 10%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.InputContainer12 > div {
+    padding: 0.5rem;
+    height: 7%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+}
+
+.InputContainer12 > div:first-child > div {
+    text-align: center;
+}
+
 .InputContainer5 {
     padding: 0.5rem;
     height: 7%;

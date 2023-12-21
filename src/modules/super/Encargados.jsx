@@ -17,10 +17,8 @@ import { EditEncargadoForm } from './SuperForms/EditEncargadoForm';
 
 
 export default function Encargados() {
-    useEffect(()=>{
-        console.log("Activoooo");
-    }, []);
     const [selectedObject, setSelectedObject] = useState({});
+    const session = JSON.parse(localStorage.getItem('user') || null);
     const columns = [
         {
             name: 'Nombre',
@@ -40,6 +38,12 @@ export default function Encargados() {
         {
             name: 'Domicilio',
             selector: 'domicilio',
+            sortable: true,
+        },
+        session.data.role === 'SUPER' && 
+        {
+            name: 'Campus',
+            selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
             sortable: true,
         },
         {
@@ -123,7 +127,8 @@ export default function Encargados() {
             });
             console.log(response);
             if (!response.error) {
-                setDatos(response);
+                const responseCamp = session.data.role === 'SUPER' ? response : response.filter(item => item.campus === session.data.campus);
+                setDatos(responseCamp);
             }
         } catch (err) {
             Alert.fire({
