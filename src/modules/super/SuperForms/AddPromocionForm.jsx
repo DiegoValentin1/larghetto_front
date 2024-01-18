@@ -13,7 +13,7 @@ export const AddPromocionForm = ({ isOpen, cargarDatos, onClose }) => {
         },
         validationSchema: yup.object().shape({
             promocion: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-            descuento: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+            descuento: yup.string().matches(/^[0-9]+(\.[0-9]+)?$/, 'Ingrese un número válido').required('Campoobligatorio'),
         }),
         onSubmit: async (values) => {
             return Alert.fire({
@@ -98,7 +98,7 @@ export const AddPromocionForm = ({ isOpen, cargarDatos, onClose }) => {
                 <Form.Group className='mb-3'>
                     <div style={{ display: "flex", flexDirection: "row", width: "100%" }} htmlFor='descuento'><p style={{ width: "40%" }}>Porcentaje de Descuento</p>  <div style={{ fontSize: "10px", width: "30%", display: "flex", justifyContent: "start", alignItems: "end" }}><p ></p></div></div>
 
-                    <Form.Control type='number' max={100} min={0} name='descuento' placeholder="50" value={form.values.descuento} onChange={form.handleChange} />
+                    <Form.Control type='text' name='descuento' placeholder="55" value={form.values.descuento} onChange={form.handleChange} />
                     {
                         form.errors.descuento && (<span className='error-text'>{form.errors.descuento}</span>)
                     }

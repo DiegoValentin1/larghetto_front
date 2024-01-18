@@ -236,7 +236,7 @@ export default function SuperDashboard() {
                                     <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: total && total }] }} />
                                 </div>
                                 <div className="ChartContainer">
-                                    <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} />
+                                    {/* <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} /> */}
                                 </div>
                                 <div className="ChartContainer" style={{ padding: "0.5rem" }}>
                                     <div style={{ fontSize: "14px" }}>{`${logs[0] ? logs[0].fecha.substring(0, 10) : ""}  ${logs[0] ? logs[0].autor : ""} ${logs[0] ? logs[0].accion : ""}`} </div>

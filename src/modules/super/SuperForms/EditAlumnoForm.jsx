@@ -44,7 +44,7 @@ export const EditUserForm = ({
     },
     validationSchema: menor ?
       yup.object().shape({
-        name: yup.string().required("Campo obligatorio").min(2, "Minimo 2 caracteres"),
+        name: yup.string().required("Campo obligatorio").matches(/^([^ ]* [^ ]*){2,}$/, "Minimo 2 espacios"),
         email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
         fechaNacimiento: yup.string().required("Campo obligatorio"),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
@@ -54,14 +54,14 @@ export const EditUserForm = ({
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
         promocion: yup.string().required("Campo obligatorio"),
-        nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-        madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-        nombrePadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
-        padreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+        // nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        // madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+        // nombrePadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        // padreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
       })
       :
       yup.object().shape({
-        name: yup.string().required("Campo obligatorio").min(2, "Minimo 2 caracteres"),
+        name: yup.string().required("Campo obligatorio").matches(/^([^ ]* [^ ]*){2,}$/, "Minimo 2 espacios"),
         email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
         fechaNacimiento: yup.string().required("Campo obligatorio"),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
@@ -157,9 +157,9 @@ export const EditUserForm = ({
       });
       if (!response.error) {
         console.log(response)
-        setPagos(response.map((item)=> item.fecha.slice(0,10)));
-        console.log(response.map((item)=> item.fecha.slice(0,10)));
-        handleInputPago(response.map((item)=> item.fecha.slice(0,10)));
+        setPagos(response.map((item) => item.fecha.slice(0, 10)));
+        console.log(response.map((item) => item.fecha.slice(0, 10)));
+        handleInputPago(response.map((item) => item.fecha.slice(0, 10)));
       }
     };
     fetchMaterial();
@@ -199,11 +199,11 @@ export const EditUserForm = ({
     const { checked } = event.target;
 
     if (checked) {
-      const nuevaFecha = `2023-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
+      const nuevaFecha = `2024-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
       setPagos([...pagos, nuevaFecha]); // Agregar la fecha al array
       console.log([...pagos, nuevaFecha]);
     } else {
-      const fechaRemovida = `2023-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
+      const fechaRemovida = `2024-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
       setPagos(pagos.filter(fecha => fecha !== fechaRemovida)); // Remover la fecha del array
       console.log(pagos.filter(fecha => fecha !== fechaRemovida));
     }
@@ -211,23 +211,28 @@ export const EditUserForm = ({
 
   const handleInputPago = (listaFechas) => {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-  
+
     // Encontrar el mes más alto en la lista de fechas
     let mesMasAlto = 0;
+    const listaFechasTemp = [];
     for (let i = 0; i < listaFechas.length; i++) {
       const fecha = new Date(listaFechas[i]);
-      const mes = fecha.getMonth() + 2;
+      const diferenciaGMT = -7 * 60;
+      fecha.setUTCMinutes(fecha.getUTCMinutes() - diferenciaGMT);
+      listaFechasTemp.push(fecha);
+      const mes = fecha.getMonth() + 1;
       console.log(fecha, mes, mesMasAlto)
       if (mes > mesMasAlto) {
         mesMasAlto = mes;
       }
     }
-  
+
     // Marcar y habilitar los checkboxes
     for (let i = 1; i <= 12; i++) {
       const checkbox = document.getElementById('pago' + i);
-      if (i <= mesMasAlto || i < new Date().getMonth() + 1) {
-        checkbox.checked = listaFechas.some(fecha => new Date(fecha).getMonth() + 2 === i);
+      if (i <= mesMasAlto || i < new Date().getMonth()) {
+        checkbox.checked = listaFechasTemp.some(fecha => new Date(fecha).getMonth() + 1 === i);
+        listaFechasTemp.map((fecha)=> console.log(new Date(fecha).getMonth() + 1, i));
         checkbox.disabled = true;
       } else {
         checkbox.disabled = false;
@@ -247,11 +252,11 @@ export const EditUserForm = ({
       }
     };
     fetchMaterial();
-    
+
   }, []);
 
   React.useMemo(() => {
-    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, promocion_id, observaciones } = objeto;
+    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, promocion_id, observaciones, nombreMadre, nombrePadre, madreTelefono, padreTelefono } = objeto;
     form.values.id = personal_id;
     form.values.name = name;
     form.values.email = email;
@@ -265,6 +270,12 @@ export const EditUserForm = ({
     form.values.promocion = promocion_id;
     // form.values.hora = hora ? hora.substring(0, 5) : hora;
     form.values.observaciones = observaciones;
+    form.values.nombreMadre = nombreMadre;
+    form.values.nombrePadre = nombrePadre;
+    form.values.madreTelefono = madreTelefono;
+    form.values.padreTelefono = padreTelefono;
+    setMenor(nombreMadre !== 'N/A' ? true : false);
+
 
     const fetchMaterial = async () => {
       const response = await AxiosClient({
@@ -475,16 +486,16 @@ export const EditUserForm = ({
             <div>
               <input type="checkbox" name="" id="pago1" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '01')} />
               <input type="checkbox" name="" id="pago2" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '02')} />
-              <input type="checkbox" name="" id="pago3" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '03')}/>
-              <input type="checkbox" name="" id="pago4" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '04')}/>
-              <input type="checkbox" name="" id="pago5" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '05')}/>
-              <input type="checkbox" name="" id="pago6" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '06')}/>
-              <input type="checkbox" name="" id="pago7" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '07')}/>
-              <input type="checkbox" name="" id="pago8" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '08')}/>
-              <input type="checkbox" name="" id="pago9" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '09')}/>
-              <input type="checkbox" name="" id="pago10" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '10')}/>
-              <input type="checkbox" name="" id="pago11" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '11')}/>
-              <input type="checkbox" name="" id="pago12" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '12')}/>
+              <input type="checkbox" name="" id="pago3" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '03')} />
+              <input type="checkbox" name="" id="pago4" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '04')} />
+              <input type="checkbox" name="" id="pago5" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '05')} />
+              <input type="checkbox" name="" id="pago6" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '06')} />
+              <input type="checkbox" name="" id="pago7" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '07')} />
+              <input type="checkbox" name="" id="pago8" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '08')} />
+              <input type="checkbox" name="" id="pago9" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '09')} />
+              <input type="checkbox" name="" id="pago10" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '10')} />
+              <input type="checkbox" name="" id="pago11" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '11')} />
+              <input type="checkbox" name="" id="pago12" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '12')} />
             </div>
           </div>
           <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black", display: "flex", paddingBottom: "5px" }}>

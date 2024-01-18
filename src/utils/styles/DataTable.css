@@ -84,3 +84,37 @@
     background-color: #641616; /* Color de la barra del scrollbar */
     border-radius: 6px; /* Radio de borde de la barra del scrollbar */
   }
+
+.switch{
+height: 6vh;
+width: 10vw;
+font-size: 14px;
+font-weight: bold;
+display: flex;
+flex-direction: row;
+cursor: pointer;
+border-radius: 0.5rem;
+}
+
+.switchoff{
+    border: red solid 2px;
+}
+
+.switchon{
+    border: green solid 2px;
+}
+
+.switchactivo{
+    background-color: green;
+}
+
+.switchinactivo{
+    background-color: red;
+}
+
+.onoff{
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -9,8 +9,7 @@ const requestHandler = (request) => {
     const session = JSON.parse(localStorage.getItem('user') || null);
     console.log(request);
     const temp = JSON.parse(request.data || null);
-    console.log({...temp, hola:"kekekeke", hola2:"kokoko"});
-    request.data = {...temp, empleado:session?.data.name};
+    request.data = {...temp, empleado:session.data ? session.data.name : "N/A"};
     if(session?.isLogged)
     request.headers["Authorization"] = `Bearer ${session}`;
     return request;

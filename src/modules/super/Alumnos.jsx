@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
 import { AiOutlineInfoCircle } from 'react-icons/ai'
@@ -25,6 +25,7 @@ export default function Users() {
     const [totalStatus, setTotalStatus] = useState({});
     const [showStatusMenu, setShowStatusMenu] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
+    const [switchActivo, setSwitchActivo] = useState(true);
     const { user } = useContext(AuthContext);
     const columns = [
         {
@@ -47,7 +48,7 @@ export default function Users() {
             selector: (row) => { return row.proximo_pago.substring(0, 10) },
             sortable: true,
         },
-        user.data.role === 'SUPER' && 
+        user.data.role === 'SUPER' &&
         {
             name: 'Campus',
             selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
@@ -114,7 +115,7 @@ export default function Users() {
         },
     ];
 
-    
+
 
 
     const [isEditing, setIsEditting] = useState(false);
@@ -128,12 +129,12 @@ export default function Users() {
         const valorInput = event.target.value;
         setShowFilter(valorInput.lenght === 0 ? false : true)
         console.log('Valor actual del input:', valorInput);
-        setFiltrados( datos.filter(item => {
+        setFiltrados(datos.filter(item => {
             return (
                 (item.matricula && item.matricula.toLowerCase().includes(valorInput.toLowerCase())) ||
                 (item.name && item.name.toLowerCase().includes(valorInput.toLowerCase()))
             );
-          }));
+        }));
     }
 
 
@@ -176,7 +177,10 @@ export default function Users() {
                 console.log(response);
                 const responseCamp = user.data.role === 'SUPER' ? response : response.filter(item => item.campus === user.data.campus);
                 setDatos(responseCamp);
-                setTotalMensualidad(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
+                setTotalMensualidad(responseCamp.reduce((acum, item) => { 
+                    var temp = item.estado !== 0 ? acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) : 0;
+                    return temp;
+                }, 0));
                 console.log(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
                 setTotalStatus(responseCamp.reduce((contador, item) => {
                     const estado = item.estado;
@@ -273,13 +277,68 @@ export default function Users() {
 
     useEffect(() => { aplicarEstilosAlSiguienteDiv(); });
 
-
-
     return (
         < >
             <div style={{ justifyContent: 'ceneter', alignItems: "center", backgroundColor: "transparent", height: "92vh", padding: 20 }}>
                 <div>
                     <div className="App">
+                        <div style={{ display: "flex", flexDirection: "row", height: "5vh", width: "100%" }}>
+                            <div style={{ width: "50%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "start" }}>
+                                <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
+                                    <div style={{ fontSize: "11px", height: "70%" }}>Total Mensualidad</div>
+                                    <div>${totalMensualidad ? totalMensualidad.toFixed(2) : 0}</div>
+                                </div>
+                                {/* <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
+                                    <div style={{ fontSize: "11px", height: "70%" }}>Total Mensualidad</div>
+                                    <div>${totalMensualidad ? totalMensualidad.toFixed(2) : 0}</div>
+                                </div>
+                                <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
+                                    <div style={{ fontSize: "11px", height: "70%" }}>Faltantes</div>
+                                    <div>${totalMensualidad ? totalMensualidad.toFixed(2) : 0}</div>
+                                </div> */}
+                            </div>
+                            <div style={{ width: "50%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                                <div style={{ width: "40%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", fontSize: "18px" }}>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#A0A2A2", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[1] ? totalStatus[1] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#F0BA14", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[2] ? totalStatus[2] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#14F0B7", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[3] ? totalStatus[3] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#40DC51", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[4] ? totalStatus[4] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#ED2C75", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[5] ? totalStatus[5] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#1F175A", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[6] ? totalStatus[6] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#DAE175", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[7] ? totalStatus[7] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#702390", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[8] ? totalStatus[8] : "0"}</div>
+                                    <div
+                                        style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
+                                    ></div>
+                                    <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[0] ? totalStatus[0] : "0"}</div>
+
+                                </div>
+                            </div>
+                        </div>
                         <DataTable
 
 
@@ -291,51 +350,15 @@ export default function Users() {
                                         Alumnos
                                     </div>
 
-                                    <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row" }}>
-                                        <div style={{ width: "auto", height: "100%", display: "flex", alignItems: "end", fontSize: "18px", borderBottom: "1px solid black", marginRight: "3rem" }}>Total Mensualidad: ${totalMensualidad}</div>
-                                        <div style={{ width: "60%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", fontSize: "18px" }}>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#A0A2A2", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[1] ? totalStatus[1] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#F0BA14", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[2] ? totalStatus[2] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#14F0B7", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[3] ? totalStatus[3] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#40DC51", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[4] ? totalStatus[4] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#ED2C75", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[5] ? totalStatus[5] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#1F175A", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[6] ? totalStatus[6] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#DAE175", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[7] ? totalStatus[7] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#702390", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[8] ? totalStatus[8] : "0"}</div>
-                                            <div
-                                                style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}
-                                            ></div>
-                                            <div style={{ paddingTop: "0.35rem", paddingLeft: "0.35rem" }}>{totalStatus[0] ? totalStatus[0] : "0"}</div>
-
+                                    <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight:"1rem" }}>
+                                        <div className={`switch ${switchActivo ? "switchon" : "switchoff"}`} onClick={() => setSwitchActivo(!switchActivo)}>
+                                            <div className={`onoff ${switchActivo ? "switchactivo" : ""} `}>Activo</div>
+                                            <div className={`onoff ${switchActivo ? "" : "switchinactivo"}`}>Inactivo</div>
                                         </div>
                                     </div>
 
                                     <input
-                                    className='inputSearch'
+                                        className='inputSearch'
                                         type="text"
                                         placeholder="Buscar..."
                                         onChange={(event) => handleInputChange(event)}
@@ -372,7 +395,7 @@ export default function Users() {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
                                         {
-                                            !(user.data.role === "RECEPCION" || user.data.role === "ENCARGADO" && new Date().getDate() > 15) ?
+                                            !(user.data.role === "RECEPCION" || user.data.role === "ENCARGADO" && new Date().getDate() > 15) || true ?
                                                 <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                                     changeStatus(selectedStudentId, 0);
                                                 }}></div> :
@@ -383,10 +406,12 @@ export default function Users() {
                                 </div>
                             }
                             columns={columns}
-                            data={showFilter ? filtrados : datos}
+                            data={showFilter ? 
+                                (switchActivo ? filtrados.filter(item => item.estado !== 0) : filtrados.filter(item => item.estado === 0)) : 
+                                (switchActivo ? datos.filter(item => item.estado !== 0) : datos.filter(item => item.estado === 0))}
                             pagination
                             highlightOnHover
-                            paginationPerPage={8}
+                            paginationPerPage={6}
                             paginationComponentOptions={{
                                 rowsPerPageText: '',
                                 noRowsPerPage: true,

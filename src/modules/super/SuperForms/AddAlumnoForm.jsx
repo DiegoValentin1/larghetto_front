@@ -92,7 +92,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
         },
         validationSchema: menor ?
             yup.object().shape({
-                name: yup.string().required("Campo obligatorio").min(2, "Minimo 2 caracteres"),
+                name: yup.string().required("Campo obligatorio").matches(/^([^ ]* [^ ]*){2,}$/, "Minimo 2 espacios"),
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
@@ -109,7 +109,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
             })
             :
             yup.object().shape({
-                name: yup.string().required("Campo obligatorio").min(2, "Minimo 2 caracteres"),
+                name: yup.string().required("Campo obligatorio").matches(/^([^ ]* [^ ]*){2,}$/, "Minimo 2 espacios"),
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
@@ -144,11 +144,11 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         } else if (numInstrumentos == 3) {
                             clases = [{ maestro: values.maestro1, instrumento: values.instrumento1, dia: values.dia1, hora: values.hora1 }, { maestro: values.maestro2, instrumento: values.instrumento2, dia: values.dia2, hora: values.hora2 }, { maestro: values.maestro3, instrumento: values.instrumento3, dia: values.dia3, hora: values.hora3 }]
                         }
-                        console.log(JSON.stringify({ ...values, role: "ALUMNO", clases, campus:session.data.campus }));
+                        console.log(JSON.stringify({ ...values, role: "ALUMNO", clases, campus: session.data.campus }));
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/alumno",
-                            data: JSON.stringify({ ...values, role: "ALUMNO", clases, campus:session.data.campus }),
+                            data: JSON.stringify({ ...values, role: "ALUMNO", clases, campus: session.data.campus }),
                         });
                         console.log(response);
                         if (!response.error) {
