@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Col, Row, Form, Modal, FormGroup } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -16,6 +16,7 @@ import { FaPlus } from 'react-icons/fa'
 import { BiMinus } from 'react-icons/bi'
 
 import "../../../utils/styles/DataTable.css"
+import { AuthContext } from "../../auth/authContext";
 
 export const EditUserForm = ({
   isOpen,
@@ -33,6 +34,7 @@ export const EditUserForm = ({
   const [promociones, setPromociones] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
+  const { user } = useContext(AuthContext);
 
   const form = useFormik({
     initialValues: {
@@ -173,7 +175,8 @@ export const EditUserForm = ({
       });
       if (!response.error) {
         console.log(response);
-        setMaestros(response);
+        const responseCamp = user.data.role === 'SUPER' ? response : response.filter(item => item.campus === user.data.campus);
+        setMaestros(responseCamp);
         return response;
       }
     };
@@ -232,7 +235,7 @@ export const EditUserForm = ({
       const checkbox = document.getElementById('pago' + i);
       if (i <= mesMasAlto || i < new Date().getMonth()) {
         checkbox.checked = listaFechasTemp.some(fecha => new Date(fecha).getMonth() + 1 === i);
-        listaFechasTemp.map((fecha)=> console.log(new Date(fecha).getMonth() + 1, i));
+        listaFechasTemp.map((fecha) => console.log(new Date(fecha).getMonth() + 1, i));
         checkbox.disabled = true;
       } else {
         checkbox.disabled = false;

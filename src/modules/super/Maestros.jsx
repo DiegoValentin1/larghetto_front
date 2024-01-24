@@ -199,14 +199,12 @@ export default function SuperMaterialesTee() {
 
 
     const aplicarEstilosAlSiguienteDiv = () => {
-        const div1 = document.querySelector('.ktEZNl');
+        const div1 = document.querySelector('.sc-kgTSHT');
         const div2 = div1 && div1.nextElementSibling;
-
-        if (div2) {
-            div2.style.width = '89.2%';
-            div2.style.bottom = '4.5%';
-            div2.style.right = '2%';
-            div2.style.position = 'absolute';
+        if (div1) {
+            console.log(div1)
+            div1.style.overflowY = 'scroll';
+            div1.style.height = "80%";
         }
     };
     useEffect(() => {
@@ -240,13 +238,7 @@ export default function SuperMaterialesTee() {
                             }
                             columns={columns}
                             data={datos}
-                            pagination
                             highlightOnHover
-                            paginationPerPage={7}
-                            paginationComponentOptions={{
-                                rowsPerPageText: '',
-                                noRowsPerPage: true,
-                            }}
                         />
                     </div>
                 </div>

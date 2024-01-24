@@ -9,6 +9,7 @@ import '../../../utils/styles/SuperDashboard.css'
 import { ChartAlumnos } from './Charts/ChartAlumnos';
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
+import { LogTable } from './Charts/LogTable';
 
 
 
@@ -17,6 +18,7 @@ export default function SuperDashboard() {
     const [selectedObject, setSelectedObject] = useState({});
     const [isEditing, setIsEditting] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [isLog, setIsLog] = useState(false);
     const [alumnosActivos, setAlumnosActivos] = useState(0);
     const [centro, setCentro] = useState([]);
     const [buga, setBuga] = useState([]);
@@ -62,23 +64,23 @@ export default function SuperDashboard() {
             bugambilias: 0,
             cuautla: 0
         };
-    
+
         // Calcular los totales de acuerdo a la lista original
         listaOriginal.forEach(item => {
             totalesPorCampus[item.campus] = item.total;
         });
-    
+
         // Obtener la lista de totales
         let totales = [
             totalesPorCampus.centro,
             totalesPorCampus.bugambilias,
             totalesPorCampus.cuautla
         ];
-    
+
         // Obtener el total general
         let totalGeneral = totales.reduce((acc, curr) => acc + curr, 0);
         totales.push(totalGeneral);
-    
+
         return totales;
     };
 
@@ -202,6 +204,18 @@ export default function SuperDashboard() {
         cargarActual();
     }, []);
 
+
+
+    const devolverFecha = (fecha) => {
+        const opciones = {
+            weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric',
+            second: 'numeric', hour12: false, timeZone: 'America/Mexico_City'
+        };
+        const tempfecha = new Date(fecha);
+        const fechaFormateada = new Intl.DateTimeFormat('es-ES', opciones).format(tempfecha);
+        return fechaFormateada;
+    }
+
     return (
         < >
             <div style={{ justifyContent: 'ceneter', alignItems: "center", backgroundColor: "transparent", height: "92vh", padding: 20 }}>
@@ -238,11 +252,11 @@ export default function SuperDashboard() {
                                 <div className="ChartContainer">
                                     {/* <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} /> */}
                                 </div>
-                                <div className="ChartContainer" style={{ padding: "0.5rem" }}>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[0] ? logs[0].fecha.substring(0, 10) : ""}  ${logs[0] ? logs[0].autor : ""} ${logs[0] ? logs[0].accion : ""}`} </div>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[1] ? logs[1].fecha.substring(0, 10) : ""}  ${logs[1] ? logs[1].autor : ""}  ${logs[1] ? logs[1].accion : ""}`}</div>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[2] ? logs[2].fecha.substring(0, 10) : ""}  ${logs[2] ? logs[2].autor : ""}  ${logs[2] ? logs[2].accion : ""}`}</div>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[3] ? logs[3].fecha.substring(0, 10) : ""}  ${logs[3] ? logs[3].autor : ""}  ${logs[3] ? logs[3].accion : ""}`}</div>
+                                <div className="ChartContainer" style={{ padding: "0.5rem" }} onClick={()=>setIsLog(!isLog)}>
+                                    <div style={{ fontSize: "14px" }}>{`${logs[0] ? devolverFecha(logs[0].fecha) : ""}  ${logs[0] ? logs[0].autor : ""} ${logs[0] ? logs[0].accion : ""}`} </div>
+                                    <div style={{ fontSize: "14px" }}>{`${logs[1] ? devolverFecha(logs[1].fecha) : ""}  ${logs[1] ? logs[1].autor : ""}  ${logs[1] ? logs[1].accion : ""}`}</div>
+                                    <div style={{ fontSize: "14px" }}>{`${logs[2] ? devolverFecha(logs[2].fecha) : ""}  ${logs[2] ? logs[2].autor : ""}  ${logs[2] ? logs[2].accion : ""}`}</div>
+                                    <div style={{ fontSize: "14px" }}>{`${logs[3] ? devolverFecha(logs[3].fecha) : ""}  ${logs[3] ? logs[3].autor : ""}  ${logs[3] ? logs[3].accion : ""}`}</div>
                                 </div>
                             </div>
                         </div>
@@ -252,7 +266,7 @@ export default function SuperDashboard() {
 
 
             <ChartAlumnos alumnosActivos={selectedObject} isOpen={isOpen} onClose={() => setIsOpen(false)} titulo={titulo} />
-            {/* <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject}/> */}
+            <LogTable loglist={logs} isOpen={isLog} onClose={() => setIsLog(false)}/>
         </>
 
     )

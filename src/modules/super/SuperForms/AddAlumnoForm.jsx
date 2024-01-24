@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Button, Col, Row, Form, Modal, FormGroup } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -6,6 +6,7 @@ import FeatherIcon from 'feather-icons-react'
 import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts';
 import '../../../utils/styles/UserNuevoTrabajo.css';
+import { AuthContext } from '../../auth/authContext';
 
 export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const [menor, setMenor] = useState(false);
@@ -15,6 +16,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const [promociones, setPromociones] = useState([]);
     const [numInstrumentos, setNumInstrumentos] = useState(1);
     const session = JSON.parse(localStorage.getItem('user') || null);
+    const { user } = useContext(AuthContext);
     let schema;
 
     const handleInstrumentosNumber = () => {
@@ -188,7 +190,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 url: "/personal/teacher",
             });
             if (!response.error) {
-                setMaestros(response);
+                const responseCamp = user.data.role === 'SUPER' ? response : response.filter(item => item.campus === user.data.campus);
+                setMaestros(responseCamp);
                 return response;
             }
         };

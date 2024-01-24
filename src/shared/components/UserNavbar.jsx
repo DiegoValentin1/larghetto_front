@@ -1,12 +1,16 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../../utils/styles/UserNavbar.css'
 import { AuthContext } from "../../modules/auth/authContext";
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../plugins/alerts';
+import { RiLockPasswordLine } from "react-icons/ri";
+import { Link } from "react-router-dom";
+import { ChangePassword } from './ChangePassword';
 
 
 
 const UserNavbar = () => {
   const session = JSON.parse(localStorage.getItem('user') || null);
+  const [isOpen, setIsOpen] = useState(false);
   const devolverColor = (fechaDeseada) => {
     const fechaComparar = new Date(fechaDeseada); // Convertir la fecha deseada a tipo Date
 
@@ -78,9 +82,12 @@ const UserNavbar = () => {
 
   return (
     <div className='UserNav'>
+      <RiLockPasswordLine className="icon" data-label="Cambiar Contraseña" style={{ height: 28, width: 28, marginRight: "2rem", color: "#333" }} onClick={()=>setIsOpen(!isOpen)} />
       <div className='UserData'>
         <div>Larghetto | {user.data.name}</div>
       </div>
+      {isOpen && <ChangePassword isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      }
     </div>
   );
 }
