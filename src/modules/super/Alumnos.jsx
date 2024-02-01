@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, Suspense } from 'react'
 import DataTable from 'react-data-table-component';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
 import { AiOutlineInfoCircle } from 'react-icons/ai'
@@ -14,6 +14,7 @@ import { Edit } from 'feather-icons-react/build/IconComponents';
 import { EditUserForm } from './SuperForms/EditAlumnoForm';
 import { AlumnoInfo } from './Components/AlumnoInfo';
 import { AuthContext } from '../auth/authContext';
+import { BarLoader } from 'react-spinners';
 
 
 
@@ -28,6 +29,8 @@ export default function Users() {
     const [showStatusMenu, setShowStatusMenu] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
     const [switchActivo, setSwitchActivo] = useState(true);
+    const [switchCampus, setSwitchCampus] = useState(false);
+    const [cargando, setCargando] = useState(false);
     const { user } = useContext(AuthContext);
     const columns = [
         {
@@ -55,7 +58,7 @@ export default function Users() {
             selector: (row) => (new Date() < new Date(row.proximo_pago)) ? <div>✅</div> : <div>✖️</div>,
             sortable: true,
         },
-        user.data.role === 'SUPER' &&
+        (user.data.role === 'SUPER' || switchCampus) &&
         {
             name: 'Campus',
             selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
@@ -175,7 +178,7 @@ export default function Users() {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: user.data.role === 'SUPER' ? "/instrumento/clases/total" : "/instrumento/clases/total/" + user.data.campus,
+                url: (user.data.role === 'SUPER' || switchCampus) ? "/instrumento/clases/total" : "/instrumento/clases/total/" + user.data.campus,
             });
             if (!response.error) {
                 console.log(response);
@@ -184,7 +187,7 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, []);
+    }, [switchCampus]);
 
     const changeStatus = async (id, estado) => {
         console.log(id, estado);
@@ -259,6 +262,7 @@ export default function Users() {
     }
 
     const cargarDatos = async () => {
+        setCargando(false);
         try {
             const response = await AxiosClient({
                 url: "/personal/",
@@ -267,11 +271,10 @@ export default function Users() {
             console.log(response);
             if (!response.error) {
                 console.log(response);
-                const responseCamp = user.data.role === 'SUPER' ? response : response.filter(item => item.campus === user.data.campus);
+                const responseCamp = (user.data.role === 'SUPER' || switchCampus) ? response : response.filter(item => item.campus === user.data.campus);
                 setDatos(responseCamp);
                 setTotalMensualidad(await responseCamp.reduce((acum, item) => {
                     var temp = item.estado !== 0 ? acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) : acum + 0;
-                    console.log(temp, acum);
                     return temp;
 
                 }, 0));
@@ -306,6 +309,8 @@ export default function Users() {
             });
             console.log(err);
         }
+
+        setCargando(true);
     }
 
 
@@ -322,6 +327,11 @@ export default function Users() {
 
         cargarDatos();
     }, []);
+
+    useEffect(() => {
+
+        cargarDatos();
+    }, [switchCampus]);
 
     useEffect(() => { aplicarEstilosAlSiguienteDiv(); });
 
@@ -408,6 +418,13 @@ export default function Users() {
                                         Alumnos
                                     </div>
 
+                                    {(user.data.campus === 'centro' && user.data.role === 'ENCARGADO') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
+                                        <div className={`switch ${switchCampus ? "switchonC" : "switchoffC"}`} onClick={() => setSwitchCampus(!switchCampus)}>
+                                            <div className={`onoff ${switchCampus ? "" : "switchinactivoC"} `}>Centro</div>
+                                            <div className={`onoff ${switchCampus ? "switchactivoC" : ""}`}>Todos</div>
+                                        </div>
+                                    </div>}
+
                                     <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
                                         <div className={`switch ${switchActivo ? "switchon" : "switchoff"}`} onClick={() => setSwitchActivo(!switchActivo)}>
                                             <div className={`onoff ${switchActivo ? "switchactivo" : ""} `}>Activo</div>
@@ -479,7 +496,7 @@ export default function Users() {
                         />
                     </div>
                 </div>
-            </div>
+            </div >
 
 
 
@@ -488,7 +505,8 @@ export default function Users() {
 
 
 
-            {isOpen && <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
+            {isOpen && <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
+            }
             {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
             {isInfo && <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
         </>

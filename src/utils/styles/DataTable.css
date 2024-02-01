@@ -115,6 +115,22 @@
     background-color: red;
 }
 
+.switchoffC {
+    border: blueviolet solid 2px;
+}
+
+.switchonC {
+    border: rgb(79, 79, 190) solid 2px;
+}
+
+.switchactivoC {
+    background-color: rgb(79, 79, 190);
+}
+
+.switchinactivoC {
+    background-color: blueviolet;
+}
+
 .onoff {
     width: 50%;
     display: flex;

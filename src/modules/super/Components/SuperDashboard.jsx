@@ -31,16 +31,17 @@ export default function SuperDashboard() {
 
     const procesarLista = (listaOriginal) => {
         let totalesPorMes = {};
-
+        console.log(listaOriginal);
         listaOriginal.forEach(item => {
             let fecha = new Date(item.fecha);
             let mes = fecha.getMonth() + 1;
             let total = parseInt(item.total);
-
+            
             if (!totalesPorMes[mes]) {
                 totalesPorMes[mes] = 0;
             }
             totalesPorMes[mes] += total;
+            console.log(totalesPorMes, fecha, mes, total);
         });
 
         let mesesDelAnio = [];
@@ -48,7 +49,8 @@ export default function SuperDashboard() {
 
         for (let i = 1; i <= 12; i++) {
             let mesNombre = new Date(2023, i - 1, 1).toLocaleString('default', { month: 'long' });
-            let total = totalesPorMes[i - 1] || 0;
+            let total = totalesPorMes[i] || 0;
+            console.log(i, mesNombre, total);
 
             mesesDelAnio.push(mesNombre);
             totalesOrdenados.push(total);
@@ -129,7 +131,9 @@ export default function SuperDashboard() {
             console.log(response);
             if (!response.error) {
                 let temp = procesarLista(response);
+                console.log(temp);
                 temp[mactu] = total;
+                console.log(temp, mactu, total);
                 setCuautla(temp);
                 console.log(temp)
             }
