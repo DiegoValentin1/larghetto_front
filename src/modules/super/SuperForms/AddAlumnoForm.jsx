@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext} from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Button, Col, Row, Form, Modal, FormGroup } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -123,6 +123,37 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 promocion: yup.string().required("Campo obligatorio"),
             }),
         onSubmit: async (values) => {
+            let conteo;
+            const nombres = values.name.toUpperCase().split(" ");
+            var matricula;
+            if (nombres.length == 1) {
+                matricula = `L${nombres[0].substring(0, 2)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
+            } else if (nombres.length == 2) {
+                matricula = `L${nombres[1].substring(0, 2)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
+            } else if (nombres.length == 3) {
+                matricula = `L${nombres[1].substring(0, 1)}${nombres[2].substring(0, 1)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
+            } else if (nombres.length == 4) {
+                matricula = `L${nombres[2].substring(0, 1)}${nombres[3].substring(0, 1)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
+            } else if (nombres.length > 4) {
+                matricula = `L${nombres[2].substring(0, 1)}${nombres[nombres.length - 1].substring(0, 1)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
+            }
+            const checkMatricula = async () => {
+                const response = await AxiosClient({
+                    method: "GET",
+                    url: "/personal/matricula/check/" + matricula,
+                });
+                if (!response.error) {
+                    return response.conteo;
+                }
+                return 0;
+            };
+            try {
+
+
+
+            } catch (error) {
+                console.log(error);
+            }
             return Alert.fire({
                 title: confirmTitle,
                 text: confirmMsj,
@@ -133,10 +164,12 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 cancelButtonText: 'Cancelar',
                 reverseButtons: true,
                 backdrop: true,
+                html: await checkMatricula() === 0 ? "<div></div>" : `<div style="color:red">Alumno con matricula ${matricula} ya existe</div>`,
                 showCancelButton: true,
                 showLoaderOnConfirm: true,
                 allowOutsideClick: () => !Alert.isLoading,
                 preConfirm: async () => {
+
                     try {
                         const clases = [];
 
@@ -239,6 +272,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
         dialogClassName="modalAlumnoActualizar"
         id="modalAlumnoR"
     >
+
         <Modal.Header closeButton >
             <Modal.Title>Agregar Alumno</Modal.Title>
         </Modal.Header>
@@ -246,7 +280,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
             <Form onSubmit={form.handleSubmit}>
                 <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos del Alumno</div>
                 <div className="InputContainer4-2">
-                    <div className="InputContainer4" style={{ width: "80%" }}>
+                    <div className="InputContainer4" style={{ width: "100%" }}>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='name'>Nombre</Form.Label>
                             <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
@@ -292,14 +326,16 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                             )}
                         </Form.Group>
                         {/* <Form.Group className='mb-3'>
-                          <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
-                          <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
-                          {
-                              form.errors.password && (<span className='error-text'>{form.errors.password}</span>)
-                          }
-                      </Form.Group> */}
+                            <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
+                            <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
+                            {
+                                form.errors.password && (<span className='error-text'>{form.errors.password}</span>)
+                            }
+                        </Form.Group> */}
                     </div>
-                    <div className="InputContainer1" style={{ width: "20%" }}>
+                </div>
+                <div className="InputContainer4-2">
+                    <div className="InputContainer4" style={{ width: "100%" }}>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='nivel'>Nivel</Form.Label>
                             <Form.Control name='nivel' placeholder="1" value={form.values.nivel} onChange={form.handleChange} />
@@ -309,12 +345,27 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='mensualidad'>Mensualidad</Form.Label>
-                            <Form.Control name='mensualidad' placeholder="400" value={form.values.mensualidad} onChange={form.handleChange} />
+                            <Form.Control name='mensualidad' placeholder="0" value={form.values.mensualidad} onChange={form.handleChange} />
                             {
                                 form.errors.mensualidad && (<span className='error-text'>{form.errors.mensualidad}</span>)
                             }
                         </Form.Group>
+                        <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='inscripcion'>Inscripción</Form.Label>
+                            <Form.Control name='inscripcion' placeholder="0" value={form.values.inscripcion} onChange={form.handleChange} />
+                            {
+                                form.errors.inscripcion && (<span className='error-text'>{form.errors.inscripcion}</span>)
+                            }
+                        </Form.Group>
+                        <Form.Group className='mb-3'>
+                            <Form.Label htmlFor='fechaInicio'>Fecha de Inicio</Form.Label>
+                            <Form.Control type='date' name='fechaInicio' placeholder="" value={form.values.fechaInicio} onChange={form.handleChange} />
+                            {
+                                form.errors.fechaInicio && (<span className='error-text'>{form.errors.fechaInicio}</span>)
+                            }
+                        </Form.Group>
                     </div>
+
                 </div>
                 <div className="InputContainer4" style={{ height: "50%" }}>
                     <Form.Group className='mb-3'>

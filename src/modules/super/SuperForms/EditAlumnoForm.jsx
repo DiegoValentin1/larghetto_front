@@ -163,6 +163,8 @@ export const EditUserForm = ({
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
         promocion: yup.string().required("Campo obligatorio"),
+        fechaInicio: yup.string().required("Campo obligatorio"),
+        inscripcion: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
         // nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         // madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         // nombrePadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
@@ -173,6 +175,8 @@ export const EditUserForm = ({
         name: yup.string().required("Campo obligatorio").matches(/^([^ ]* [^ ]*){2,}$/, "Minimo 2 espacios"),
         email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
         fechaNacimiento: yup.string().required("Campo obligatorio"),
+        fechaInicio: yup.string().required("Campo obligatorio"),
+        inscripcion: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
         domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
@@ -271,9 +275,9 @@ export const EditUserForm = ({
       });
       if (!response.error) {
         console.log(response)
-        setPagos(response.map((item) => item.fecha.slice(0, 10)));
-        console.log(response.map((item) => item.fecha.slice(0, 10)));
-        handleInputPago(response.map((item) => item.fecha.slice(0, 10)));
+        setPagos(response.map((item) => ({ fecha: item.fecha.slice(0, 10), tipo: item.tipo })));
+        console.log(response.map((item) => ({ fecha: item.fecha.slice(0, 10), tipo: item.tipo })));
+        handleInputPago(response.map((item) => ({ fecha: item.fecha.slice(0, 10), tipo: item.tipo })));
       }
     };
     fetchMaterial();
@@ -310,17 +314,33 @@ export const EditUserForm = ({
     fetchMaterial();
   }, []);
 
-  const manejarCambioCheckbox = (event, mes) => {
-    const { checked } = event.target;
-
-    if (checked) {
-      const nuevaFecha = `2024-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
-      setPagos([...pagos, nuevaFecha]); // Agregar la fecha al array
-      console.log([...pagos, nuevaFecha]);
+  const manejarCambioSelect = (event, mes) => {
+    const colores = {
+      0:"gray",
+      1:"green",
+      2:"yellow",
+      3:"red",
+      4:"purple",
+      5:"orange",
+      6:"pink"
+    };
+    let { value } = event.target;
+    let nuevoMes = mes.split("");
+    const mesFormated = nuevoMes[0] === "0" ? nuevoMes[1] : nuevoMes[0] + nuevoMes[1];
+    value = parseInt(value);
+    const nomMes = document.getElementById('mes' + mesFormated);
+      
+    if (value !== 0) {
+      nomMes.style.backgroundColor = colores[value];
+      const nuevaFecha = `2024-${mes.toString().padStart(2, '0')}-01`;
+      const nuevosPagos = pagos.filter(pago => pago.fecha !== nuevaFecha);
+      setPagos([...nuevosPagos, { fecha: nuevaFecha, tipo: value }]);
+      console.log([...nuevosPagos, { fecha: nuevaFecha, tipo: value }]);
     } else {
-      const fechaRemovida = `2024-${mes.toString().padStart(2, '0')}-01`; // Construir la fecha correspondiente
-      setPagos(pagos.filter(fecha => fecha !== fechaRemovida)); // Remover la fecha del array
-      console.log(pagos.filter(fecha => fecha !== fechaRemovida));
+      nomMes.style.backgroundColor = colores[0];
+      const fechaRemovida = `2024-${mes.toString().padStart(2, '0')}-01`;
+      setPagos(pagos.filter(fecha => fecha.fecha !== fechaRemovida));
+      console.log(pagos.filter(fecha => fecha.fecha !== fechaRemovida));
     }
   };
 
@@ -331,26 +351,40 @@ export const EditUserForm = ({
     let mesMasAlto = 0;
     const listaFechasTemp = [];
     for (let i = 0; i < listaFechas.length; i++) {
-      const fecha = new Date(listaFechas[i]);
+      const fecha = new Date(listaFechas[i].fecha);
+      const tipo = listaFechas[i].tipo;
       const diferenciaGMT = -7 * 60;
       fecha.setUTCMinutes(fecha.getUTCMinutes() - diferenciaGMT);
-      listaFechasTemp.push(fecha);
+      listaFechasTemp.push({ fecha, tipo });
       const mes = fecha.getMonth() + 1;
       console.log(fecha, mes, mesMasAlto)
       if (mes > mesMasAlto) {
         mesMasAlto = mes;
       }
     }
+    const colores = {
+      0:"gray",
+      1:"green",
+      2:"yellow",
+      3:"red",
+      4:"purple",
+      5:"orange",
+      6:"pink"
+    };
 
     // Marcar y habilitar los checkboxes
     for (let i = 1; i <= 12; i++) {
+      const nomMes = document.getElementById('mes' + i);
+      nomMes.style.borderRadius = "1rem";
       const checkbox = document.getElementById('pago' + i);
       if (i <= mesMasAlto || i < new Date().getMonth()) {
-        checkbox.checked = listaFechasTemp.some(fecha => new Date(fecha).getMonth() + 1 === i);
-        listaFechasTemp.map((fecha) => console.log(new Date(fecha).getMonth() + 1, i));
+        const fechaEnMes = listaFechasTemp.find(fecha => new Date(fecha.fecha).getMonth() + 1 === i);
+        checkbox.value = fechaEnMes ? fechaEnMes.tipo : "0";
         checkbox.disabled = !((user.data.role === 'SUPER' || (user.data.campus === 'centro' && user.data.role === 'ENCARGADO')));
+        nomMes.style.backgroundColor = fechaEnMes ? colores[fechaEnMes.tipo] : colores[0];
       } else {
-        checkbox.disabled = false;
+        checkbox.value = "0";
+        nomMes.style.backgroundColor = "gray";
       }
     }
   }
@@ -371,7 +405,7 @@ export const EditUserForm = ({
   }, []);
 
   React.useMemo(() => {
-    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, promocion_id, observaciones, nombreMadre, nombrePadre, madreTelefono, padreTelefono } = objeto;
+    const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, promocion_id, observaciones, nombreMadre, nombrePadre, madreTelefono, padreTelefono, inscripcion, fecha_inicio } = objeto;
     form.values.id = personal_id;
     form.values.name = name;
     form.values.email = email;
@@ -389,6 +423,8 @@ export const EditUserForm = ({
     form.values.nombrePadre = nombrePadre;
     form.values.madreTelefono = madreTelefono;
     form.values.padreTelefono = padreTelefono;
+    form.values.inscripcion = inscripcion;
+    form.values.fechaInicio = fecha_inicio ? fecha_inicio.substring(0, 10) : fecha_inicio;
     setMenor(nombreMadre !== 'N/A' ? true : false);
 
 
@@ -400,7 +436,7 @@ export const EditUserForm = ({
       if (!response.error) {
         console.log(response);
         for (let i = 0; i < Math.min(response.length, 8); i++) {
-          
+
           const index = i + 1;
           console.log("adkjenfuefefef", index, i)
           form.values[`maestro${index}`] = response[i].id_maestro;
@@ -461,7 +497,7 @@ export const EditUserForm = ({
         <Form onSubmit={form.handleSubmit}>
           <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos del Alumno</div>
           <div className="InputContainer4-2">
-            <div className="InputContainer4" style={{ width: "80%" }}>
+            <div className="InputContainer4" style={{ width: "100%" }}>
               <Form.Group className='mb-3'>
                 <Form.Label htmlFor='name'>Nombre</Form.Label>
                 <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
@@ -514,7 +550,9 @@ export const EditUserForm = ({
                             }
                         </Form.Group> */}
             </div>
-            <div className="InputContainer1" style={{ width: "20%" }}>
+          </div>
+          <div className="InputContainer4-2">
+            <div className="InputContainer4" style={{ width: "100%" }}>
               <Form.Group className='mb-3'>
                 <Form.Label htmlFor='nivel'>Nivel</Form.Label>
                 <Form.Control name='nivel' placeholder="1" value={form.values.nivel} onChange={form.handleChange} />
@@ -524,12 +562,27 @@ export const EditUserForm = ({
               </Form.Group>
               <Form.Group className='mb-3'>
                 <Form.Label htmlFor='mensualidad'>Mensualidad</Form.Label>
-                <Form.Control name='mensualidad' placeholder="400" value={form.values.mensualidad} onChange={form.handleChange} />
+                <Form.Control name='mensualidad' placeholder="0" value={form.values.mensualidad} onChange={form.handleChange} />
                 {
                   form.errors.mensualidad && (<span className='error-text'>{form.errors.mensualidad}</span>)
                 }
               </Form.Group>
+              <Form.Group className='mb-3'>
+                <Form.Label htmlFor='inscripcion'>Inscripción</Form.Label>
+                <Form.Control name='inscripcion' placeholder="0" value={form.values.inscripcion} onChange={form.handleChange} />
+                {
+                  form.errors.inscripcion && (<span className='error-text'>{form.errors.inscripcion}</span>)
+                }
+              </Form.Group>
+              <Form.Group className='mb-3'>
+                <Form.Label htmlFor='fechaInicio'>Fecha de Inicio</Form.Label>
+                <Form.Control type='date' name='fechaInicio' placeholder="" value={form.values.fechaInicio} onChange={form.handleChange} />
+                {
+                  form.errors.fechaInicio && (<span className='error-text'>{form.errors.fechaInicio}</span>)
+                }
+              </Form.Group>
             </div>
+            
           </div>
           <div className="InputContainer4" style={{ height: "50%" }}>
             <Form.Group className='mb-3'>
@@ -576,20 +629,14 @@ export const EditUserForm = ({
           </div>
           <div className="InputContainer12" style={{ height: "50%" }}>
             <div>
-              <div>Enero</div>
-              <div>Febrero</div>
-              <div>Marzo</div>
-              <div>Abril</div>
-              <div>Mayo</div>
-              <div>Junio</div>
-              <div>Julio</div>
-              <div>Agosto</div>
-              <div>Septiembre</div>
-              <div>Octubre</div>
-              <div>Noviembre</div>
-              <div>Diciembre</div>
+              <div id="mes1">Enero</div>
+              <div id="mes2">Febrero</div>
+              <div id="mes3">Marzo</div>
+              <div id="mes4">Abril</div>
+              <div id="mes5">Mayo</div>
+              <div id="mes6">Junio</div>
             </div>
-            <div>
+            {/* <div>
               <input type="checkbox" name="" id="pago1" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '01')} />
               <input type="checkbox" name="" id="pago2" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '02')} />
               <input type="checkbox" name="" id="pago3" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '03')} />
@@ -602,6 +649,132 @@ export const EditUserForm = ({
               <input type="checkbox" name="" id="pago10" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '10')} />
               <input type="checkbox" name="" id="pago11" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '11')} />
               <input type="checkbox" name="" id="pago12" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '12')} />
+            </div> */}
+            <div>
+              <select id="pago1" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '01')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago2" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '02')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago3" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '03')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago4" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '04')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago5" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '05')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago6" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '06')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+
+
+
+            </div>
+            <div>
+              <div id="mes7">Julio</div>
+              <div id="mes8">Agosto</div>
+              <div id="mes9">Septiembre</div>
+              <div id="mes10">Octubre</div>
+              <div id="mes11">Noviembre</div>
+              <div id="mes12">Diciembre</div>
+            </div>
+            <div>
+              <select id="pago7" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '07')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago8" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '08')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago9" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '09')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago10" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '10')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago11" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '11')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+              <select id="pago12" className="pagoInput" onChange={(e) => manejarCambioSelect(e, '12')}>
+                <option value="0">No ha pagado</option>
+                <option value="1">Pago Normal</option>
+                <option value="2">Pago Oportuno</option>
+                <option value="3">Pago Tardío</option>
+                <option value="4">Equivalencia 25%</option>
+                <option value="5">Equivalencia 50%</option>
+                <option value="6">Equivalencia 75%</option>
+              </select>
+
+
+
             </div>
           </div>
           <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black", display: "flex", paddingBottom: "5px" }}>

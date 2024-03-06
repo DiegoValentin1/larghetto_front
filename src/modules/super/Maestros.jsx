@@ -14,6 +14,8 @@ import { AiOutlineBarChart } from 'react-icons/ai'
 import { MdOutlineAttachMoney } from "react-icons/md";
 import { MaestroChart } from './SuperForms/MaestroChart';
 import { MaestroPayment } from './Components/MaestroPayment';
+import { MaestroClases } from './Components/MaestroClases';
+import { GrSchedule } from "react-icons/gr";
 
 
 
@@ -92,24 +94,30 @@ export default function SuperMaterialesTee() {
                         }} style={{ height: 25, width: 25, marginBottom: 0 }} />
                     </div>
                     <div style={{ paddingRight: 10 }}>
+                        <GrSchedule className='DataIcon' onClick={() => {
+                            setSelectedObject(row);
+                            setIsClases(true);
+                        }} style={{ height: 25, width: 25, marginBottom: 0 }} />
+                    </div>
+                    <div style={{ paddingRight: 10 }}>
                         <FaEdit className='DataIcon' onClick={() => {
 
                             setSelectedObject(row);
                             filtrarInstrumentos(instrumentosMaestros.filter(objeto => objeto.maestro_id === row.user_id))
 
                             setIsEditting(true);
-                        }} style={{ height: 20, width: 25, marginBottom: 0 }} />
+                        }} style={{ height: 25, width: 25, marginBottom: 0 }} />
                     </div>
                     {
-                        row.status ? (<div style={{ paddingLeft: 10 }}>
+                        row.status ? (<div>
                             <FaTrashAlt className='DataIcon' onClick={() => {
                                 changeStatus(row.user_id);
-                            }} style={{ height: 20, width: 25, marginBottom: 0 }} />
+                            }} style={{ height: 25, width: 25, marginBottom: 0 }} />
                         </div>) : (
-                            <div style={{ paddingLeft: 10 }}>
+                            <div >
                                 <FaPlus className='DataIcon' onClick={() => {
                                     changeStatus(row.user_id);
-                                }} style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                }} style={{ height: 25, width: 25, marginBottom: 0 }} />
                             </div>
                         )
                     }
@@ -127,6 +135,7 @@ export default function SuperMaterialesTee() {
     const [isEditing, setIsEditting] = useState(false);
     const [isChart, setIsChart] = useState(false);
     const [isPayment, setIsPayment] = useState(false);
+    const [isClases, setIsClases] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [datos, setDatos] = useState([]);
     const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
@@ -249,6 +258,7 @@ export default function SuperMaterialesTee() {
             {isEditing && <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos} />}
             {isChart && <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />}
             {isPayment && <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />}
+            {isClases && <MaestroClases isOpen={isClases} cargarDatos={cargarDatos} onClose={() => setIsClases(false)} objeto={selectedObject} />}
         </>
 
     )

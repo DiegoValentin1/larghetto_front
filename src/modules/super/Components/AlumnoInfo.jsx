@@ -43,7 +43,7 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
             });
             console.log(response);
             if (!response.error) {
-                setAsistencias(response.map(json => json.fecha.substring(0, 10)));
+                setAsistencias(response.map(json => ({ fecha: json.fecha.substring(0, 10), id_clase: json.id_clase })));
             }
         } catch (err) {
 
@@ -67,12 +67,12 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
         }
     }
 
-    const saveAsistencia = async (id_alumno, fecha) => {
+    const saveAsistencia = async (id_alumno, fecha, id_clase) => {
         try {
             const response = await AxiosClient({
                 method: "POST",
                 url: "/personal/alumno/asistencias",
-                data: JSON.stringify({ id_alumno, fecha }),
+                data: JSON.stringify({ id_alumno, fecha, id_clase }),
             });
             console.log(response);
             if (!response.error) {
@@ -90,10 +90,10 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
             console.log(err);
         }
     }
-    const removeAsistencia = async (id_alumno, fecha) => {
+    const removeAsistencia = async (id_alumno, fecha, id_clase) => {
         try {
             const response = await AxiosClient({
-                url: "/personal/alumno/asistencias/" + id_alumno + "/" + fecha,
+                url: "/personal/alumno/asistencias/" + id_alumno + "/" + fecha + "/" + id_clase,
                 method: "DELETE",
             });
             console.log(response);
@@ -130,7 +130,7 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
 
         let diaDeLaSemana = primerDiaDelMes.getDay();
 
-        const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+        const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
         const indiceDia = diasSemana.indexOf(dia.toLowerCase());
 
@@ -222,6 +222,10 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                                     <p style={{}}>{objeto.mensualidad}</p>
                                 </div>
                                 <div className="AlumnoInfoTitleInfo" style={{ height: "100%", width: "50%" }}>
+                                    <p style={{}}>Inscripción</p>
+                                    <p style={{}}>{objeto.inscripcion}</p>
+                                </div>
+                                <div className="AlumnoInfoTitleInfo" style={{ height: "100%", width: "50%" }}>
                                     <p style={{}}>Promoción</p>
                                     <p style={{}}>{objeto.promocion}</p>
                                 </div>
@@ -274,12 +278,10 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                                 {fechasEnDiaDeLaSemana(item.dia).map((item2, index2) => (
                                     <div className="PanelDia" key={item.id * 27 + index2}>
                                         <div className="PanelDiaFecha">{item.dia} | {item2 ? item2.substring(8, 10) : ""} | {item.hora}</div>
-                                        {asistencias.includes(item2) ?
-                                            <div className="PanelDiaAsistencia asiste" onClick={() => removeAsistencia(objeto.user_id, item2)}>ASISTE</div> :
-                                            <div className="PanelDiaAsistencia falta" onClick={() => saveAsistencia(objeto.user_id, item2)}>FALTA</div>}
-                                        {/* <div className="PanelDiaCambiarAsistencia">
-                                            <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
-                                        </div> */}
+                                        {asistencias.some(item3 => item3.fecha === item2 && item3.id_clase === item.id) ?
+                                        <div className="PanelDiaAsistencia asiste" onClick={() => removeAsistencia(objeto.user_id, item2, item.id)}>ASISTE</div> :
+                                        <div className="PanelDiaAsistencia falta" onClick={() => saveAsistencia(objeto.user_id, item2, item.id)}>FALTA</div>}
+
                                     </div>
                                 ))}
                             </div>
@@ -323,11 +325,11 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                             </div>
                         </div> */}
                         <div className="PanelClase">
-                            <div className="PanelDiaTitulo" style={{ flexDirection: "row" }} ><div style={{ width: "80%", textAlign: "center" }}>Reposiciones</div> <div onClick={()=>setIsRepo(true)} style={{ fontSize: "16px", cursor: "pointer" }}>+</div></div>
+                            <div className="PanelDiaTitulo" style={{ flexDirection: "row" }} ><div style={{ width: "80%", textAlign: "center" }}>Reposiciones</div> <div onClick={() => setIsRepo(true)} style={{ fontSize: "16px", cursor: "pointer" }}>+</div></div>
                             {aluRepo.map((item, index) => (
-                                <div className="PanelDia" key={index*27}>
-                                    <div className="PanelDiaFecha">{item.fecha && item.fecha.slice(0,10)}</div>
-                                    <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333", width:"30%" }}>Reposición</div>
+                                <div className="PanelDia" key={index * 27}>
+                                    <div className="PanelDiaFecha">{item.fecha && item.fecha.slice(0, 10)}</div>
+                                    <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333", width: "30%" }}>Reposición</div>
                                     {/* <div className="PanelDiaCambiarAsistencia">
                                         <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
                                     </div> */}
@@ -400,7 +402,7 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                     </div> */}
                 </div>
             </div>
-            <AddRepoForm isOpen={isRepo} onClose={() => setIsRepo(false)} objeto={objeto}/>
+            <AddRepoForm isOpen={isRepo} onClose={() => setIsRepo(false)} objeto={objeto} />
         </Modal.Body>
     </Modal>
 };

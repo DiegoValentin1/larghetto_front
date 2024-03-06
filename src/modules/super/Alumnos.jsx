@@ -50,7 +50,7 @@ export default function Users() {
         },
         {
             name: 'Próximo Pago',
-            selector: (row) => { return row.proximo_pago.substring(0, 10) },
+            selector: (row) => { return row.proximo_pago ? row.proximo_pago.substring(0, 10) : '' },
             sortable: true,
         },
         {
@@ -167,8 +167,23 @@ export default function Users() {
             });
             if (!response.error) {
                 console.log(response);
-                console.log(response[0]['sum(mensualidad)']);
-                setPagosMes(response[0]['sum(mensualidad)']);
+                console.log(response[0]['total_pagado']);
+                setPagosMes(response[0]['total_pagado']);
+            }
+        };
+        fetchMaterial();
+    }, []);
+
+    useEffect(() => {
+        const fetchMaterial = async () => {
+            const response = await AxiosClient({
+                method: "GET",
+                url: user.data.role === 'SUPER' ? "/stats/pagos/total/mensualidades" : "/stats/pagos/total/mensualidades/" + user.data.campus,
+            });
+            if (!response.error) {
+                console.log(response);
+                console.log(response[0]['total_mensualidad']);
+                // setTotalMensualidad(response[0]['total_mensualidad']);
             }
         };
         fetchMaterial();
@@ -278,7 +293,7 @@ export default function Users() {
                     return temp;
 
                 }, 0));
-                console.log(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
+                // console.log(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
                 setTotalStatus(responseCamp.reduce((contador, item) => {
                     const estado = item.estado;
                     if (contador[estado] !== undefined) {
@@ -344,15 +359,15 @@ export default function Users() {
                             <div style={{ width: "50%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "start" }}>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Total Mensualidad</div>
-                                    <div>${totalMensualidad ? totalMensualidad.toFixed(2) : 0}</div>
+                                    <div>${totalMensualidad ? totalMensualidad.toLocaleString('en', {maximumFractionDigits: 2}) : 0}</div>
                                 </div>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "green" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Pagos Obtenidos ({new Date().toLocaleString('es', { month: 'long' }).toUpperCase()})</div>
-                                    <div style={{ color: "green" }}>${pagosMes ? pagosMes.toFixed(2) : 0}</div>
+                                    <div style={{ color: "green" }}>${pagosMes ? pagosMes.toLocaleString('en', {maximumFractionDigits: 2}) : 0}</div>
                                 </div>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "red" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Pagos Faltantes</div>
-                                    <div style={{ color: "red" }}>${totalMensualidad && pagosMes ? (totalMensualidad - pagosMes).toFixed(2) : 0}</div>
+                                    <div style={{ color: "red" }}>${totalMensualidad && pagosMes ? (totalMensualidad - pagosMes).toLocaleString('en', {maximumFractionDigits: 2}) : 0}</div>
                                 </div>
                                 {/* <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
                                     <div style={{ fontSize: "11px", height: "70%" }}>Total Mensualidad</div>

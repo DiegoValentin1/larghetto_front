@@ -3,6 +3,7 @@ import '../../utils/styles/UserNavbar.css'
 import { AuthContext } from "../../modules/auth/authContext";
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../plugins/alerts';
 import { RiLockPasswordLine } from "react-icons/ri";
+import { VscMute, VscUnmute  } from "react-icons/vsc";
 import { Link } from "react-router-dom";
 import { ChangePassword } from './ChangePassword';
 
@@ -10,6 +11,7 @@ import { ChangePassword } from './ChangePassword';
 
 const UserNavbar = () => {
   const session = JSON.parse(localStorage.getItem('user') || null);
+  const [switchActivo, setSwitchActivo] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const devolverColor = (fechaDeseada) => {
     const fechaComparar = new Date(fechaDeseada); // Convertir la fecha deseada a tipo Date
@@ -45,7 +47,7 @@ const UserNavbar = () => {
       const fechaPago3 = JSON.parse(event.data).resultados[2] && JSON.parse(event.data).resultados[2].proximo_pago.slice(0, 10) || 'Sin Datos';
       const nombre3 = JSON.parse(event.data).resultados[2] && JSON.parse(event.data).resultados[2].name || 'Sin Datos';
       const color3 = JSON.parse(event.data).resultados[2] && devolverColor(fechaPago3) || 'f2f2f2';
-      if (session && session.data.role !== 'SUPER' && session.data.campus === campus) {
+      if ((session && session.data.role !== 'SUPER' && session.data.campus === campus) && switchActivo) {
         Alert.fire({
           html: `<div style='height: 80vh;width: auto;display: flex;flex-direction: column; margin:10px;'>
                 <div style='height: 50%;width: 100%;font-size: 30px; font-weight: bold;display: flex;justify-content: center;align-items: center; border: solid black 1px; background-color:${color[0]}; color:${color[1]};flex-direction:column;'>
@@ -78,11 +80,16 @@ const UserNavbar = () => {
   }, []);
 
   const { user } = useContext(AuthContext);
+  
   console.log(user);
 
   return (
     <div className='UserNav'>
-      <RiLockPasswordLine className="icon" data-label="Cambiar Contraseña" style={{ height: 28, width: 28, marginRight: "2rem", color: "#333" }} onClick={()=>setIsOpen(!isOpen)} />
+      <div style={{marginRight:"1rem"}} className={`switch ${switchActivo ? "switchon" : "switchoff"}`} onClick={() => setSwitchActivo(!switchActivo)}>
+        <div className={`onoff ${switchActivo ? "switchactivo" : ""} `}><VscUnmute /></div>
+        <div className={`onoff ${switchActivo ? "" : "switchinactivo"}`}><VscMute /></div>
+      </div>
+      <RiLockPasswordLine className="icon" data-label="Cambiar Contraseña" style={{ height: 28, width: 28, marginRight: "2rem", color: "#333" }} onClick={() => setIsOpen(!isOpen)} />
       <div className='UserData'>
         <div>Larghetto | {user.data.name}</div>
       </div>
