@@ -21,7 +21,7 @@ import { GrSchedule } from "react-icons/gr";
 
 
 export default function SuperMaterialesTee() {
-    useEffect(()=>{
+    useEffect(() => {
         console.log("Activoooo");
     }, []);
     const [selectedObject, setSelectedObject] = useState({});
@@ -47,19 +47,7 @@ export default function SuperMaterialesTee() {
             selector: (row) => row.fecha_inicio ? row.fecha_inicio.substring(0, 10) : "",
             sortable: true,
         },
-        // {
-        //     name: 'C. de Domicilio',
-        //     selector: 'comprobante',
-        //     sortable: true,
-        //     cell: (row) => {
-        //         if (row.comprobante) {
-        //             return <div style={{ marginLeft: "0.8rem", backgroundColor: "#40DC51", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
-        //         } else {
-        //             return <div style={{ marginLeft: "0.8rem", backgroundColor: "#DC3030", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
-        //         }
-        //     }
-        // },
-        session.data.role === 'SUPER' && 
+        session.data.role === 'SUPER' &&
         {
             name: 'Campus',
             selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
@@ -79,7 +67,17 @@ export default function SuperMaterialesTee() {
         },
         {
             name: '',
-            cell: (row) => (
+            cell: (row) => session.data.role === 'RECEPCION' ? (
+                <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
+                    <div style={{ paddingRight: 10 }}>
+                        <GrSchedule className='DataIcon' onClick={() => {
+                            setSelectedObject(row);
+                            setIsClases(true);
+                        }} style={{ height: 25, width: 25, marginBottom: 0 }} />
+                    </div>
+                </div>
+            ) : 
+            (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
                     {/* <div style={{ paddingRight: 10 }}>
                         <AiOutlineBarChart className='DataIcon' onClick={() => {
@@ -127,139 +125,164 @@ export default function SuperMaterialesTee() {
         },
     ];
 
-    const filtrarInstrumentos = (lista) => {
-        setMaestroInstrumentos(lista);
-    }
+const filtrarInstrumentos = (lista) => {
+    setMaestroInstrumentos(lista);
+}
 
 
-    const [isEditing, setIsEditting] = useState(false);
-    const [isChart, setIsChart] = useState(false);
-    const [isPayment, setIsPayment] = useState(false);
-    const [isClases, setIsClases] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
-    const [datos, setDatos] = useState([]);
-    const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
-    const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
-    
+const [isEditing, setIsEditting] = useState(false);
+const [isChart, setIsChart] = useState(false);
+const [isPayment, setIsPayment] = useState(false);
+const [isClases, setIsClases] = useState(false);
+const [isOpen, setIsOpen] = useState(false);
+const [datos, setDatos] = useState([]);
+const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
+const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
+const [filtrados, setFiltrados] = useState([]);
+const [showFilter, setShowFilter] = useState(false);
 
-    const changeStatus = async (id) => {
-        try {
-            const response = await AxiosClient({
-                url: "/personal/" + id,
-                method: "DELETE",
-            });
-            if (!response.error) {
-                Alert.fire({
-                    title: "EXITO",
-                    text: "Cambio de Status Exitoso",
-                    icon: "success",
-                });
-                cargarDatos();
-            }
-        } catch (err) {
+
+const changeStatus = async (id) => {
+    try {
+        const response = await AxiosClient({
+            url: "/personal/" + id,
+            method: "DELETE",
+        });
+        if (!response.error) {
             Alert.fire({
-                title: "VERIFICAR DATOS",
-                text: "",
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "Aceptar",
+                title: "EXITO",
+                text: "Cambio de Status Exitoso",
+                icon: "success",
             });
-            console.log(err);
+            cargarDatos();
         }
+    } catch (err) {
+        Alert.fire({
+            title: "VERIFICAR DATOS",
+            text: "",
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Aceptar",
+        });
+        console.log(err);
     }
+}
 
-    const cargarDatos = async () => {
-        try {
-            const response = await AxiosClient({
-                url: "/personal/teacher",
-                method: "GET",
-            });
-            console.log(response);
-            if (!response.error) {
-                const responseCamp = session.data.role === 'SUPER' ? response : response.filter(item => item.campus === session.data.campus);
-                setDatos(responseCamp);
-            }
-        } catch (err) {
-            Alert.fire({
-                title: "VERIFICAR DATOS",
-                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "Aceptar",
-            });
-            console.log(err);
+const handleInputChange = (event) => {
+    if (!event) {
+        setShowFilter(false);
+        const imp = document.getElementById('inputFilter');
+        if (imp) imp.value = "";
+        return
+    }
+    const valorInput = event.target.value;
+    setShowFilter(valorInput.lenght === 0 ? false : true)
+    console.log('Valor actual del input:', valorInput);
+    setFiltrados(datos.filter(item => {
+        return (
+            (item.name && item.name.toLowerCase().includes(valorInput.toLowerCase()))
+        );
+    }));
+}
+
+const cargarDatos = async () => {
+    try {
+        const response = await AxiosClient({
+            url: "/personal/teacher",
+            method: "GET",
+        });
+        console.log(response);
+        if (!response.error) {
+            const responseCamp = session.data.role === 'SUPER' ? response : response.filter(item => item.campus === session.data.campus);
+            setDatos(responseCamp);
         }
+    } catch (err) {
+        Alert.fire({
+            title: "VERIFICAR DATOS",
+            text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Aceptar",
+        });
+        console.log(err);
     }
+}
 
-    useEffect(() => {
-        const fetchMaterial = async () => {
-            const response = await AxiosClient({
-                method: "GET",
-                url: "/instrumento/teacher",
-            });
-            if (!response.error) {
-                console.log(response)
-                setInstrumentosMaestros(response);
-                return response;
-            }
-        };
-        fetchMaterial();
-    }, [isEditing, isOpen]);
-
-
-    const aplicarEstilosAlSiguienteDiv = () => {
-        const div1 = document.querySelector('.sc-kgTSHT');
-        const div2 = div1 && div1.nextElementSibling;
-        if (div1) {
-            console.log(div1)
-            div1.style.overflowY = 'scroll';
-            div1.style.height = "80%";
+useEffect(() => {
+    const fetchMaterial = async () => {
+        const response = await AxiosClient({
+            method: "GET",
+            url: "/instrumento/teacher",
+        });
+        if (!response.error) {
+            console.log(response)
+            setInstrumentosMaestros(response);
+            return response;
         }
     };
-    useEffect(() => {
-        cargarDatos();
-    }, []);
-
-    useEffect(() => aplicarEstilosAlSiguienteDiv());
+    fetchMaterial();
+}, [isEditing, isOpen]);
 
 
+const aplicarEstilosAlSiguienteDiv = () => {
+    const div1 = document.querySelector('.sc-kgTSHT');
+    const div2 = div1 && div1.nextElementSibling;
+    if (div1) {
+        console.log(div1)
+        div1.style.overflowY = 'scroll';
+        div1.style.height = "80%";
+    }
+};
+useEffect(() => {
+    cargarDatos();
+}, []);
 
-    return (
-        < >
-            <div style={{ justifyContent: 'ceneter', alignItems: "center", backgroundColor: "transparent", height: "92vh", padding: 20 }}>
-                <div>
-                    <div className="App">
-                        <DataTable
+useEffect(() => aplicarEstilosAlSiguienteDiv());
 
 
-                            title={
 
-                                <div style={{ display: "flex", flexDirection: "row" }}>
+return (
+    < >
+        <div style={{ justifyContent: 'ceneter', alignItems: "center", backgroundColor: "transparent", height: "92vh", padding: 20 }}>
+            <div>
+                <div className="App">
+                    <DataTable
 
-                                    <div style={{ width: "95%", paddingTop: 3 }}>
-                                        Maestros
-                                    </div>
 
-                                    <div >
-                                        <FeatherIcon className='DataIcon' icon={'plus'} onClick={() => setIsOpen(true)} style={{ height: 40, width: 40 }} />
-                                    </div>
+                        title={
+
+                            <div style={{ display: "flex", flexDirection: "row" }}>
+
+                                <div style={{ width: "95%", paddingTop: 3 }}>
+                                    Maestros
                                 </div>
-                            }
-                            columns={columns}
-                            data={datos}
-                            highlightOnHover
-                        />
-                    </div>
+                                <input
+                                        id='inputFilter'
+                                        className='inputSearch'
+                                        type="text"
+                                        placeholder="Buscar..."
+                                        onChange={(event) => handleInputChange(event)}
+                                    />
+                                { session.data.role === 'RECEPCION' ? "" : <div >
+                                    <FeatherIcon className='DataIcon' icon={'plus'} onClick={() => setIsOpen(true)} style={{ height: 40, width: 40 }} />
+                                </div>}
+                            </div>
+                        }
+                        columns={columns}
+                        data={showFilter ? filtrados : datos}
+                        highlightOnHover
+                    />
                 </div>
             </div>
+        </div>
 
 
-            {isOpen && <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
-            {isEditing && <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos} />}
-            {isChart && <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />}
-            {isPayment && <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />}
-            {isClases && <MaestroClases isOpen={isClases} cargarDatos={cargarDatos} onClose={() => setIsClases(false)} objeto={selectedObject} />}
-        </>
+        {isOpen && <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
+        {isEditing && <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos} />}
+        {isChart && <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />}
+        {isPayment && <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />}
+        {isClases && <MaestroClases isOpen={isClases} cargarDatos={cargarDatos} onClose={() => setIsClases(false)} objeto={selectedObject} />}
+    </>
 
-    )
+)
 }

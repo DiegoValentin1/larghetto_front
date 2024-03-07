@@ -22,7 +22,7 @@ const UserSidebar = () => {
                     <img className='profilePicture' src={require('../../utils/img/profilePicture.jpg')} alt="" />
                 </div>
                 <Link to='/' className="user icon" data-label="Alumnos"><FeatherIcon icon={'users'} /></Link>
-                {/* <Link to='maestros' className="sliders icon" data-label="Maestros" ><FaChalkboardTeacher style={{ height: 28, width: 28 }}/> </Link> */}
+                <Link to='/maestros' className="sliders icon" data-label="Maestros" ><FaChalkboardTeacher style={{ height: 28, width: 28 }}/> </Link>
             </div>
             <div className="bottom">
                 {/* <div className="config icon" data-label="Configuración"><FeatherIcon icon={'settings'} /></div> */}
