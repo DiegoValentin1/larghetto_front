@@ -118,7 +118,7 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
         cargarClases();
         cargarAsistencias();
         cargarAluRepo();
-    }, [isOpen]);
+    }, [isOpen, isRepo]);
 
     function fechasEnDiaDeLaSemana(dia) {
         const fechaActual = new Date();
@@ -328,8 +328,8 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                             <div className="PanelDiaTitulo" style={{ flexDirection: "row" }} ><div style={{ width: "80%", textAlign: "center" }}>Reposiciones</div> <div onClick={() => setIsRepo(true)} style={{ fontSize: "16px", cursor: "pointer" }}>+</div></div>
                             {aluRepo.map((item, index) => (
                                 <div className="PanelDia" key={index * 27}>
-                                    <div className="PanelDiaFecha">{item.fecha && item.fecha.slice(0, 10)}</div>
-                                    <div className="PanelDiaAsistencia" style={{ backgroundColor: "yellow", color: "#333", width: "30%" }}>Reposición</div>
+                                    <div className="PanelDiaFecha" style={{width: "30%" }}>{item.fecha && item.fecha.slice(0, 10)}</div>
+                                    <div style={{width: "70%" }}>{item.name}</div>
                                     {/* <div className="PanelDiaCambiarAsistencia">
                                         <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
                                     </div> */}

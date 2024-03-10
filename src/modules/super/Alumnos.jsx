@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, Suspense } from 'react'
 import DataTable from 'react-data-table-component';
-import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
+import { FaPlus, FaTrashAlt, FaEdit, FaRegMoneyBillAlt } from 'react-icons/fa'
 import { AiOutlineInfoCircle } from 'react-icons/ai'
 import { IoMdRepeat } from 'react-icons/io'
 import { MdDeleteOutline } from "react-icons/md";
@@ -15,6 +15,7 @@ import { EditUserForm } from './SuperForms/EditAlumnoForm';
 import { AlumnoInfo } from './Components/AlumnoInfo';
 import { AuthContext } from '../auth/authContext';
 import { BarLoader } from 'react-spinners';
+import { SuperPagos } from './Components/SuperPagos';
 
 
 
@@ -24,6 +25,7 @@ export default function Users() {
     const [totalMensualidad, setTotalMensualidad] = useState(0);
     const [contador, setContador] = useState(0);
     const [totalClases, setTotalClases] = useState(0);
+    const [superCampus, setSuperCampus] = useState(0);
     const [inner, setInner] = useState("");
     const [totalStatus, setTotalStatus] = useState({});
     const [showStatusMenu, setShowStatusMenu] = useState(false);
@@ -136,6 +138,7 @@ export default function Users() {
     const [isEditing, setIsEditting] = useState(false);
     const [isInfo, setIsInfo] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [isSuperPagos, setIsSuperPagos] = useState(false);
     const [datos, setDatos] = useState([]);
     const [filtrados, setFiltrados] = useState([]);
     const [pagosMes, setPagosMes] = useState(0);
@@ -163,7 +166,11 @@ export default function Users() {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: user.data.role === 'SUPER' ? "/stats/pagos/suma/total" : "/stats/pagos/suma/" + user.data.campus,
+                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
+                    "/stats/pagos/suma/total" : (superCampus === 1 ?
+                        "/stats/pagos/suma/centro" :
+                        (superCampus === 2 ? "/stats/pagos/suma/bugambilias" :
+                            (superCampus === 3 ? "/stats/pagos/suma/cuautla" : "/stats/pagos/suma/" + user.data.campus))),
             });
             if (!response.error) {
                 console.log(response);
@@ -172,28 +179,36 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, []);
+    }, [switchActivo, superCampus]);
 
     useEffect(() => {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: user.data.role === 'SUPER' ? "/stats/pagos/total/mensualidades" : "/stats/pagos/total/mensualidades/" + user.data.campus,
+                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
+                "/stats/pagos/total/mensualidades" : (superCampus === 1 ?
+                        "/stats/pagos/total/mensualidades/centro" :
+                        (superCampus === 2 ? "/stats/pagos/total/mensualidades/bugambilias" :
+                            (superCampus === 3 ? "/stats/pagos/total/mensualidades/cuautla" : "/instrumento/clases/total/" + user.data.campus))),
             });
             if (!response.error) {
                 console.log(response);
                 console.log(response[0]['total_mensualidad']);
-                // setTotalMensualidad(response[0]['total_mensualidad']);
+                setTotalMensualidad(response[0]['total_mensualidad']);
             }
         };
         fetchMaterial();
-    }, []);
+    }, [switchCampus, superCampus]);
 
     useEffect(() => {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: (user.data.role === 'SUPER' || switchCampus) ? "/instrumento/clases/total" : "/instrumento/clases/total/" + user.data.campus,
+                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
+                "/instrumento/clases/total/" : (superCampus === 1 ?
+                        "/instrumento/clases/total/centro" :
+                        (superCampus === 2 ? "/instrumento/clases/total/bugambilias" :
+                            (superCampus === 3 ? "/instrumento/clases/total/cuautla" : "/instrumento/clases/total/" + user.data.campus))),
             });
             if (!response.error) {
                 console.log(response);
@@ -202,7 +217,7 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, [switchCampus]);
+    }, [switchCampus, superCampus]);
 
     const changeStatus = async (id, estado) => {
         console.log(id, estado);
@@ -280,19 +295,23 @@ export default function Users() {
         setCargando(false);
         try {
             const response = await AxiosClient({
-                url: "/personal/",
+                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
+                    "/personal/" : (superCampus === 1 ?
+                        "/personal/centro" :
+                        (superCampus === 2 ? "/personal/bugambilias" :
+                            (superCampus === 3 ? "/personal/cuautla" : "/personal/" + user.data.campus))),
                 method: "GET",
             });
             console.log(response);
             if (!response.error) {
                 console.log(response);
-                const responseCamp = (user.data.role === 'SUPER' || switchCampus) ? response : response.filter(item => item.campus === user.data.campus);
+                const responseCamp = response;
                 setDatos(responseCamp);
-                setTotalMensualidad(await responseCamp.reduce((acum, item) => {
-                    var temp = item.estado !== 0 ? acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) : acum + 0;
-                    return temp;
+                // setTotalMensualidad(await responseCamp.reduce((acum, item) => {
+                //     var temp = item.estado !== 0 ? acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) : acum + 0;
+                //     return temp;
 
-                }, 0));
+                // }, 0));
                 // console.log(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
                 setTotalStatus(responseCamp.reduce((contador, item) => {
                     const estado = item.estado;
@@ -346,7 +365,7 @@ export default function Users() {
     useEffect(() => {
 
         cargarDatos();
-    }, [switchCampus]);
+    }, [switchCampus, superCampus]);
 
     useEffect(() => { aplicarEstilosAlSiguienteDiv(); });
 
@@ -359,16 +378,20 @@ export default function Users() {
                             <div style={{ width: "50%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "start" }}>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Total Mensualidad</div>
-                                    <div>${totalMensualidad ? totalMensualidad.toLocaleString('en', {maximumFractionDigits: 2}) : 0}</div>
+                                    <div>${totalMensualidad ? totalMensualidad.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "green" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Pagos Obtenidos ({new Date().toLocaleString('es', { month: 'long' }).toUpperCase()})</div>
-                                    <div style={{ color: "green" }}>${pagosMes ? pagosMes.toLocaleString('en', {maximumFractionDigits: 2}) : 0}</div>
+                                    <div style={{ color: "green" }}>${pagosMes ? pagosMes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "red" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Pagos Faltantes</div>
-                                    <div style={{ color: "red" }}>${totalMensualidad && pagosMes ? (totalMensualidad - pagosMes).toLocaleString('en', {maximumFractionDigits: 2}) : 0}</div>
+                                    <div style={{ color: "red" }}>${totalMensualidad && pagosMes ? (totalMensualidad - pagosMes).toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
+                                {user.data.role==="SUPER" && <div style={{ width: "auto", height: "100%", display: "grid", placeItems:"center" , fontSize: "13px", marginRight: "3rem" }}>
+                                <FaRegMoneyBillAlt onClick={()=>setIsSuperPagos(true)} className='icon' style={{height:"30px", width:"30px", color:"black"}}/>
+                                </div>}
+
                                 {/* <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
                                     <div style={{ fontSize: "11px", height: "70%" }}>Total Mensualidad</div>
                                     <div>${totalMensualidad ? totalMensualidad.toFixed(2) : 0}</div>
@@ -437,6 +460,15 @@ export default function Users() {
                                         <div className={`switch ${switchCampus ? "switchonC" : "switchoffC"}`} onClick={() => setSwitchCampus(!switchCampus)}>
                                             <div className={`onoff ${switchCampus ? "" : "switchinactivoC"} `}>Centro</div>
                                             <div className={`onoff ${switchCampus ? "switchactivoC" : ""}`}>Todos</div>
+                                        </div>
+                                    </div>}
+
+                                    {(user.data.role === 'SUPER') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
+                                        <div className={`switch switchonC`} style={{backgroundColor:"rgb(79, 79, 190)"}}>
+                                            <div className={`onoff ${superCampus === 0 && "switchactivoC"}`} onClick={() => setSuperCampus(0)}>Todos</div>
+                                            <div className={`onoff ${superCampus === 1 && "switchactivoC"}`} onClick={() => setSuperCampus(1)}>Centro</div>
+                                            <div className={`onoff ${superCampus === 2 && "switchactivoC"}`} onClick={() => setSuperCampus(2)}>Bugambilias</div>
+                                            <div className={`onoff ${superCampus === 3 && "switchactivoC"}`} onClick={() => setSuperCampus(3)}>Cuautla</div>
                                         </div>
                                     </div>}
 
@@ -524,6 +556,7 @@ export default function Users() {
             }
             {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
             {isInfo && <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
+            {isSuperPagos && <SuperPagos isOpen={isSuperPagos} objeto={selectedObject} onClose={() => setIsSuperPagos(false)} />}
         </>
 
     )

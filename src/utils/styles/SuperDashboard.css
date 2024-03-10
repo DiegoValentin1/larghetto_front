@@ -21,6 +21,7 @@
     transform: scale(1.00);
 }
 
+
 .DashboardTitle{
     font-weight: bold;
     font-size: 23px;
@@ -36,10 +37,55 @@
     padding-inline: 1px;
 }
 
+.DashboardTitleP{
+    font-weight: bold;
+    font-size: 23px;
+    height: 15%;
+    background-color: #302f2f;
+    color: #dfdfdf;
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    padding-left: 1rem;
+    display: flex;
+    gap: 10px;
+    padding-inline: 1px;
+}
+
+.DashboardTitleP > div:first-child{
+    width: 33%;
+}
+
+.DashboardTitleP > div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22%;
+}
+
 .DashboardTitle > div{
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.ChartBoxP{
+    height: 85%;
+    display: flex;
+    gap: 10px;
+    padding-inline: 1px;
+}
+
+.ChartBoxP > div:first-child{
+    width: 33%;
+    border-bottom-left-radius: 1rem;
+}
+
+.ChartBoxP > div{
+    width: 22%;
+}
+
+.ChartBoxP > div:last-child{
+    border-bottom-right-radius: 1rem;
 }
 
 .ChartBox{

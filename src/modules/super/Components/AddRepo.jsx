@@ -16,6 +16,7 @@ export const AddRepoForm = ({ isOpen, onClose, objeto }) => {
                 url: "/personal/teacher",
             });
             if (!response.error) {
+                console.log(response);
                 setMaestros(response);
                 return response;
             }
@@ -121,7 +122,7 @@ export const AddRepoForm = ({ isOpen, onClose, objeto }) => {
                                     >
                                         <option value="">Selecciona un Maestro</option>
                                         {maestros.map((item) => (
-                                            <option key={item.id} value={item.id}>
+                                            <option key={item.id} value={item.user_id}>
                                                 {item.name}
                                             </option>
                                         ))}

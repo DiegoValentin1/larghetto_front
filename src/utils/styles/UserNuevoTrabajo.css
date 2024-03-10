@@ -791,3 +791,11 @@ input[type=number] {
     text-align: center;
     background-color: #FE7F70;
 }
+
+input[value=""] {
+    color: red;
+  }
+
+  select > option:first-child {
+    color: red;
+  }

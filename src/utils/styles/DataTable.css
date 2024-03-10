@@ -89,14 +89,16 @@
 }
 
 .switch {
+    min-width: 5vw;
     height: 6vh;
-    width: 10vw;
+    width: auto;
     font-size: 14px;
     font-weight: bold;
     display: flex;
     flex-direction: row;
     cursor: pointer;
     border-radius: 0.5rem;
+    gap: 3px;
 }
 
 .switchoff {
@@ -108,11 +110,11 @@
 }
 
 .switchactivo {
-    background-color: green;
+    background-color: green !important;
 }
 
 .switchinactivo {
-    background-color: red;
+    background-color: red !important;
 }
 
 .switchoffC {
@@ -124,18 +126,35 @@
 }
 
 .switchactivoC {
-    background-color: rgb(79, 79, 190);
+    background-color: rgb(79, 79, 190) !important;
 }
 
 .switchinactivoC {
-    background-color: blueviolet;
+    background-color: blueviolet !important;
 }
 
 .onoff {
+    padding: 10px;
     width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: 0.3s;
+    background-color: white;
+}
+
+.switch > div:first-child{
+    border-top-left-radius: 0.4rem;
+    border-bottom-left-radius: 0.4rem;
+}
+
+.switch > div:last-child{
+    border-top-right-radius: 0.4rem;
+    border-bottom-right-radius: 0.4rem;
+}
+
+.onoff:hover{
+    transform: scale(1.05);
 }
 
 .statusButton {

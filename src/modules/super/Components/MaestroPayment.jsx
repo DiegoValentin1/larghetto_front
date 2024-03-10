@@ -10,6 +10,7 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
   const [talleres, setTalleres] = useState([]);
   const [reposiciones, setReposiciones] = useState([]);
   const [alumnosMaestro, setAlumnosMaestro] = useState([]);
+  const [teacherRepo, setTeacherRepo] = useState([]);
   // useEffect(() => {
   //   const fetchMaterial = async () => {
   //     const response = await AxiosClient({
@@ -33,7 +34,6 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
       console.log(response);
       if (!response.error) {
         setDescuentos2(response[0]);
-        setReposiciones(response[1]);
         setTalleres(response[2]);
       }
     } catch (err) {
@@ -47,6 +47,22 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
       console.log(err);
     }
   }
+
+  const cargarTeacherRepo = async () => {
+    try {
+        const response = await AxiosClient({
+            url: "/personal/teacher/repo/" + objeto.user_id,
+            method: "GET",
+        });
+        console.log(response);
+        if (!response.error) {
+            setReposiciones(response);
+        }
+    } catch (err) {
+
+        console.log(err);
+    }
+}
 
   const exportToExcel = async(descuentosEx, repoEx, talleresEx) => {
     const tablaAlumnos = [
@@ -154,6 +170,7 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
     };
     cargarStats();
     fetchMaterial();
+    cargarTeacherRepo();
   }, [isOpen]);
 
   const obtenerContenidoDivs = () => {
@@ -444,20 +461,20 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
                   <div>N°</div>
                   <div>Nombre del Alumno</div>
                   <div style={{ width: "35%" }}>Pago Por Alumno</div>
-                  <div style={{ width: "20%" }}></div>
-                  <div style={{ width: "5%" }} onClick={() => addRepoRow()}>+</div>
+                  <div style={{ width: "20%" }}>Fecha</div>
                 </div>
                 {reposiciones && reposiciones.map((item, index) => (
                   <div className="PagoAlumnoRow" style={{ backgroundColor: "#CCD2F1" }} key={index * 17}>
-                    <div onClick={() => subRepoRow(index)}>{index + 1}</div>
-                    <div className='repoName' contentEditable="true">{item.nombre}</div>
-                    <div className='repoCant' contentEditable="true">{item.cantidad}</div>
+                    <div>{index + 1}</div>
+                    <div className='repoName' >{item.name}</div>
+                    <div className='repoCant' style={{ width: "35%" }}>70</div>
+                    <div style={{ width: "20%" }}>{item.fecha? item.fecha.slice(0,10) : ""}</div>
                   </div>
                 ))}
                 <div className="PagoAlumnoTotal" style={{ backgroundColor: "#8A9AEE" }}>
                   <div></div>
                   <div style={{ backgroundColor: "#8A9AEE" }}>Total Pago de Reposiciones</div>
-                  <div className='repoTotal' style={{ width: "35%", backgroundColor: "#8A9AEE" }} >{reposiciones.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
+                  <div className='repoTotal' style={{ width: "35%", backgroundColor: "#8A9AEE" }} >{reposiciones.length * 70}</div>
                 </div>
               </div>
 
