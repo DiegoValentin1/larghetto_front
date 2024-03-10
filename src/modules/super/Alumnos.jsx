@@ -297,9 +297,9 @@ export default function Users() {
             const response = await AxiosClient({
                 url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
                     "/personal/" : (superCampus === 1 ?
-                        "/personal/centro" :
-                        (superCampus === 2 ? "/personal/bugambilias" :
-                            (superCampus === 3 ? "/personal/cuautla" : "/personal/" + user.data.campus))),
+                        "/personal/getalumno/centro" :
+                        (superCampus === 2 ? "/personal/getalumno/bugambilias" :
+                            (superCampus === 3 ? "/personal/getalumno/cuautla" : "/personal/getalumno/" + user.data.campus))),
                 method: "GET",
             });
             console.log(response);
