@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Row, Form, Modal, FormGroup } from 'react-bootstrap';
 import { useFormik } from 'formik';
+import { FaEdit } from 'react-icons/fa'
 import * as yup from 'yup';
 import FeatherIcon from 'feather-icons-react'
 import AxiosClient from '../../../shared/plugins/axios';
@@ -10,6 +11,7 @@ import { FaUserGraduate } from 'react-icons/fa';
 import { IoMdRepeat } from 'react-icons/io';
 import { EditBridaForm } from '../SuperForms/EditInstrumentoForm';
 import { AddRepoForm } from './AddRepo';
+import { AddPictureModal } from './AddPictureModal';
 
 export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
     console.log(objeto);
@@ -18,7 +20,9 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
     const [asistencias, setAsistencias] = useState([]);
     const [aluRepo, setAluRepo] = useState([]);
     const [isRepo, setIsRepo] = useState(false);
+    const [isPicture, setIsPicture] = useState(false);
     const [dia, setDia] = useState(new Date().getDate());
+    const [aluImg, setAluImg] = useState(null);
 
     const cargarClases = async () => {
         try {
@@ -35,6 +39,30 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
             console.log(err);
         }
     }
+
+    useEffect(() => {
+        const cargarImagen = async () => {
+            try {
+                const response = await AxiosClient({
+                    url: "/uploads/image/" + objeto.user_id,
+                    method: "GET",
+                    responseType: 'arraybuffer'
+                });
+                console.log(response);
+                if (!response.error) {
+                    const imageBlob = new Blob([response]);
+                    const imageUrl = URL.createObjectURL(imageBlob);
+                    setAluImg(imageUrl);
+                }
+            } catch (err) {
+
+                console.log(err);
+            }
+        }
+
+        cargarImagen();
+    }, [isPicture]);
+
     const cargarAsistencias = async () => {
         try {
             const response = await AxiosClient({
@@ -60,6 +88,29 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
             console.log(response);
             if (!response.error) {
                 setAluRepo(response);
+            }
+        } catch (err) {
+
+            console.log(err);
+        }
+    }
+
+    const deleteAluRepo = async (repo_id) => {
+        try {
+            const response = await AxiosClient({
+                url: "/personal/repo/" + repo_id,
+                method: "DELETE",
+            });
+            console.log(response);
+            if (!response.error) {
+                Alert.fire({
+                    title: "Reposición Eliminada",
+                    text: "La Reposición se Elimino Correctamente",
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "Aceptar"
+                })
+                cargarAluRepo();
             }
         } catch (err) {
 
@@ -174,7 +225,18 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                     <div className="AlumnoInfoMain" style={{ padding: 0 }}>
                         <div className="AlumnoInfoRight" style={{ flexDirection: "column" }}>
                             <div className="AlumnoInfoProfilePicture">
-                                <FaUserGraduate className='DataIcon' style={{ height: "70%", width: "70%" }} />
+                                {aluImg ? <div className='imgContainer' style={{ height: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <div className='editAluInfo'>
+                                        <FaEdit className='DataIcon' onClick={() => setIsPicture(true)} style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                    </div>
+                                    <img src={aluImg} alt="" srcset="" className='imgAlumno' />
+                                </div> :
+                                    <div style={{ height: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        <div className='editAluInfo'>
+                                            <FaEdit className='DataIcon' onClick={() => setIsPicture(true)} style={{ height: 20, width: 25, marginBottom: 0 }} />
+                                        </div>
+                                        <FaUserGraduate className='DataIcon' style={{ height: "70%", width: "70%" }} />
+                                    </div>}
                             </div>
                             <div className="AlumnoInfoBottomInfo">
                                 <div className="AlumnoInfoTitleInfo">
@@ -279,8 +341,8 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                                     <div className="PanelDia" key={item.id * 27 + index2}>
                                         <div className="PanelDiaFecha">{item.dia} | {item2 ? item2.substring(8, 10) : ""} | {item.hora}</div>
                                         {asistencias.some(item3 => item3.fecha === item2 && item3.id_clase === item.id) ?
-                                        <div className="PanelDiaAsistencia asiste" onClick={() => removeAsistencia(objeto.user_id, item2, item.id)}>ASISTE</div> :
-                                        <div className="PanelDiaAsistencia falta" onClick={() => saveAsistencia(objeto.user_id, item2, item.id)}>FALTA</div>}
+                                            <div className="PanelDiaAsistencia asiste" onClick={() => removeAsistencia(objeto.user_id, item2, item.id)}>ASISTE</div> :
+                                            <div className="PanelDiaAsistencia falta" onClick={() => saveAsistencia(objeto.user_id, item2, item.id)}>FALTA</div>}
 
                                     </div>
                                 ))}
@@ -328,8 +390,9 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                             <div className="PanelDiaTitulo" style={{ flexDirection: "row" }} ><div style={{ width: "80%", textAlign: "center" }}>Reposiciones</div> <div onClick={() => setIsRepo(true)} style={{ fontSize: "16px", cursor: "pointer" }}>+</div></div>
                             {aluRepo.map((item, index) => (
                                 <div className="PanelDia" key={index * 27}>
-                                    <div className="PanelDiaFecha" style={{width: "30%" }}>{item.fecha && item.fecha.slice(0, 10)}</div>
-                                    <div style={{width: "70%" }}>{item.name}</div>
+                                    <div className='menosRepo' onClick={()=>deleteAluRepo(item.id_repo)}></div>
+                                    <div className="PanelDiaFecha" style={{ width: "35%" }}>{item.fecha && item.fecha.slice(0, 10)}</div>
+                                    <div style={{ width: "65%" }}>{item.name}</div>
                                     {/* <div className="PanelDiaCambiarAsistencia">
                                         <IoMdRepeat className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} />
                                     </div> */}
@@ -403,6 +466,7 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                 </div>
             </div>
             <AddRepoForm isOpen={isRepo} onClose={() => setIsRepo(false)} objeto={objeto} />
+            <AddPictureModal isOpen={isPicture} onClose={() => setIsPicture(false)} objeto={objeto} />
         </Modal.Body>
     </Modal>
 };

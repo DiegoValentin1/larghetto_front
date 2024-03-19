@@ -427,7 +427,7 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
                   <div>TOTAL PAGO</div>
                   <div className='MaestroPago'>
                     <div>$</div>
-                    <div>{((alumnosMaestro.length * 300) + (talleres.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)) + (reposiciones.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0))) - descuentos2.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
+                    <div>{((alumnosMaestro.length * 300) + (talleres.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)) + (reposiciones.length * 70)) - descuentos2.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
                   </div>
                 </div>
               </div>

@@ -52,6 +52,11 @@ export default function Users() {
             sortable: true,
         },
         {
+            name: 'Inscripción',
+            selector: (row) => row.inscripcion && row.inscripcion.toFixed(2),
+            sortable: true,
+        },
+        {
             name: 'Próximo Pago',
             selector: (row) => { return row.proximo_pago ? row.proximo_pago.substring(0, 10) : '' },
             sortable: true,
@@ -410,7 +415,7 @@ export default function Users() {
                                 </div>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "#F0BA14" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Inscripciones</div>
-                                    <div style={{ color: "#F0BA14" }}>${totalInscripciones}</div>
+                                    <div style={{ color: "#F0BA14" }}>${totalInscripciones ? totalInscripciones.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
                                 {user.data.role==="SUPER" && <div style={{ width: "auto", height: "100%", display: "grid", placeItems:"center" , fontSize: "13px", marginRight: "3rem" }}>
                                 <FaRegMoneyBillAlt onClick={()=>setIsSuperPagos(true)} className='icon' style={{height:"30px", width:"30px", color:"black"}}/>
