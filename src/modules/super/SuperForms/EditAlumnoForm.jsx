@@ -287,7 +287,7 @@ export const EditUserForm = ({
     const fetchMaterial = async () => {
       const response = await AxiosClient({
         method: "GET",
-        url: "/personal/teacher",
+        url: "/personal/teacher/active",
       });
       if (!response.error) {
         console.log(response);

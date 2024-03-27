@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Button, Col, Row, Form, Modal, FormGroup } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import FeatherIcon from 'feather-icons-react'
 import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts'
+import { AuthContext } from '../../auth/authContext';
 
 export const AddRepoForm = ({ isOpen, onClose, objeto }) => {
     const [maestros, setMaestros] = useState([]);
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: "/personal/teacher",
+                url: "/personal/teacher/active",
             });
             if (!response.error) {
                 console.log(response);
-                setMaestros(response);
+                const responseCamp = user.data.role === 'SUPER' ? response : response.filter(item => item.campus === user.data.campus);
+                setMaestros(responseCamp);
                 return response;
             }
         };

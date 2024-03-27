@@ -222,9 +222,10 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: "/personal/teacher",
+                url: "/personal/teacher/active",
             });
             if (!response.error) {
+                console.log(response);
                 const responseCamp = user.data.role === 'SUPER' ? response : response.filter(item => item.campus === user.data.campus);
                 setMaestros(responseCamp);
                 return response;

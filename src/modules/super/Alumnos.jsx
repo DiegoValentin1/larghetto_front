@@ -48,12 +48,12 @@ export default function Users() {
         },
         {
             name: 'Mensualidad',
-            selector: (row) => row.mensualidad && (row.mensualidad - (row.mensualidad * (row.descuento / 100))).toFixed(2),
+            selector: (row) => row.mensualidad && (row.mensualidad - (row.mensualidad * (row.descuento / 100))).toLocaleString('en', { maximumFractionDigits: 2, minimumFractionDigits: 2 }),
             sortable: true,
         },
         {
             name: 'Inscripción',
-            selector: (row) => row.inscripcion && row.inscripcion.toFixed(2),
+            selector: (row) => row.inscripcion && row.inscripcion.toLocaleString('en', { maximumFractionDigits: 2, minimumFractionDigits: 2 }),
             sortable: true,
         },
         {
@@ -185,7 +185,7 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, [switchActivo, superCampus]);
+    }, [switchCampus, superCampus]);
 
     useEffect(() => {
         const fetchMaterial = async () => {
@@ -547,7 +547,7 @@ export default function Users() {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
                                         {
-                                            !(user.data.role === "RECEPCION" || user.data.role === "ENCARGADO" && new Date().getDate() > 15) || true ?
+                                            (((user.data.role ==! "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'centro') || (user.data.role === "SUPER") ) ?
                                                 <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                                     changeStatus(selectedStudentId, 0);
                                                 }}></div> :
