@@ -4,13 +4,12 @@ import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts';
 import '../../../utils/styles/MaestroClases.css';
 import * as XLSX from 'xlsx';
-const {campus, role} = JSON.parse(localStorage.getItem('user') || null)?.data;
+const session = JSON.parse(localStorage.getItem('user') || null);
 
 export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) => {
   const [clases, setClases] = useState([]);
 
   useEffect(() => {
-    console.log(campus, role);
     const diasOrdenados = {
       "Lunes": 1,
       "Martes": 2,
@@ -23,7 +22,7 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
     const fetchMaterial = async () => {
       const response = await AxiosClient({
         method: "GET",
-        url: role === "SUPER" ? `/clase/${objeto.user_id}` : `/clase/maestro/${objeto.user_id}/${campus}`,
+        url: session.data.role && session.data.campus && session.data.role === "SUPER" ? `/clase/${objeto.user_id}` : `/clase/maestro/${objeto.user_id}/${session.data.campus}`,
       });
       if (!response.error) {
         const temp = response.map((obj) => {

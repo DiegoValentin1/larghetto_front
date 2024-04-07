@@ -547,7 +547,7 @@ export default function Users() {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
                                         {
-                                            (((user.data.role ==! "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'centro') || (user.data.role === "SUPER") ) ?
+                                            (((user.data.role ==! "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'centro') || (user.data.role === "SUPER") ) || true ?
                                                 <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                                     changeStatus(selectedStudentId, 0);
                                                 }}></div> :
