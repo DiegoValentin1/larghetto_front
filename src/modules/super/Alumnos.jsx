@@ -23,6 +23,7 @@ export default function Users() {
     const [selectedObject, setSelectedObject] = useState({});
     const [selectedStudentId, setSelectedStudentId] = useState(0);
     const [totalMensualidad, setTotalMensualidad] = useState(0);
+    const [totalFaltantes, setTotalFaltantes] = useState(0);
     const [totalInscripciones, setTotalInscripciones] = useState(0);
     const [contador, setContador] = useState(0);
     const [totalClases, setTotalClases] = useState(0);
@@ -201,6 +202,26 @@ export default function Users() {
                 console.log(response);
                 console.log(response[0]['total_mensualidad']);
                 setTotalMensualidad(response[0]['total_mensualidad']);
+            }
+        };
+        fetchMaterial();
+    }, [switchCampus, superCampus]);
+
+    useEffect(() => {
+        const fetchMaterial = async () => {
+            const response = await AxiosClient({
+                method: "GET",
+                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
+                "/stats/pagos/falta/total/" : (superCampus === 1 ?
+                        "/stats/pagos/falta/centro" :
+                        (superCampus === 2 ? "/stats/pagos/falta/bugambilias" :
+                            (superCampus === 3 ? "/stats/pagos/falta/cuautla" : "/stats/pagos/falta/" + user.data.campus))),
+            });
+            console.log(response);
+            if (!response.error) {
+                console.log(response);
+                console.log(response[0]['lol']);
+                setTotalFaltantes(response[0]['lol']);
             }
         };
         fetchMaterial();
@@ -411,7 +432,7 @@ export default function Users() {
                                 </div>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "red" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Pagos Faltantes</div>
-                                    <div style={{ color: "red" }}>${totalMensualidad && pagosMes ? (totalMensualidad - pagosMes).toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
+                                    <div style={{ color: "red" }}>${totalFaltantes ? (totalFaltantes).toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
                                 <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "#F0BA14" }}>
                                     <div style={{ fontSize: "13px", height: "90%" }}>Inscripciones</div>

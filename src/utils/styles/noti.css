@@ -1,0 +1,27 @@
+.mainNoti{
+    height: 92vh;
+    width: 93vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainNoti > div:first-child{
+    height: 50%;
+    border-bottom: white 2px solid;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.mainNoti > div{
+    height: 25%;
+    border-bottom: white 2px solid;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.centerTextNoti{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,11 +1,11 @@
 import instance from 'axios';
-// const AxiosClient = instance.create({
-//     baseURL: 'http://104.237.128.187:3001/api',
-// });
-
 const AxiosClient = instance.create({
-    baseURL: 'http://localhost:3001/api',
+    baseURL: 'http://104.237.128.187:3001/api',
 });
+
+// const AxiosClient = instance.create({
+//     baseURL: 'http://192.168.100.16:3001/api',
+// });
 
 const requestHandler = (request) => {
     request.headers['Accept'] = "application/json";

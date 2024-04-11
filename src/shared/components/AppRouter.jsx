@@ -13,6 +13,9 @@ import Promociones from "../../modules/super/Promociones";
 import Encargados from "../../modules/super/Encargados";
 import Recepcionistas from "../../modules/super/Recepcionistas";
 import SuperDashboard from "../../modules/super/Components/SuperDashboard";
+import CuautlaNoti from "./CuautlaNoti";
+import CentroNoti from "./CentroNoti";
+import BugaNoti from "./BugaNoti";
 
 export const AppRouter = () => {
   const { user } = useContext(AuthContext);
@@ -30,11 +33,14 @@ export const AppRouter = () => {
                 <>
                   <Routes>
                     <Route path="/" element={<AppLayout option={1} />}>
-                    <Route index element={<Users/>} />
-                    <Route path="instrumentos" element={<SuperMaterialesBrida/>} />
-                    <Route path="maestros" element={<SuperMaterialesTee/>} />
-                    {/* <Route path="promociones" element={<Promociones/>} /> */}
-                    <Route path="recepcionistas" element={<Recepcionistas/>} />
+                      <Route index element={<Users />} />
+                      <Route path="instrumentos" element={<SuperMaterialesBrida />} />
+                      <Route path="maestros" element={<SuperMaterialesTee />} />
+                      {/* <Route path="promociones" element={<Promociones/>} /> */}
+                      <Route path="recepcionistas" element={<Recepcionistas />} />
+                      <Route path="cuautla" element={<CuautlaNoti />} />
+                      <Route path="centro" element={<CentroNoti />} />
+                      <Route path="buga" element={<BugaNoti />} />
                     </Route>
                   </Routes>
                 </>
@@ -44,13 +50,16 @@ export const AppRouter = () => {
                     <Routes>
                       <Route path="/" element={<AppLayout option={2} />}>
                         {/* <Route index element={<SuperDashBoard/>} /> */}
-                        <Route index element={<SuperDashboard/>} />
+                        <Route index element={<SuperDashboard />} />
                         <Route path="alumnos" element={<Users />} />
                         <Route path="instrumentos" element={<SuperMaterialesBrida />} />
                         <Route path="maestros" element={<SuperMaterialesTee />} />
                         <Route path="promociones" element={<Promociones />} />
                         <Route path="encargados" element={<Encargados />} />
                         <Route path="recepcionistas" element={<Recepcionistas />} />
+                        <Route path="cuautla" element={<CuautlaNoti />} />
+                        <Route path="centro" element={<CentroNoti />} />
+                        <Route path="buga" element={<BugaNoti />} />
                         <Route index element={<Loader />} />
                         <Route path="*" element={<>SUPER</>} />
                       </Route>
@@ -61,8 +70,11 @@ export const AppRouter = () => {
                     <>
                       <Routes>
                         <Route path="/" element={<AppLayout option={3} />}>
-                        <Route index element={<Users/>} />
-                        <Route path="maestros" element={<SuperMaterialesTee />} />
+                          <Route index element={<Users />} />
+                          <Route path="maestros" element={<SuperMaterialesTee />} />
+                          <Route path="cuautla" element={<CuautlaNoti />} />
+                          <Route path="centro" element={<CentroNoti />} />
+                          <Route path="buga" element={<BugaNoti />} />
                         </Route>
                       </Routes>
 
@@ -72,12 +84,15 @@ export const AppRouter = () => {
               )
             ) : (
               <>
-                  <Routes>
-                    <Route path="auth" element={<LoginScreen/>} />
-                    <Route path="contact" element={<>Contact</>} />
-                    <Route index element={<LoginScreen/>} />
-                    <Route path="*" element={<>404</>} />
-                  </Routes>
+                <Routes>
+                  <Route path="auth" element={<LoginScreen />} />
+                  <Route path="contact" element={<>Contact</>} />
+                  <Route index element={<LoginScreen />} />
+                  <Route path="*" element={<>404</>} />
+                  <Route path="cuautla" element={<CuautlaNoti />} />
+                  <Route path="centro" element={<CentroNoti />} />
+                  <Route path="buga" element={<BugaNoti />} />
+                </Routes>
               </>
             )
           }

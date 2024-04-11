@@ -427,7 +427,7 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
                   <div>TOTAL PAGO</div>
                   <div className='MaestroPago'>
                     <div>$</div>
-                    <div>{((alumnosMaestro.length * 300) + (talleres.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)) + (reposiciones.length * 70)) - descuentos2.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
+                    <div>{((alumnosMaestro.length * 300) + (talleres.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)) + (reposiciones.length * 75)) - descuentos2.reduce((acumulador, elemento) => acumulador + parseFloat(elemento.cantidad), 0)}</div>
                   </div>
                 </div>
               </div>
@@ -467,14 +467,14 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
                   <div className="PagoAlumnoRow" style={{ backgroundColor: "#CCD2F1" }} key={index * 17}>
                     <div>{index + 1}</div>
                     <div className='repoName' >{item.name}</div>
-                    <div className='repoCant' style={{ width: "35%" }}>70</div>
+                    <div className='repoCant' style={{ width: "35%" }}>75</div>
                     <div style={{ width: "20%" }}>{item.fecha? item.fecha.slice(0,10) : ""}</div>
                   </div>
                 ))}
                 <div className="PagoAlumnoTotal" style={{ backgroundColor: "#8A9AEE" }}>
                   <div></div>
                   <div style={{ backgroundColor: "#8A9AEE" }}>Total Pago de Reposiciones</div>
-                  <div className='repoTotal' style={{ width: "35%", backgroundColor: "#8A9AEE" }} >{reposiciones.length * 70}</div>
+                  <div className='repoTotal' style={{ width: "35%", backgroundColor: "#8A9AEE" }} >{reposiciones.length * 75}</div>
                 </div>
               </div>
 
