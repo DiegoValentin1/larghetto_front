@@ -4,7 +4,7 @@ const AxiosClient = instance.create({
 });
 
 // const AxiosClient = instance.create({
-//     baseURL: 'http://192.168.100.16:3001/api',
+//     baseURL: 'http://192.168.100.67:3001/api',
 // });
 
 const requestHandler = (request) => {

@@ -177,7 +177,8 @@ export default function Users() {
                     "/stats/pagos/suma/total" : (superCampus === 1 ?
                         "/stats/pagos/suma/centro" :
                         (superCampus === 2 ? "/stats/pagos/suma/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/suma/cuautla" : "/stats/pagos/suma/" + user.data.campus))),
+                            (superCampus === 3 ? "/stats/pagos/suma/cuautla" : 
+                            (superCampus === 4 ? "/stats/pagos/suma/CDMX" : "/stats/pagos/suma/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -196,7 +197,8 @@ export default function Users() {
                 "/stats/pagos/total/mensualidades" : (superCampus === 1 ?
                         "/stats/pagos/total/mensualidades/centro" :
                         (superCampus === 2 ? "/stats/pagos/total/mensualidades/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/total/mensualidades/cuautla" : "/stats/pagos/total/mensualidades/" + user.data.campus))),
+                            (superCampus === 3 ? "/stats/pagos/total/mensualidades/cuautla" : 
+                            (superCampus === 4 ? "/stats/pagos/total/mensualidades/CDMX" : "/stats/pagos/total/mensualidades/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -215,7 +217,8 @@ export default function Users() {
                 "/stats/pagos/falta/total/" : (superCampus === 1 ?
                         "/stats/pagos/falta/centro" :
                         (superCampus === 2 ? "/stats/pagos/falta/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/falta/cuautla" : "/stats/pagos/falta/" + user.data.campus))),
+                            (superCampus === 3 ? "/stats/pagos/falta/cuautla" : 
+                            (superCampus === 4 ? "/stats/pagos/falta/CDMX" : "/stats/pagos/falta/" + user.data.campus)))),
             });
             console.log(response);
             if (!response.error) {
@@ -235,7 +238,8 @@ export default function Users() {
                 "/stats/pagos/total/inscripciones/" : (superCampus === 1 ?
                         "/stats/pagos/total/inscripciones/centro" :
                         (superCampus === 2 ? "/stats/pagos/total/inscripciones/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/total/inscripciones/cuautla" : "/stats/pagos/total/inscripciones/" + user.data.campus))),
+                            (superCampus === 3 ? "/stats/pagos/total/inscripciones/cuautla" : 
+                            (superCampus === 4 ? "/stats/pagos/total/inscripciones/CDMX" : "/stats/pagos/total/inscripciones/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -254,7 +258,8 @@ export default function Users() {
                 "/instrumento/clases/total/" : (superCampus === 1 ?
                         "/instrumento/clases/total/centro" :
                         (superCampus === 2 ? "/instrumento/clases/total/bugambilias" :
-                            (superCampus === 3 ? "/instrumento/clases/total/cuautla" : "/instrumento/clases/total/" + user.data.campus))),
+                            (superCampus === 3 ? "/instrumento/clases/total/cuautla" : 
+                            (superCampus === 4 ? "/instrumento/clases/total/CDMX" : "/instrumento/clases/total/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -345,7 +350,9 @@ export default function Users() {
                     "/personal/" : (superCampus === 1 ?
                         "/personal/getalumno/centro" :
                         (superCampus === 2 ? "/personal/getalumno/bugambilias" :
-                            (superCampus === 3 ? "/personal/getalumno/cuautla" : "/personal/getalumno/" + user.data.campus))),
+                            (superCampus === 3 ? "/personal/getalumno/cuautla" : 
+                            (superCampus === 4 ? "/personal/getalumno/CDMX" : "/personal/getalumno/" + user.data.campus)
+                            ))),
                 method: "GET",
             });
             console.log(response);
@@ -519,6 +526,7 @@ export default function Users() {
                                             <div className={`onoff ${superCampus === 1 && "switchactivoC"}`} onClick={() => setSuperCampus(1)}>Centro</div>
                                             <div className={`onoff ${superCampus === 2 && "switchactivoC"}`} onClick={() => setSuperCampus(2)}>Bugambilias</div>
                                             <div className={`onoff ${superCampus === 3 && "switchactivoC"}`} onClick={() => setSuperCampus(3)}>Cuautla</div>
+                                            <div className={`onoff ${superCampus === 4 && "switchactivoC"}`} onClick={() => setSuperCampus(4)}>CDMX</div>
                                         </div>
                                     </div>}
 
@@ -568,7 +576,7 @@ export default function Users() {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
                                         {
-                                            (((user.data.role ==! "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'centro') || (user.data.role === "SUPER") ) || true ?
+                                            (((user.data.role === "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'centro') || (user.data.role === "SUPER") ) ?
                                                 <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                                     changeStatus(selectedStudentId, 0);
                                                 }}></div> :

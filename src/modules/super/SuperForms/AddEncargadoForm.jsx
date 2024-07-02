@@ -179,6 +179,7 @@ export const AddEncargadoForm = ({ isOpen, cargarDatos, onClose, option }) => {
                                         <option value="bugambilias">Bugambilias</option>
                                         <option value="centro">Centro</option>
                                         <option value="cuautla">Cuautla</option>
+                                        <option value="CDMX">CDMX</option>
                                 </Form.Select>
                             </div>
                         {

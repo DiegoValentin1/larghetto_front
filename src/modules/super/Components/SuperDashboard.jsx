@@ -23,6 +23,7 @@ export default function SuperDashboard() {
     const [centro, setCentro] = useState([]);
     const [buga, setBuga] = useState([]);
     const [cuautla, setCuautla] = useState([]);
+    const [cdmx, setCdmx] = useState([]);
     const [total, setTotal] = useState([]);
     const [actual, setActual] = useState([]);
     const [diasAnio, setDiasAnio] = useState(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']);
@@ -34,9 +35,10 @@ export default function SuperDashboard() {
         console.log(listaOriginal);
         listaOriginal.forEach(item => {
             let fecha = new Date(item.fecha);
+            fecha.setMinutes(fecha.getMinutes() + fecha.getTimezoneOffset() + 180);
             let mes = fecha.getMonth() + 1;
             let total = parseInt(item.total);
-            
+
             if (!totalesPorMes[mes]) {
                 totalesPorMes[mes] = 0;
             }
@@ -46,9 +48,9 @@ export default function SuperDashboard() {
 
         let mesesDelAnio = [];
         let totalesOrdenados = [];
-
+        const year = new Date().getFullYear();
         for (let i = 1; i <= 12; i++) {
-            let mesNombre = new Date(2023, i - 1, 1).toLocaleString('default', { month: 'long' });
+            let mesNombre = new Date(year, i - 1, 1).toLocaleString('default', { month: 'long' });
             let total = totalesPorMes[i] || 0;
             console.log(i, mesNombre, total);
 
@@ -64,7 +66,8 @@ export default function SuperDashboard() {
         let totalesPorCampus = {
             centro: 0,
             bugambilias: 0,
-            cuautla: 0
+            cuautla: 0,
+            CDMX:0
         };
 
         // Calcular los totales de acuerdo a la lista original
@@ -76,7 +79,8 @@ export default function SuperDashboard() {
         let totales = [
             totalesPorCampus.centro,
             totalesPorCampus.bugambilias,
-            totalesPorCampus.cuautla
+            totalesPorCampus.cuautla,
+            totalesPorCampus.CDMX,
         ];
 
         // Obtener el total general
@@ -122,6 +126,25 @@ export default function SuperDashboard() {
         }
     }
 
+    const cargarCDMX = async (mactu, total) => {
+        try {
+            const response = await AxiosClient({
+                url: "/stats/cdmx/",
+                method: "GET",
+            });
+            console.log(response);
+            if (!response.error) {
+                let temp = procesarLista(response);
+                console.log(temp);
+                temp[mactu] = total;
+                console.log(temp, mactu, total);
+                setCdmx(temp);
+                console.log(temp)
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
     const cargarCuautla = async (mactu, total) => {
         try {
             const response = await AxiosClient({
@@ -175,7 +198,8 @@ export default function SuperDashboard() {
                 cargarCentro(mactu, ordenada[0]);
                 cargarBuga(mactu, ordenada[1]);
                 cargarCuautla(mactu, ordenada[2]);
-                cargarTotal(mactu, ordenada[3]);
+                cargarCDMX(mactu, ordenada[3])
+                cargarTotal(mactu, ordenada[4]);
             }
         } catch (err) {
             console.log(err);
@@ -246,7 +270,7 @@ export default function SuperDashboard() {
                         <div className="ContainerLogs DashboardContainer">
                             <div className="DashboardTitle">
                                 <div>Larghetto</div>
-                                <div></div>
+                                <div>CDMX</div>
                                 <div>Cambios Recientes</div>
                             </div>
                             <div className="ChartBox">
@@ -254,9 +278,9 @@ export default function SuperDashboard() {
                                     <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: total && total }] }} />
                                 </div>
                                 <div className="ChartContainer">
-                                    {/* <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: [215, 211, 213] }] }} /> */}
+                                    <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cdmx && cdmx }] }} />
                                 </div>
-                                <div className="ChartContainer" style={{ padding: "0.5rem" }} onClick={()=>setIsLog(!isLog)}>
+                                <div className="ChartContainer" style={{ padding: "0.5rem" }} onClick={() => setIsLog(!isLog)}>
                                     <div style={{ fontSize: "14px" }}>{`${logs[0] ? devolverFecha(logs[0].fecha) : ""}  ${logs[0] ? logs[0].autor : ""} ${logs[0] ? logs[0].accion : ""}`} </div>
                                     <div style={{ fontSize: "14px" }}>{`${logs[1] ? devolverFecha(logs[1].fecha) : ""}  ${logs[1] ? logs[1].autor : ""}  ${logs[1] ? logs[1].accion : ""}`}</div>
                                     <div style={{ fontSize: "14px" }}>{`${logs[2] ? devolverFecha(logs[2].fecha) : ""}  ${logs[2] ? logs[2].autor : ""}  ${logs[2] ? logs[2].accion : ""}`}</div>
@@ -270,7 +294,7 @@ export default function SuperDashboard() {
 
 
             <ChartAlumnos alumnosActivos={selectedObject} isOpen={isOpen} onClose={() => setIsOpen(false)} titulo={titulo} />
-            <LogTable loglist={logs} isOpen={isLog} onClose={() => setIsLog(false)}/>
+            <LogTable loglist={logs} isOpen={isLog} onClose={() => setIsLog(false)} />
         </>
 
     )

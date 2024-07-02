@@ -8,10 +8,13 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
     console.log(objeto);
 
     const [pagosMes, setPagosMes] = useState({
-        larghetto:0, centro:0, bugambilias:0, cucutla:0
+        larghetto:0, centro:0, bugambilias:0, cuautla:0, cdmx:0
     });
     const [totalMensualidad, setTotalMensualidad] = useState({
-        larghetto:0, centro:0, bugambilias:0, cucutla:0
+        larghetto:0, centro:0, bugambilias:0, cuautla:0, cdmx:0
+    });
+    const [totalFaltantes, setTotalFaltantes] = useState({
+        larghetto:0, centro:0, bugambilias:0, cuautla:0, cdmx:0
     });
 
     const redondear = (cantidad)=>{
@@ -36,8 +39,12 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                 method: "GET",
                 url: "/stats/pagos/suma/cuautla" ,
             });
+            const response5 = await AxiosClient({
+                method: "GET",
+                url: "/stats/pagos/suma/CDMX" ,
+            });
             if (!response.error && !response2.error && !response3.error && !response4.error) {
-                setPagosMes({larghetto:response[0]['total_pagado'], centro:response2[0]['total_pagado'], bugambilias:response3[0]['total_pagado'], cuautla:response4[0]['total_pagado']});
+                setPagosMes({larghetto:response[0]['total_pagado'], centro:response2[0]['total_pagado'], bugambilias:response3[0]['total_pagado'], cuautla:response4[0]['total_pagado'], cdmx:response5[0]['total_pagado']});
             }
         };
         fetchMaterial();
@@ -61,10 +68,45 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                 method: "GET",
                 url: "/stats/pagos/total/mensualidades/cuautla" ,
             });
+            const response5 = await AxiosClient({
+                method: "GET",
+                url: "/stats/pagos/total/mensualidades/CDMX" ,
+            });
             if (!response.error && !response2.error && !response3.error && !response4.error) {
                 console.log(response);
                 console.log(response[0]['total_mensualidad']);
-                setTotalMensualidad({larghetto:response[0]['total_mensualidad'], centro:response2[0]['total_mensualidad'], bugambilias:response3[0]['total_mensualidad'], cuautla:response4[0]['total_mensualidad']});
+                setTotalMensualidad({larghetto:response[0]['total_mensualidad'], centro:response2[0]['total_mensualidad'], bugambilias:response3[0]['total_mensualidad'], cuautla:response4[0]['total_mensualidad'], cdmx:response5[0]['total_mensualidad']});
+            }
+        };
+        fetchMaterial();
+    }, []);
+
+    useEffect(() => {
+        const fetchMaterial = async () => {
+            const response = await AxiosClient({
+                method: "GET",
+                url: "/stats/pagos/falta/total/",
+            });
+            const response2 = await AxiosClient({
+                method: "GET",
+                url: "/stats/pagos/falta/centro" ,
+            });
+            const response3 = await AxiosClient({
+                method: "GET",
+                url: "/stats/pagos/falta/bugambilias" ,
+            });
+            const response4 = await AxiosClient({
+                method: "GET",
+                url: "/stats/pagos/falta/cuautla" ,
+            });
+            const response5 = await AxiosClient({
+                method: "GET",
+                url: "/stats/pagos/falta/CDMX" ,
+            });
+            if (!response.error && !response2.error && !response3.error && !response4.error) {
+                console.log(response);
+                console.log(response[0]['lol']);
+                setTotalFaltantes({larghetto:response[0]['lol'], centro:response2[0]['lol'], bugambilias:response3[0]['lol'], cuautla:response4[0]['lol'], cdmx:response5[0]['lol']});
             }
         };
         fetchMaterial();
@@ -111,7 +153,7 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
-                                <div>{totalMensualidad && pagosMes && redondear(totalMensualidad.larghetto - pagosMes.larghetto)}</div>
+                                <div>{redondear(totalFaltantes.larghetto)}</div>
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
@@ -125,7 +167,7 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
-                                <div>{totalMensualidad && pagosMes && redondear(totalMensualidad.centro - pagosMes.centro)}</div>
+                                <div>{redondear(totalFaltantes.centro)}</div>
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
@@ -139,7 +181,7 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
-                                <div>{totalMensualidad && pagosMes && redondear(totalMensualidad.bugambilias - pagosMes.bugambilias)}</div>
+                                <div>{redondear(totalFaltantes.bugambilias)}</div>
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
@@ -153,13 +195,57 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
-                                <div>{totalMensualidad && pagosMes && redondear(totalMensualidad.cuautla - pagosMes.cuautla)}</div>
+                                <div>{redondear(totalFaltantes.cuautla)}</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black", display: "flex", paddingBottom: "5px", marginTop:"10px", marginBottom:"10px"}}>
                     <div style={{ width: "58%" }}>CDMX</div>
+                </div>
+                <div className="ContainerCharts DashboardContainer">
+                    <div className="DashboardTitleP">
+                        <div>CDMX</div>
+                        <div>Coyoacán</div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <div className="ChartBoxP">
+                        <div className="ChartContainer chartContainerP">
+                            <div className="totalEsperado totalPagos">
+                                <div>Total Mensualidad</div>
+                                <div>{redondear(totalMensualidad.cdmx)}</div>
+                            </div>
+                            <div className="totalRecibido totalPagos">
+                                <div>Pagos Obtenidos</div>
+                                <div>{redondear(pagosMes.cdmx)}</div>
+                            </div>
+                            <div className="totalFaltante totalPagos">
+                                <div>Pagos Faltantes</div>
+                                <div>{redondear(totalFaltantes.cdmx)}</div>
+                            </div>
+                        </div>
+                        <div className="ChartContainer chartContainerP">
+                            <div className="totalEsperado totalPagos">
+                                <div>Total Mensualidad</div>
+                                <div>{redondear(totalMensualidad.cdmx)}</div>
+                            </div>
+                            <div className="totalRecibido totalPagos">
+                                <div>Pagos Obtenidos</div>
+                                <div>{redondear(pagosMes.cdmx)}</div>
+                            </div>
+                            <div className="totalFaltante totalPagos">
+                                <div>Pagos Faltantes</div>
+                                <div>{redondear(totalFaltantes.cdmx)}</div>
+                            </div>
+                        </div>
+                        <div className="ChartContainer chartContainerP">
+                            
+                        </div>
+                        <div className="ChartContainer chartContainerP">
+                            
+                        </div>
+                    </div>
                 </div>
             </div>
         </Modal.Body>
