@@ -163,6 +163,7 @@
     width: 5%;
     height: 60%;
     margin-left: 0.35rem;
+    font-size: clamp(4px, 1vw, 10px);
 }
 
 .statusMain {

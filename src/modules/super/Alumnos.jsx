@@ -428,24 +428,25 @@ export default function Users() {
                 <div>
                     <div className="App">
                         <div style={{ display: "flex", flexDirection: "row", height: "7%", width: "100%" }}>
-                            <div style={{ width: "70%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "start" }}>
-                                <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column" }}>
-                                    <div style={{ fontSize: "13px", height: "90%" }}>Total Mensualidad</div>
+                            <div style={{ width: "70%", height: "100%", display: "grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr"}}>
+                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column" }}>
+                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Total Mensualidad</div>
                                     <div>${totalMensualidad ? totalMensualidad.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
-                                <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "green" }}>
-                                    <div style={{ fontSize: "13px", height: "90%" }}>Pagos Obtenidos ({new Date().toLocaleString('es', { month: 'long' }).toUpperCase()})</div>
+                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "green" }}>
+                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Pagos Obtenidos </div>
+                                    {/* <div style={{ fontSize: "clamp(6px, 1vw, 10px)", height: "90%" }}>({new Date().toLocaleString('es', { month: 'long' }).toUpperCase()})</div> */}
                                     <div style={{ color: "green" }}>${pagosMes ? pagosMes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
-                                <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "red" }}>
-                                    <div style={{ fontSize: "13px", height: "90%" }}>Pagos Faltantes</div>
+                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "red" }}>
+                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Pagos Faltantes</div>
                                     <div style={{ color: "red" }}>${totalFaltantes ? (totalFaltantes).toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
-                                <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "#F0BA14" }}>
-                                    <div style={{ fontSize: "13px", height: "90%" }}>Inscripciones</div>
+                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "#F0BA14" }}>
+                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Inscripciones</div>
                                     <div style={{ color: "#F0BA14" }}>${totalInscripciones ? totalInscripciones.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
-                                {user.data.role==="SUPER" && <div style={{ width: "auto", height: "100%", display: "grid", placeItems:"center" , fontSize: "13px", marginRight: "3rem" }}>
+                                {user.data.role==="SUPER" && <div style={{ width: "100%", height: "100%", display: "grid", placeItems:"center" , fontSize: "13px", marginRight: "3rem" }}>
                                 <FaRegMoneyBillAlt onClick={()=>setIsSuperPagos(true)} className='icon' style={{height:"30px", width:"30px", color:"black"}}/>
                                 </div>}
 
@@ -497,7 +498,7 @@ export default function Users() {
                                     <div style={{ marginLeft: "0.15rem" }}>{totalStatus[0] ? totalStatus[0] : "0"}</div>
                                 </div>
                                 <div className='statusTotalMain'>
-                                    <div>Total Cursos</div>
+                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Total Cursos</div>
                                     <div>{totalClases}</div>
                                 </div>
                             </div>
@@ -520,7 +521,7 @@ export default function Users() {
                                         </div>
                                     </div>}
 
-                                    {(user.data.role === 'SUPER') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
+                                    {(user.data.role === 'SUPER') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem", marginBottom:"0.8rem" }}>
                                         <div className={`switch switchonC`} style={{backgroundColor:"rgb(79, 79, 190)"}}>
                                             <div className={`onoff ${superCampus === 0 && "switchactivoC"}`} onClick={() => setSuperCampus(0)}>Todos</div>
                                             <div className={`onoff ${superCampus === 1 && "switchactivoC"}`} onClick={() => setSuperCampus(1)}>Centro</div>
@@ -542,6 +543,7 @@ export default function Users() {
                                         className='inputSearch'
                                         type="text"
                                         placeholder="Buscar..."
+                                        style={{marginBottom:"0.4rem"}}
                                         onChange={(event) => handleInputChange(event)}
                                     />
                                     <div >
