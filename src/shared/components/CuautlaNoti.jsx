@@ -50,8 +50,8 @@ export default function CuautlaNoti() {
         return resultado;
     }
     useEffect(() => {
-        const ws = new WebSocket('ws://104.237.128.187:8080');
-        // const ws = new WebSocket('ws://192.168.100.16:8080');
+        // const ws = new WebSocket('ws://104.237.128.187:8080');
+        const ws = new WebSocket('ws://192.168.100.67:8080');
         ws.onopen = () => {
             console.log('Conexión WebSocket establecida');
         };

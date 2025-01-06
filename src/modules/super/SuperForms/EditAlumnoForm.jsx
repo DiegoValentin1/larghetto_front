@@ -316,29 +316,30 @@ export const EditUserForm = ({
 
   const manejarCambioSelect = (event, mes) => {
     const colores = {
-      0:"gray",
-      1:"green",
-      2:"yellow",
-      3:"red",
-      4:"purple",
-      5:"orange",
-      6:"pink"
+      0: "gray",
+      1: "green",
+      2: "yellow",
+      3: "red",
+      4: "purple",
+      5: "orange",
+      6: "pink"
     };
     let { value } = event.target;
     let nuevoMes = mes.split("");
     const mesFormated = nuevoMes[0] === "0" ? nuevoMes[1] : nuevoMes[0] + nuevoMes[1];
     value = parseInt(value);
     const nomMes = document.getElementById('mes' + mesFormated);
-      
+    const currentYear = new Date().getFullYear();
     if (value !== 0) {
       nomMes.style.backgroundColor = colores[value];
-      const nuevaFecha = `2024-${mes.toString().padStart(2, '0')}-01`;
+      const nuevaFecha = `${currentYear}-${mes.toString().padStart(2, '0')}-01`;
       const nuevosPagos = pagos.filter(pago => pago.fecha !== nuevaFecha);
       setPagos([...nuevosPagos, { fecha: nuevaFecha, tipo: value }]);
       console.log([...nuevosPagos, { fecha: nuevaFecha, tipo: value }]);
     } else {
       nomMes.style.backgroundColor = colores[0];
-      const fechaRemovida = `2024-${mes.toString().padStart(2, '0')}-01`;
+      
+      const fechaRemovida = `${currentYear}-${mes.toString().padStart(2, '0')}-01`;
       setPagos(pagos.filter(fecha => fecha.fecha !== fechaRemovida));
       console.log(pagos.filter(fecha => fecha.fecha !== fechaRemovida));
     }
@@ -355,21 +356,25 @@ export const EditUserForm = ({
       const tipo = listaFechas[i].tipo;
       const diferenciaGMT = -7 * 60;
       fecha.setUTCMinutes(fecha.getUTCMinutes() - diferenciaGMT);
-      listaFechasTemp.push({ fecha, tipo });
-      const mes = fecha.getMonth() + 1;
-      console.log(fecha, mes, mesMasAlto)
-      if (mes > mesMasAlto) {
-        mesMasAlto = mes;
+
+      const currentYear = new Date().getFullYear();
+      if (fecha.getFullYear() === currentYear) {
+        listaFechasTemp.push({ fecha, tipo });
+        const mes = fecha.getMonth() + 1;
+        console.log(fecha, mes, mesMasAlto);
+        if (mes > mesMasAlto) {
+          mesMasAlto = mes;
+        }
       }
     }
     const colores = {
-      0:"gray",
-      1:"green",
-      2:"yellow",
-      3:"red",
-      4:"purple",
-      5:"orange",
-      6:"pink"
+      0: "gray",
+      1: "green",
+      2: "yellow",
+      3: "red",
+      4: "purple",
+      5: "orange",
+      6: "pink"
     };
 
     // Marcar y habilitar los checkboxes
@@ -582,7 +587,7 @@ export const EditUserForm = ({
                 }
               </Form.Group>
             </div>
-            
+
           </div>
           <div className="InputContainer4" style={{ height: "50%" }}>
             <Form.Group className='mb-3'>

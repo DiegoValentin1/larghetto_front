@@ -16,6 +16,7 @@ import SuperDashboard from "../../modules/super/Components/SuperDashboard";
 import CuautlaNoti from "./CuautlaNoti";
 import CentroNoti from "./CentroNoti";
 import BugaNoti from "./BugaNoti";
+import CoyoacanNoti from "./CoyoacanNoti";
 
 export const AppRouter = () => {
   const { user } = useContext(AuthContext);
@@ -41,6 +42,7 @@ export const AppRouter = () => {
                       <Route path="cuautla" element={<CuautlaNoti />} />
                       <Route path="centro" element={<CentroNoti />} />
                       <Route path="buga" element={<BugaNoti />} />
+                      <Route path="coyoacan" element={<CoyoacanNoti />} />
                     </Route>
                   </Routes>
                 </>
@@ -60,6 +62,7 @@ export const AppRouter = () => {
                         <Route path="cuautla" element={<CuautlaNoti />} />
                         <Route path="centro" element={<CentroNoti />} />
                         <Route path="buga" element={<BugaNoti />} />
+                        <Route path="coyoacan" element={<CoyoacanNoti />} />
                         <Route index element={<Loader />} />
                         <Route path="*" element={<>SUPER</>} />
                       </Route>
@@ -75,6 +78,7 @@ export const AppRouter = () => {
                           <Route path="cuautla" element={<CuautlaNoti />} />
                           <Route path="centro" element={<CentroNoti />} />
                           <Route path="buga" element={<BugaNoti />} />
+                          <Route path="coyoacan" element={<CoyoacanNoti />} />
                         </Route>
                       </Routes>
 
@@ -92,6 +96,7 @@ export const AppRouter = () => {
                   <Route path="cuautla" element={<CuautlaNoti />} />
                   <Route path="centro" element={<CentroNoti />} />
                   <Route path="buga" element={<BugaNoti />} />
+                  <Route path="coyoacan" element={<CoyoacanNoti />} />
                 </Routes>
               </>
             )
