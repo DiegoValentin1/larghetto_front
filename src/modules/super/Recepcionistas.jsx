@@ -81,7 +81,7 @@ export default function Recepcionistas() {
                             }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                         </div>) : (
                             <div style={{ paddingLeft: 10 }}>
-                                <FaPlus className='DataIcon' onClick={() => {
+                                <FaTrashAlt className='DataIcon' onClick={() => {
                                     changeStatus(row.user_id);
                                 }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                             </div>
@@ -101,13 +101,13 @@ export default function Recepcionistas() {
     const changeStatus = async (id) => {
         try {
             const response = await AxiosClient({
-                url: "/personal/" + id,
+                url: "/personal/empleado/" + id,
                 method: "DELETE",
             });
             if (!response.error) {
                 Alert.fire({
                     title: "EXITO",
-                    text: "Cambio de Status Exitoso",
+                    text: "Eliminación completada con exito",
                     icon: "success",
                 });
                 cargarDatos();
