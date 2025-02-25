@@ -8,6 +8,12 @@ import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, err
 import '../../../utils/styles/UserNuevoTrabajo.css';
 import { AuthContext } from '../../auth/authContext';
 
+
+const generateRandomLetter = () => {
+    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude I, O, Q
+    return letters.charAt(Math.floor(Math.random() * letters.length));
+};
+
 export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
     const [menor, setMenor] = useState(false);
     const [maestros, setMaestros] = useState([]);
@@ -48,7 +54,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 password: yup.string().required("Campo obligatorio").min(8, "Minimo 8 caracteres"),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").max(250, "Maximo 250 caracteres"),
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -70,7 +76,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 password: yup.string().required("Campo obligatorio").min(8, "Minimo 8 caracteres"),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").max(250, "Maximo 250 caracteres"),
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -98,7 +104,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").max(250, "Maximo 250 caracteres"),
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -115,7 +121,7 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
                 fechaNacimiento: yup.string().required("Campo obligatorio"),
                 nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+                domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").max(250, "Maximo 250 caracteres"),
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -126,17 +132,24 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
             let conteo;
             const nombres = values.name.toUpperCase().split(" ");
             var matricula;
-            if (nombres.length == 1) {
-                matricula = `L${nombres[0].substring(0, 2)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
-            } else if (nombres.length == 2) {
-                matricula = `L${nombres[1].substring(0, 2)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
-            } else if (nombres.length == 3) {
-                matricula = `L${nombres[1].substring(0, 1)}${nombres[2].substring(0, 1)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
-            } else if (nombres.length == 4) {
-                matricula = `L${nombres[2].substring(0, 1)}${nombres[3].substring(0, 1)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
-            } else if (nombres.length > 4) {
-                matricula = `L${nombres[2].substring(0, 1)}${nombres[nombres.length - 1].substring(0, 1)}${values.fechaNacimiento.substring(2, 4)}${values.fechaNacimiento.substring(5, 7)}`;
+            const cleanNames = nombres.filter(name => name.trim() !== "");
+
+            let initials;
+            if (cleanNames.length >= 2) {
+                const lastNameIndex = cleanNames.length - 1;
+                const secondLastNameIndex = cleanNames.length - 2;
+                initials = cleanNames[secondLastNameIndex].substring(0, 1) + cleanNames[lastNameIndex].substring(0, 1);
+            } else if (cleanNames.length === 1) {
+                initials = cleanNames[0].substring(0, 2);
+            } else {
+                throw new Error("Insufficient names to generate matricula");
             }
+
+            const year = values.fechaNacimiento.substring(2, 4);
+            const month = values.fechaNacimiento.substring(5, 7);
+            const randomLetter = generateRandomLetter();
+            matricula = `L${initials}${year}${month}${randomLetter}`;
+
             const checkMatricula = async () => {
                 const response = await AxiosClient({
                     method: "GET",
@@ -314,11 +327,11 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                                     onChange={form.handleChange}
                                 >
                                     <option value="">Selecciona una Promocion</option>
-                                    {promociones.map((item) => (
+                                    {promociones.map((item) => item.status ? (
                                         <option key={item.id} value={item.id}>
                                             {item.promocion}
                                         </option>
-                                    ))}
+                                    ) : null)}
                                 </Form.Select>
                             </div>
 

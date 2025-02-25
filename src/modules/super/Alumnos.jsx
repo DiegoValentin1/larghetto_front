@@ -16,6 +16,19 @@ import { AlumnoInfo } from './Components/AlumnoInfo';
 import { AuthContext } from '../auth/authContext';
 import { BarLoader } from 'react-spinners';
 import { SuperPagos } from './Components/SuperPagos';
+import Modal from 'react-modal';
+
+const statusColors = [
+    { color: "#A0A2A2", description: "Activo" },
+    { color: "#F0BA14", description: "Nuevo" },
+    { color: "#14F0B7", description: "Curso doble" },
+    { color: "#40DC51", description: "Curso triple" },
+    { color: "#ED2C75", description: "Curso cuadruple (Certificación)" },
+    { color: "#1F175A", description: "Reingreso" },
+    { color: "#DAE175", description: "Situación" },
+    { color: "#702390", description: "Inglés" },
+    { color: "rgb(220, 48, 48)", description: "Bajo" }
+];
 
 
 
@@ -36,6 +49,18 @@ export default function Users() {
     const [switchCampus, setSwitchCampus] = useState(false);
     const [cargando, setCargando] = useState(false);
     const { user } = useContext(AuthContext);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalDescription, setModalDescription] = useState("");
+
+    const openModal = (description) => {
+        setModalDescription(description);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setModalDescription("");
+    };
     const columns = [
         {
             name: 'Matricula',
@@ -104,7 +129,7 @@ export default function Users() {
             name: '',
             cell: (row) => (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
-                    {(row.estado == 0 && (user.data.role === 'SUPER' || (user.data.campus === 'centro' && user.data.role === 'ENCARGADO'))) && <div style={{ paddingRight: "10px" }}>
+                    {(row.estado == 0 && (user.data.role === 'SUPER' || (user.data.campus === 'bugambilias' && user.data.role === 'ENCARGADO'))) && <div style={{ paddingRight: "10px" }}>
                         <MdDeleteOutline className='DataIcon' onClick={async () => {
                             await eliminateStudent(row.user_id, row.personal_id);
                         }} style={{ height: 24, width: 25, marginBottom: 0 }} />
@@ -173,12 +198,12 @@ export default function Users() {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
+                url: (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
                     "/stats/pagos/suma/total" : (superCampus === 1 ?
                         "/stats/pagos/suma/centro" :
                         (superCampus === 2 ? "/stats/pagos/suma/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/suma/cuautla" : 
-                            (superCampus === 4 ? "/stats/pagos/suma/CDMX" : "/stats/pagos/suma/" + user.data.campus)))),
+                            (superCampus === 3 ? "/stats/pagos/suma/cuautla" :
+                                (superCampus === 4 ? "/stats/pagos/suma/CDMX" : "/stats/pagos/suma/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -193,12 +218,12 @@ export default function Users() {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
-                "/stats/pagos/total/mensualidades" : (superCampus === 1 ?
+                url: (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                    "/stats/pagos/total/mensualidades" : (superCampus === 1 ?
                         "/stats/pagos/total/mensualidades/centro" :
                         (superCampus === 2 ? "/stats/pagos/total/mensualidades/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/total/mensualidades/cuautla" : 
-                            (superCampus === 4 ? "/stats/pagos/total/mensualidades/CDMX" : "/stats/pagos/total/mensualidades/" + user.data.campus)))),
+                            (superCampus === 3 ? "/stats/pagos/total/mensualidades/cuautla" :
+                                (superCampus === 4 ? "/stats/pagos/total/mensualidades/CDMX" : "/stats/pagos/total/mensualidades/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -213,12 +238,12 @@ export default function Users() {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
-                "/stats/pagos/falta/total/" : (superCampus === 1 ?
+                url: (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                    "/stats/pagos/falta/total/" : (superCampus === 1 ?
                         "/stats/pagos/falta/centro" :
                         (superCampus === 2 ? "/stats/pagos/falta/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/falta/cuautla" : 
-                            (superCampus === 4 ? "/stats/pagos/falta/CDMX" : "/stats/pagos/falta/" + user.data.campus)))),
+                            (superCampus === 3 ? "/stats/pagos/falta/cuautla" :
+                                (superCampus === 4 ? "/stats/pagos/falta/CDMX" : "/stats/pagos/falta/" + user.data.campus)))),
             });
             console.log(response);
             if (!response.error) {
@@ -234,12 +259,12 @@ export default function Users() {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
-                "/stats/pagos/total/inscripciones/" : (superCampus === 1 ?
+                url: (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                    "/stats/pagos/total/inscripciones/" : (superCampus === 1 ?
                         "/stats/pagos/total/inscripciones/centro" :
                         (superCampus === 2 ? "/stats/pagos/total/inscripciones/bugambilias" :
-                            (superCampus === 3 ? "/stats/pagos/total/inscripciones/cuautla" : 
-                            (superCampus === 4 ? "/stats/pagos/total/inscripciones/CDMX" : "/stats/pagos/total/inscripciones/" + user.data.campus)))),
+                            (superCampus === 3 ? "/stats/pagos/total/inscripciones/cuautla" :
+                                (superCampus === 4 ? "/stats/pagos/total/inscripciones/CDMX" : "/stats/pagos/total/inscripciones/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -254,12 +279,12 @@ export default function Users() {
         const fetchMaterial = async () => {
             const response = await AxiosClient({
                 method: "GET",
-                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
-                "/instrumento/clases/total/" : (superCampus === 1 ?
+                url: (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                    "/instrumento/clases/total/" : (superCampus === 1 ?
                         "/instrumento/clases/total/centro" :
                         (superCampus === 2 ? "/instrumento/clases/total/bugambilias" :
-                            (superCampus === 3 ? "/instrumento/clases/total/cuautla" : 
-                            (superCampus === 4 ? "/instrumento/clases/total/CDMX" : "/instrumento/clases/total/" + user.data.campus)))),
+                            (superCampus === 3 ? "/instrumento/clases/total/cuautla" :
+                                (superCampus === 4 ? "/instrumento/clases/total/CDMX" : "/instrumento/clases/total/" + user.data.campus)))),
             });
             if (!response.error) {
                 console.log(response);
@@ -346,12 +371,12 @@ export default function Users() {
         setCargando(false);
         try {
             const response = await AxiosClient({
-                url: (switchCampus || superCampus === 0 && user.data.role==="SUPER") ?
+                url: (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
                     "/personal/" : (superCampus === 1 ?
                         "/personal/getalumno/centro" :
                         (superCampus === 2 ? "/personal/getalumno/bugambilias" :
-                            (superCampus === 3 ? "/personal/getalumno/cuautla" : 
-                            (superCampus === 4 ? "/personal/getalumno/CDMX" : "/personal/getalumno/" + user.data.campus)
+                            (superCampus === 3 ? "/personal/getalumno/cuautla" :
+                                (superCampus === 4 ? "/personal/getalumno/CDMX" : "/personal/getalumno/" + user.data.campus)
                             ))),
                 method: "GET",
             });
@@ -428,7 +453,7 @@ export default function Users() {
                 <div>
                     <div className="App">
                         <div style={{ display: "flex", flexDirection: "row", height: "7%", width: "100%" }}>
-                            <div style={{ width: "70%", height: "100%", display: "grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr"}}>
+                            <div style={{ width: "70%", height: "100%", display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr" }}>
                                 <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column" }}>
                                     <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Total Mensualidad</div>
                                     <div>${totalMensualidad ? totalMensualidad.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
@@ -446,8 +471,8 @@ export default function Users() {
                                     <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Inscripciones</div>
                                     <div style={{ color: "#F0BA14" }}>${totalInscripciones ? totalInscripciones.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
                                 </div>
-                                {user.data.role==="SUPER" && <div style={{ width: "100%", height: "100%", display: "grid", placeItems:"center" , fontSize: "13px", marginRight: "3rem" }}>
-                                <FaRegMoneyBillAlt onClick={()=>setIsSuperPagos(true)} className='icon' style={{height:"30px", width:"30px", color:"black"}}/>
+                                {user.data.role === "SUPER" && <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", fontSize: "13px", marginRight: "3rem" }}>
+                                    <FaRegMoneyBillAlt onClick={() => setIsSuperPagos(true)} className='icon' style={{ height: "30px", width: "30px", color: "black" }} />
                                 </div>}
 
                                 {/* <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
@@ -461,41 +486,22 @@ export default function Users() {
                             </div>
                             <div style={{ width: "50%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "start" }}>
                                 <div className='statusMain'>
-                                    <div
-                                        style={{ backgroundColor: "#A0A2A2" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[1] ? totalStatus[1] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "#F0BA14" }} className='statusButton'></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[2] ? totalStatus[2] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "#14F0B7" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[3] ? totalStatus[3] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "#40DC51" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[4] ? totalStatus[4] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "#ED2C75" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[5] ? totalStatus[5] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "#1F175A" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[6] ? totalStatus[6] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "#DAE175" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[7] ? totalStatus[7] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "#702390" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[8] ? totalStatus[8] : "0"}</div>
-                                    <div
-                                        style={{ backgroundColor: "rgb(220, 48, 48)" }} className='statusButton'
-                                    ></div>
-                                    <div style={{ marginLeft: "0.15rem" }}>{totalStatus[0] ? totalStatus[0] : "0"}</div>
+                                    {statusColors.map((status, index) => (
+                                        <React.Fragment key={index}>
+                                            <div
+                                                style={{ backgroundColor: status.color, cursor: "pointer" }}
+                                                className='statusButton'
+                                                onClick={() => Alert.fire({
+                                                    title: <div style={{ color: status.color }}>{status.description}</div>,
+                                                    text: "",
+                                                    icon: "info",
+                                                    confirmButtonColor: "#3085d6",
+                                                    confirmButtonText: "Aceptar",
+                                                })}
+                                            ></div>
+                                            <div style={{ marginLeft: "0.15rem" }}>{totalStatus[index] ? totalStatus[index] : "0"}</div>
+                                        </React.Fragment>
+                                    ))}
                                 </div>
                                 <div className='statusTotalMain'>
                                     <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Total Cursos</div>
@@ -514,15 +520,15 @@ export default function Users() {
                                         Alumnos
                                     </div>
 
-                                    {(user.data.campus === 'centro' && user.data.role === 'ENCARGADO') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
+                                    {(user.data.campus === 'bugambilias' && user.data.role === 'ENCARGADO') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
                                         <div className={`switch ${switchCampus ? "switchonC" : "switchoffC"}`} onClick={() => setSwitchCampus(!switchCampus)}>
                                             <div className={`onoff ${switchCampus ? "" : "switchinactivoC"} `}>Centro</div>
                                             <div className={`onoff ${switchCampus ? "switchactivoC" : ""}`}>Todos</div>
                                         </div>
                                     </div>}
 
-                                    {(user.data.role === 'SUPER') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem", marginBottom:"0.8rem" }}>
-                                        <div className={`switch switchonC`} style={{backgroundColor:"rgb(79, 79, 190)"}}>
+                                    {(user.data.role === 'SUPER') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem", marginBottom: "0.8rem" }}>
+                                        <div className={`switch switchonC`} style={{ backgroundColor: "rgb(79, 79, 190)" }}>
                                             <div className={`onoff ${superCampus === 0 && "switchactivoC"}`} onClick={() => setSuperCampus(0)}>Todos</div>
                                             <div className={`onoff ${superCampus === 1 && "switchactivoC"}`} onClick={() => setSuperCampus(1)}>Centro</div>
                                             <div className={`onoff ${superCampus === 2 && "switchactivoC"}`} onClick={() => setSuperCampus(2)}>Bugambilias</div>
@@ -543,7 +549,7 @@ export default function Users() {
                                         className='inputSearch'
                                         type="text"
                                         placeholder="Buscar..."
-                                        style={{marginBottom:"0.4rem"}}
+                                        style={{ marginBottom: "0.4rem" }}
                                         onChange={(event) => handleInputChange(event)}
                                     />
                                     <div >
@@ -578,7 +584,7 @@ export default function Users() {
                                             changeStatus(selectedStudentId, 8);
                                         }}></div>
                                         {
-                                            (((user.data.role === "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'centro') || (user.data.role === "SUPER") ) ?
+                                            (((user.data.role === "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'bugambilias') || (user.data.role === "SUPER")) ?
                                                 <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                                     changeStatus(selectedStudentId, 0);
                                                 }}></div> :
@@ -617,6 +623,7 @@ export default function Users() {
             {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
             {isInfo && <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
             {isSuperPagos && <SuperPagos isOpen={isSuperPagos} objeto={selectedObject} onClose={() => setIsSuperPagos(false)} />}
+            
         </>
 
     )

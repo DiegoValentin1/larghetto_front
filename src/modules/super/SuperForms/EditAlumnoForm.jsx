@@ -157,7 +157,7 @@ export const EditUserForm = ({
         email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
         fechaNacimiento: yup.string().required("Campo obligatorio"),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-        domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").max(250, "Maximo 250 caracteres"),
         municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -178,7 +178,7 @@ export const EditUserForm = ({
         fechaInicio: yup.string().required("Campo obligatorio"),
         inscripcion: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
-        domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
+        domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").max(250, "Maximo 250 caracteres"),
         municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -400,9 +400,10 @@ export const EditUserForm = ({
         method: "GET",
         url: "/promocion",
       });
-      if (!response.error) {
-        setPromociones(response);
-        return response;
+            if (!response.error) {
+        const sortedResponse = response.sort((a, b) => b.status - a.status);
+        setPromociones(sortedResponse);
+        return sortedResponse;
       }
     };
     fetchMaterial();
@@ -535,11 +536,17 @@ export const EditUserForm = ({
                     onChange={form.handleChange}
                   >
                     <option value="">Selecciona una Promocion</option>
-                    {promociones.map((item) => (
+                    {promociones.map((item) => item.status ? (
                       <option key={item.id} value={item.id}>
                         {item.promocion}
                       </option>
-                    ))}
+                    ) : (
+                      <option key={item.id} value={item.id} disabled>
+                        {item.promocion}
+                      </option>
+                    )
+                    
+                    )}
                   </Form.Select>
                 </div>
 
