@@ -29,7 +29,8 @@ const UploadPicture = ({ id }) => {
             //         'Content-Type': 'multipart/form-data'
             //     }
             // });
-            const response = await axios.post('http://104.237.128.187:3001/api/uploads/upload/' + id, formData, {
+            const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+            const response = await axios.post(`${API_URL}/uploads/upload/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

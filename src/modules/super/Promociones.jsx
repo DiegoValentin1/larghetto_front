@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
+import { MdDeleteForever } from 'react-icons/md'
 import "bootstrap/dist/css/bootstrap.min.css";
 import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
@@ -43,6 +44,44 @@ export default function Promociones() {
             }
         },
         {
+            name: 'Vigencia',
+            selector: row => row.vigente,
+            sortable: true,
+            cell: (row) => {
+                const hoy = new Date();
+                const inicio = row.fecha_inicio ? new Date(row.fecha_inicio) : null;
+                const fin = row.fecha_fin ? new Date(row.fecha_fin) : null;
+
+                let badge = { text: 'Sin límite', color: '#6c757d' };
+
+                if (inicio && fin) {
+                    if (hoy < inicio) {
+                        badge = { text: 'Futura', color: '#0dcaf0' };
+                    } else if (hoy > fin) {
+                        badge = { text: 'Caducada', color: '#dc3545' };
+                    } else {
+                        badge = { text: 'Vigente', color: '#198754' };
+                    }
+                } else if (fin && hoy > fin) {
+                    badge = { text: 'Caducada', color: '#dc3545' };
+                } else if (inicio && hoy >= inicio) {
+                    badge = { text: 'Vigente', color: '#198754' };
+                }
+
+                return (
+                    <span style={{
+                        backgroundColor: badge.color,
+                        color: 'white',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '12px'
+                    }}>
+                        {badge.text}
+                    </span>
+                );
+            }
+        },
+        {
             name: '',
             cell: (row) => (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
@@ -66,6 +105,11 @@ export default function Promociones() {
                             </div>
                         )
                     }
+                    <div style={{ paddingLeft: 10 }}>
+                        <MdDeleteForever className='DataIcon' onClick={() => {
+                            eliminarPermanente(row.id, row.promocion);
+                        }} style={{ height: 24, width: 25, marginBottom: 0, color: '#dc3545' }} title="Eliminar permanentemente" />
+                    </div>
 
                 </div>
             ),
@@ -76,6 +120,54 @@ export default function Promociones() {
     const [isEditing, setIsEditting] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [datos, setDatos] = useState([]);
+
+    const eliminarPermanente = async (id, nombre) => {
+        Alert.fire({
+            title: '¿Eliminar Promoción Permanentemente?',
+            html: `
+                <p><strong>Promoción:</strong> ${nombre}</p>
+                <p class="text-danger"><strong>⚠️ ADVERTENCIA:</strong> Esta acción es irreversible.</p>
+                <p>Si hay alumnos usando esta promoción, solo se inactivará.</p>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await AxiosClient({
+                        url: `/promocion/permanente/${id}`,
+                        method: "DELETE",
+                    });
+
+                    if (response.deleted) {
+                        Alert.fire({
+                            title: "Eliminada",
+                            text: "La promoción ha sido eliminada permanentemente",
+                            icon: "success",
+                        });
+                    } else if (response.inactivated) {
+                        Alert.fire({
+                            title: "Promoción Inactivada",
+                            html: `<p>${response.message}</p><p><strong>Alumnos afectados:</strong> ${response.alumnos_afectados}</p>`,
+                            icon: "info",
+                        });
+                    }
+
+                    cargarDatos();
+                } catch (err) {
+                    Alert.fire({
+                        title: "ERROR",
+                        text: err.response?.data?.message || "Error al eliminar la promoción",
+                        icon: "error",
+                    });
+                }
+            }
+        });
+    };
 
     const changeStatus = async (id) => {
         try {

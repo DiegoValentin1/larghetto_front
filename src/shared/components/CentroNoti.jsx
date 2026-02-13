@@ -50,8 +50,8 @@ export default function CentroNoti() {
         return resultado;
     }
     useEffect(() => {
-        const ws = new WebSocket('ws://104.237.128.187:8080');
-        // const ws = new WebSocket('ws://192.168.100.16:8080');
+        const WS_URL = process.env.REACT_APP_WS_URL || 'ws://localhost:8080';
+        const ws = new WebSocket(WS_URL);
         ws.onopen = () => {
             console.log('Conexión WebSocket establecida');
         };

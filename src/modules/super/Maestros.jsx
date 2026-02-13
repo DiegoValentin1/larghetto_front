@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
+import { MdDeleteForever } from 'react-icons/md'
 import "bootstrap/dist/css/bootstrap.min.css";
 import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
@@ -119,6 +120,11 @@ export default function SuperMaterialesTee() {
                             </div>
                         )
                     }
+                    <div style={{ paddingLeft: 10 }}>
+                        <MdDeleteForever className='DataIcon' onClick={() => {
+                            eliminarMaestroPermanente(row.user_id, row.name);
+                        }} style={{ height: 28, width: 28, marginBottom: 0, color: '#dc3545' }} title="Eliminar/Inactivar permanente" />
+                    </div>
 
                 </div>
             ),
@@ -141,6 +147,64 @@ const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
 const [filtrados, setFiltrados] = useState([]);
 const [showFilter, setShowFilter] = useState(false);
 
+
+const eliminarMaestroPermanente = async (id, nombre) => {
+    Alert.fire({
+        title: '¿Eliminar o Inactivar Maestro?',
+        html: `
+            <p><strong>Maestro:</strong> ${nombre}</p>
+            <p class="text-warning"><strong>⚠️ IMPORTANTE:</strong></p>
+            <ul style="text-align: left;">
+                <li>Si tiene clases o historial, solo se inactivará</li>
+                <li>Si no tiene historial, se eliminará permanentemente</li>
+            </ul>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, proceder',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await AxiosClient({
+                    url: `/personal/teacher/permanente/${id}`,
+                    method: "DELETE",
+                });
+
+                if (response.deleted) {
+                    Alert.fire({
+                        title: "Maestro Eliminado",
+                        text: "El maestro ha sido eliminado permanentemente (no tenía historial)",
+                        icon: "success",
+                    });
+                } else if (response.inactivated) {
+                    Alert.fire({
+                        title: "Maestro Inactivado",
+                        html: `
+                            <p>${response.message}</p>
+                            <p><strong>Registros históricos:</strong> ${response.registros_historicos}</p>
+                            <ul style="text-align: left;">
+                                ${response.detalles.map(d => `<li>${d}</li>`).join('')}
+                            </ul>
+                        `,
+                        icon: "info",
+                    });
+                }
+
+                cargarDatos();
+            } catch (err) {
+                Alert.fire({
+                    title: "ERROR",
+                    text: err.response?.data?.message || "Error al procesar la eliminación",
+                    icon: "error",
+                });
+                console.log(err);
+            }
+        }
+    });
+};
 
 const changeStatus = async (id) => {
     try {

@@ -17,6 +17,7 @@ import { AuthContext } from '../auth/authContext';
 import { BarLoader } from 'react-spinners';
 import { SuperPagos } from './Components/SuperPagos';
 import Modal from 'react-modal';
+import SolicitarBajaModal from './Components/SolicitarBajaModal';
 
 const statusColors = [
     { color: "#A0A2A2", description: "Activo" },
@@ -51,6 +52,10 @@ export default function Users() {
     const { user } = useContext(AuthContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalDescription, setModalDescription] = useState("");
+
+    // Estados para modal de solicitud de baja
+    const [showSolicitudBajaModal, setShowSolicitudBajaModal] = useState(false);
+    const [alumnoParaBaja, setAlumnoParaBaja] = useState(null);
 
     const openModal = (description) => {
         setModalDescription(description);
@@ -155,8 +160,18 @@ export default function Users() {
                     </div>
                     <div style={{ paddingLeft: 10 }}>
                         <IoMdRepeat className='DataIcon' onClick={() => {
-                            setSelectedStudentId(row.alu_id)
-                            setShowStatusMenu(!showStatusMenu);
+                            // Si es RECEPCION, abrir modal de solicitud de baja
+                            if (user.data.role === 'RECEPCION') {
+                                setAlumnoParaBaja({
+                                    id: row.user_id,
+                                    nombre: row.nombre
+                                });
+                                setShowSolicitudBajaModal(true);
+                            } else {
+                                // Si es SUPER o ENCARGADO, mostrar menú de estados
+                                setSelectedStudentId(row.alu_id)
+                                setShowStatusMenu(!showStatusMenu);
+                            }
                         }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                     </div>
                 </div>
@@ -623,7 +638,16 @@ export default function Users() {
             {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
             {isInfo && <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
             {isSuperPagos && <SuperPagos isOpen={isSuperPagos} objeto={selectedObject} onClose={() => setIsSuperPagos(false)} />}
-            
+
+            {/* Modal de Solicitud de Baja */}
+            <SolicitarBajaModal
+                show={showSolicitudBajaModal}
+                onHide={() => setShowSolicitudBajaModal(false)}
+                alumnoId={alumnoParaBaja?.id}
+                alumnoNombre={alumnoParaBaja?.nombre}
+                onSuccess={() => cargarDatos()}
+            />
+
         </>
 
     )

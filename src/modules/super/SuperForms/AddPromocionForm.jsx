@@ -9,11 +9,18 @@ import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, err
 export const AddPromocionForm = ({ isOpen, cargarDatos, onClose }) => {
     const form = useFormik({
         initialValues: {
-            instrumento: ""
+            instrumento: "",
+            fecha_inicio: "",
+            fecha_fin: ""
         },
         validationSchema: yup.object().shape({
             promocion: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
             descuento: yup.string().matches(/^[0-9]+(\.[0-9]+)?$/, 'Ingrese un número válido').required('Campoobligatorio'),
+            fecha_inicio: yup.date().nullable(),
+            fecha_fin: yup.date().nullable()
+                .when('fecha_inicio', (fecha_inicio, schema) => {
+                    return fecha_inicio ? schema.min(fecha_inicio, 'La fecha fin debe ser posterior a la fecha inicio') : schema;
+                }),
         }),
         onSubmit: async (values) => {
             return Alert.fire({
@@ -39,7 +46,9 @@ export const AddPromocionForm = ({ isOpen, cargarDatos, onClose }) => {
                             url: "/promocion/",
                             data: JSON.stringify({
                                 promocion: values.promocion,
-                                descuento: values.descuento
+                                descuento: values.descuento,
+                                fecha_inicio: values.fecha_inicio || null,
+                                fecha_fin: values.fecha_fin || null
                             }),
                         });
                         console.log(response);
@@ -102,6 +111,22 @@ export const AddPromocionForm = ({ isOpen, cargarDatos, onClose }) => {
                     {
                         form.errors.descuento && (<span className='error-text'>{form.errors.descuento}</span>)
                     }
+                </Form.Group>
+                <Form.Group className='mb-3'>
+                    <Form.Label htmlFor='fecha_inicio'>Fecha de Inicio (Opcional)</Form.Label>
+                    <Form.Control type='date' name='fecha_inicio' value={form.values.fecha_inicio} onChange={form.handleChange} />
+                    {
+                        form.errors.fecha_inicio && (<span className='error-text'>{form.errors.fecha_inicio}</span>)
+                    }
+                    <Form.Text className="text-muted">Deja vacío si la promoción no tiene fecha de inicio</Form.Text>
+                </Form.Group>
+                <Form.Group className='mb-3'>
+                    <Form.Label htmlFor='fecha_fin'>Fecha de Fin (Opcional)</Form.Label>
+                    <Form.Control type='date' name='fecha_fin' value={form.values.fecha_fin} onChange={form.handleChange} />
+                    {
+                        form.errors.fecha_fin && (<span className='error-text'>{form.errors.fecha_fin}</span>)
+                    }
+                    <Form.Text className="text-muted">Deja vacío si la promoción no tiene fecha de expiración</Form.Text>
                 </Form.Group>
                 <FormGroup className='mb-3'>
                     <Row>

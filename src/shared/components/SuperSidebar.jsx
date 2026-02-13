@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../modules/auth/authContext";
 import { IoWoman } from 'react-icons/io5'
 import { GiGuitarBassHead } from 'react-icons/gi'
-import { FaChalkboardTeacher } from 'react-icons/fa'
+import { FaChalkboardTeacher, FaUserMinus, FaChartLine } from 'react-icons/fa'
 import { TbDiscount2Off } from 'react-icons/tb'
 import { RiAdminLine } from 'react-icons/ri'
 import { AiOutlineBarChart } from 'react-icons/ai'
@@ -50,7 +50,9 @@ const SuperSidebar = () => {
                 <Link to='promociones' className="sliders icon" data-label="Promociones" ><TbDiscount2Off style={{ height: 28, width: 28 }}/> </Link>
                 <Link to='recepcionistas' className="sliders icon" data-label="Recepcionistas" ><IoWoman style={{ height: 28, width: 28 }}/> </Link>
                 <Link to='encargados' className="sliders icon" data-label="Encargados" ><RiAdminLine style={{ height: 28, width: 28 }}/> </Link>
-{/* 
+                <Link to='solicitudes-baja' className="sliders icon" data-label="Solicitudes Baja" ><FaUserMinus style={{ height: 28, width: 28 }}/> </Link>
+                <Link to='reportes' className="sliders icon" data-label="Reportes" ><FaChartLine style={{ height: 28, width: 28 }}/> </Link>
+{/*
                 <div className='atributosContainer' style={{ gap: gapSize, height:height, width:height, backgroundColor:display}}>
                     <Link to='users' className=" icon" data-label="Valor de esfuerzo mínimo a la cedencia especificado">WH</Link>
                     <Link to='users' className=" icon" data-label="Factor de diseño"><GiPencilBrush style={{ width: "100%", height:"90%" }}/></Link>

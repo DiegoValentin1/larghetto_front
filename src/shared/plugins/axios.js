@@ -1,11 +1,11 @@
 import instance from 'axios';
-const AxiosClient = instance.create({
-    baseURL: 'http://104.237.128.187:3001/api',
-});
 
-// const AxiosClient = instance.create({
-//     baseURL: 'http://192.168.100.67:3001/api',
-// });
+// Configuración de la URL base desde variables de entorno
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+
+const AxiosClient = instance.create({
+    baseURL: API_URL,
+});
 
 const requestHandler = (request) => {
     request.headers['Accept'] = "application/json";
@@ -13,9 +13,10 @@ const requestHandler = (request) => {
     const session = JSON.parse(localStorage.getItem('user') || null);
     console.log(request);
     const temp = JSON.parse(request.data || null);
-    request.data = {...temp, empleado:session.data ? session.data.name : "N/A"};
-    if(session?.isLogged)
-    request.headers["Authorization"] = `Bearer ${session}`;
+    request.data = {...temp, empleado:session?.data ? session.data.name : "N/A"};
+    if(session?.isLogged && session?.token) {
+        request.headers["Authorization"] = `Bearer ${session.token}`;
+    }
     return request;
 };
 
