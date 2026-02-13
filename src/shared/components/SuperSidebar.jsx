@@ -8,7 +8,7 @@ import { AuthContext } from "../../modules/auth/authContext";
 import { useSidebar } from "../contexts/SidebarContext";
 import { IoWoman, IoMenu } from 'react-icons/io5'
 import { GiGuitarBassHead } from 'react-icons/gi'
-import { FaChalkboardTeacher, FaUserMinus, FaChartLine } from 'react-icons/fa'
+import { FaChalkboardTeacher, FaUserMinus } from 'react-icons/fa'
 import { TbDiscount2Off } from 'react-icons/tb'
 import { RiAdminLine } from 'react-icons/ri'
 import { AiOutlineBarChart } from 'react-icons/ai'
@@ -36,7 +36,6 @@ const SuperSidebar = () => {
         { path: '/recepcionistas', icon: <IoWoman size={24} />, label: 'Recepcionistas' },
         { path: '/encargados', icon: <RiAdminLine size={24} />, label: 'Encargados' },
         { path: '/solicitudes-baja', icon: <FaUserMinus size={24} />, label: 'Solicitudes Baja' },
-        { path: '/reportes', icon: <FaChartLine size={24} />, label: 'Reportes' },
     ];
 
     const isActive = (path) => location.pathname === path;

@@ -14,7 +14,6 @@ import Encargados from "../../modules/super/Encargados";
 import Recepcionistas from "../../modules/super/Recepcionistas";
 import SolicitudesBaja from "../../modules/super/SolicitudesBaja";
 import SuperDashboard from "../../modules/super/Components/SuperDashboard";
-import Reportes from "../../modules/super/Reportes";
 import CuautlaNoti from "./CuautlaNoti";
 import CentroNoti from "./CentroNoti";
 import BugaNoti from "./BugaNoti";
@@ -62,7 +61,6 @@ export const AppRouter = () => {
                         <Route path="encargados" element={<Encargados />} />
                         <Route path="recepcionistas" element={<Recepcionistas />} />
                         <Route path="solicitudes-baja" element={<SolicitudesBaja />} />
-                        <Route path="reportes" element={<Reportes />} />
                         <Route path="cuautla" element={<CuautlaNoti />} />
                         <Route path="centro" element={<CentroNoti />} />
                         <Route path="buga" element={<BugaNoti />} />
