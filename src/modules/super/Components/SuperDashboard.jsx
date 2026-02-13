@@ -241,11 +241,13 @@ export default function SuperDashboard() {
     const cargarHistoricoAlumnos = async () => {
         try {
             setLoading(true);
+            console.log('Cargando histórico de alumnos para el año:', yearAlumnos);
             const response = await AxiosClient({
                 url: `/stats/alumnos/historico?year=${yearAlumnos}`,
                 method: 'GET',
             });
 
+            console.log('Respuesta histórico alumnos:', response);
             setDatosAlumnos(response || []);
         } catch (error) {
             console.error('Error al cargar histórico de alumnos:', error);
@@ -262,11 +264,13 @@ export default function SuperDashboard() {
     const cargarHistoricoPagos = async () => {
         try {
             setLoading(true);
+            console.log('Cargando histórico de pagos para el año:', yearPagos);
             const response = await AxiosClient({
                 url: `/stats/pagos/historico?year=${yearPagos}`,
                 method: 'GET',
             });
 
+            console.log('Respuesta histórico pagos:', response);
             setDatosPagos(response || []);
         } catch (error) {
             console.error('Error al cargar histórico de pagos:', error);
@@ -410,7 +414,19 @@ export default function SuperDashboard() {
         cargarHistoricoPagos();
     }, [yearPagos]);
 
+    // Calcular totales de pagos
+    const calcularTotalesPagos = () => {
+        if (datosPagos.length === 0) return { normales: 0, descuentos: 0, recargos: 0, total: 0 };
 
+        return {
+            normales: datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_normales || 0), 0),
+            descuentos: datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_descuento || 0), 0),
+            recargos: datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_recargo || 0), 0),
+            total: datosPagos.reduce((sum, item) => sum + parseFloat(item.total_mes || 0), 0)
+        };
+    };
+
+    const totalesPagos = calcularTotalesPagos();
 
     const devolverFecha = (fecha) => {
         const opciones = {
@@ -559,7 +575,7 @@ export default function SuperDashboard() {
                                                             Total Pagos Normales
                                                         </div>
                                                         <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#36A2EB' }}>
-                                                            ${datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_normales || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                                            ${totalesPagos.normales.toLocaleString('es-MX', {minimumFractionDigits: 2})}
                                                         </div>
                                                     </Card.Body>
                                                 </Card>
@@ -577,7 +593,7 @@ export default function SuperDashboard() {
                                                             Con Descuento 5%
                                                         </div>
                                                         <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FFCE56' }}>
-                                                            ${datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_descuento || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                                            ${totalesPagos.descuentos.toLocaleString('es-MX', {minimumFractionDigits: 2})}
                                                         </div>
                                                     </Card.Body>
                                                 </Card>
@@ -595,7 +611,7 @@ export default function SuperDashboard() {
                                                             Con Recargo 10%
                                                         </div>
                                                         <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FF6384' }}>
-                                                            ${datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_recargo || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                                            ${totalesPagos.recargos.toLocaleString('es-MX', {minimumFractionDigits: 2})}
                                                         </div>
                                                     </Card.Body>
                                                 </Card>
@@ -613,7 +629,7 @@ export default function SuperDashboard() {
                                                             Total General
                                                         </div>
                                                         <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#10B981' }}>
-                                                            ${datosPagos.reduce((sum, item) => sum + parseFloat(item.total_mes || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                                            ${totalesPagos.total.toLocaleString('es-MX', {minimumFractionDigits: 2})}
                                                         </div>
                                                     </Card.Body>
                                                 </Card>
