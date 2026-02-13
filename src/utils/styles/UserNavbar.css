@@ -1,19 +1,20 @@
 .UserNav{
-    padding: 0.5rem;
-    padding-right: 1.5rem;
-    width: 100%;
+    padding: 1rem 2rem;
     height: 8vh;
-    background-color: #f7f7f7;
+    background-color: #FFFFFF;
     top: 0;
     right: 0;
     display: flex;
     align-items: center;
     justify-content: end;
-    color: #333333;
+    gap: 1.5rem;
+    color: #1F2937;
     font-weight: 500;
-    font-size: 18px;
-    position: absolute;
-    z-index: 0;
+    font-size: 0.95rem;
+    position: fixed;
+    z-index: 100;
+    border-bottom: 1px solid #E5E7EB;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
 .ancho-personalizado {

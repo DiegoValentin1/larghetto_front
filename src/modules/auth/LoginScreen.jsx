@@ -97,7 +97,15 @@ export const LoginScreen = () => {
       }}>
         {/* Branding Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#2563EB' }}>🎵</div>
+          <img
+            src={require('../../utils/img/Logo_Larghetto.png')}
+            alt="Larghetto Logo"
+            style={{
+              width: '120px',
+              height: 'auto',
+              marginBottom: '1.5rem'
+            }}
+          />
           <h1 style={{
             fontSize: '1.8rem',
             fontWeight: '800',

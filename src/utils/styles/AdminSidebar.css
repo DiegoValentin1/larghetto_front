@@ -1,8 +1,8 @@
 .sidebar {
-    padding: 0.3rem;
-    padding-top: 1rem;
+    padding: 0.5rem;
+    padding-top: 1.5rem;
     height: 100vh;
-    background-color: #302f2f;
+    background-color: #1F2937;
     width: 7vw;
     display: flex;
     justify-content: start;
@@ -12,6 +12,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .top {
@@ -80,32 +81,41 @@
     display: inline-block;
     cursor: pointer;
     text-decoration: none;
-    color: #c1c1c1;
-    transition: transform 0.3s ease;
+    color: #9CA3AF;
+    transition: all 0.2s ease;
+    padding: 0.75rem;
+    border-radius: 12px;
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 
 .icon:hover {
-    color: #88acbe;
-    transform: scale(1.2);
+    color: #FFFFFF;
+    background-color: #374151;
+    transform: translateX(4px);
 }
 
 .icon:hover::before {
     content: attr(data-label);
     position: absolute;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-5%);
-    padding: 5px;
-    background-color: #413f3f;
-    color: #f2f2f2;
-    font-size: 12px;
-    border-radius: 4px;
+    top: 50%;
+    left: 110%;
+    transform: translateY(-50%);
+    padding: 8px 12px;
+    background-color: #111827;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
     z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
 

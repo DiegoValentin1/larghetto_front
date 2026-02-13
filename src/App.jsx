@@ -2,6 +2,7 @@ const { authReducer } = require("./modules/auth/authReducer");
 const { useEffect, useReducer } = require("react");
 const { AuthContext } = require("./modules/auth/authContext");
 const { AppRouter } = require("./shared/components/AppRouter");
+const { SidebarProvider } = require("./shared/contexts/SidebarContext");
 
 const init = () => {
     return JSON.parse(
@@ -18,8 +19,10 @@ const App = () => {
 
     return (
         <AuthContext.Provider value={{dispatch, user}}>
-        <AppRouter/>
-    </AuthContext.Provider>
+            <SidebarProvider>
+                <AppRouter/>
+            </SidebarProvider>
+        </AuthContext.Provider>
     );
 };
 

@@ -6,6 +6,7 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { VscMute, VscUnmute  } from "react-icons/vsc";
 import { Link } from "react-router-dom";
 import { ChangePassword } from './ChangePassword';
+import { useSidebar } from '../contexts/SidebarContext';
 
 
 
@@ -81,18 +82,53 @@ const UserNavbar = () => {
   }, []);
 
   const { user } = useContext(AuthContext);
-  
+  const { isExpanded } = useSidebar();
+  const sidebarWidth = isExpanded ? '240px' : '80px';
+
   console.log(user);
 
   return (
-    <div className='UserNav'>
+    <div className='UserNav' style={{
+      width: `calc(100vw - ${sidebarWidth})`,
+      left: sidebarWidth,
+      transition: 'width 0.3s ease, left 0.3s ease'
+    }}>
       <div style={{marginRight:"1rem"}} className={`switch ${switchActivo ? "switchon" : "switchoff"}`} onClick={() => setSwitchActivo(!switchActivo)}>
         <div className={`onoff ${switchActivo ? "switchactivo" : ""} `}><VscUnmute /></div>
         <div className={`onoff ${switchActivo ? "" : "switchinactivo"}`}><VscMute /></div>
       </div>
-      <RiLockPasswordLine className="icon" data-label="Cambiar Contraseña" style={{ height: 28, width: 28, marginRight: "2rem", color: "#333" }} onClick={() => setIsOpen(!isOpen)} />
-      <div className='UserData'>
-        <div>Larghetto | {user.data.name}</div>
+      <RiLockPasswordLine
+        className="icon"
+        data-label="Cambiar Contraseña"
+        style={{
+          height: 24,
+          width: 24,
+          color: "#6B7280",
+          cursor: 'pointer',
+          transition: 'color 0.2s ease'
+        }}
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={(e) => e.target.style.color = '#2563EB'}
+        onMouseLeave={(e) => e.target.style.color = '#6B7280'}
+      />
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+        padding: '0.5rem 1rem',
+        borderRadius: '8px',
+        background: '#F3F4F6'
+      }}>
+        <div style={{ fontWeight: '600', color: '#1F2937' }}>{user.data.name}</div>
+        <div style={{
+          fontSize: '0.75rem',
+          padding: '0.25rem 0.5rem',
+          borderRadius: '4px',
+          background: '#2563EB',
+          color: '#FFFFFF'
+        }}>
+          {user.data.role}
+        </div>
       </div>
       {isOpen && <ChangePassword isOpen={isOpen} onClose={() => setIsOpen(false)} />
       }
