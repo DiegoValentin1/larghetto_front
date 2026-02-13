@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, Suspense } from 'react'
 import DataTable from 'react-data-table-component';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FaPlus, FaTrashAlt, FaEdit, FaRegMoneyBillAlt } from 'react-icons/fa'
 import { AiOutlineInfoCircle } from 'react-icons/ai'
 import { IoMdRepeat } from 'react-icons/io'
@@ -447,139 +448,471 @@ export default function Users() {
     }
 
 
-    const aplicarEstilosAlSiguienteDiv = () => {
-        const div1 = document.querySelector('.sc-kgTSHT');
-        const div2 = div1 && div1.nextElementSibling;
-        if (div1) {
-            console.log(div1)
-            div1.style.overflowY = 'scroll';
-            div1.style.height = "80%";
-        }
-    };
     useEffect(() => {
-
         cargarDatos();
     }, []);
 
     useEffect(() => {
-
         cargarDatos();
     }, [switchCampus, superCampus]);
 
-    useEffect(() => { aplicarEstilosAlSiguienteDiv(); });
+    // Estilos personalizados para DataTable
+    const customTableStyles = {
+        headRow: {
+            style: {
+                backgroundColor: '#F3F4F6',
+                borderBottom: '2px solid #E5E7EB',
+                minHeight: '52px',
+            },
+        },
+        headCells: {
+            style: {
+                color: '#1F2937',
+                fontSize: '0.875rem',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                paddingLeft: '1rem',
+                paddingRight: '1rem',
+            },
+        },
+        rows: {
+            style: {
+                minHeight: '60px',
+                fontSize: '0.875rem',
+                color: '#1F2937',
+                borderBottom: '1px solid #E5E7EB',
+                transition: 'background-color 0.2s ease',
+                '&:nth-of-type(odd)': {
+                    backgroundColor: '#FFFFFF',
+                },
+                '&:nth-of-type(even)': {
+                    backgroundColor: '#F9FAFB',
+                },
+            },
+            highlightOnHoverStyle: {
+                backgroundColor: '#F3F4F6',
+                borderBottomColor: '#D1D5DB',
+                outline: '1px solid #E5E7EB',
+            },
+        },
+        cells: {
+            style: {
+                paddingLeft: '1rem',
+                paddingRight: '1rem',
+            },
+        },
+        pagination: {
+            style: {
+                borderTop: '1px solid #E5E7EB',
+                backgroundColor: '#FFFFFF',
+                minHeight: '56px',
+            },
+            pageButtonsStyle: {
+                borderRadius: '8px',
+                height: '36px',
+                width: '36px',
+                padding: '8px',
+                margin: '0 4px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backgroundColor: 'transparent',
+                color: '#6B7280',
+                fill: '#6B7280',
+                '&:disabled': {
+                    cursor: 'not-allowed',
+                    color: '#D1D5DB',
+                    fill: '#D1D5DB',
+                },
+                '&:hover:not(:disabled)': {
+                    backgroundColor: '#F3F4F6',
+                    color: '#1F2937',
+                },
+                '&:focus': {
+                    outline: 'none',
+                },
+            },
+        },
+    };
 
     return (
-        < >
-            <div style={{ justifyContent: 'ceneter', alignItems: "center", backgroundColor: "transparent", height: "92vh", padding: 20 }}>
-                <div>
-                    <div className="App">
-                        <div style={{ display: "flex", flexDirection: "row", height: "7%", width: "100%" }}>
-                            <div style={{ width: "70%", height: "100%", display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr" }}>
-                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column" }}>
-                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Total Mensualidad</div>
-                                    <div>${totalMensualidad ? totalMensualidad.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
-                                </div>
-                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "green" }}>
-                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Pagos Obtenidos </div>
-                                    {/* <div style={{ fontSize: "clamp(6px, 1vw, 10px)", height: "90%" }}>({new Date().toLocaleString('es', { month: 'long' }).toUpperCase()})</div> */}
-                                    <div style={{ color: "green" }}>${pagosMes ? pagosMes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
-                                </div>
-                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "red" }}>
-                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Pagos Faltantes</div>
-                                    <div style={{ color: "red" }}>${totalFaltantes ? (totalFaltantes).toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
-                                </div>
-                                <div style={{ width: "100%", height: "50%", display: "flex", alignItems: "center", fontSize: "13px", marginRight: "3rem", flexDirection: "column", color: "#F0BA14" }}>
-                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Inscripciones</div>
-                                    <div style={{ color: "#F0BA14" }}>${totalInscripciones ? totalInscripciones.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}</div>
-                                </div>
-                                {user.data.role === "SUPER" && <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", fontSize: "13px", marginRight: "3rem" }}>
-                                    <FaRegMoneyBillAlt onClick={() => setIsSuperPagos(true)} className='icon' style={{ height: "30px", width: "30px", color: "black" }} />
-                                </div>}
+        <>
+        <Container fluid className="p-4" style={{ minHeight: '92vh' }}>
+            {/* FASE 2: KPIs con Cards Responsivas */}
+            <Row className="mb-4 g-3">
+                {/* Card 1: Total Mensualidad */}
+                <Col xl={3} lg={6} md={6} sm={12}>
+                    <Card style={{
+                        borderLeft: '4px solid #2563EB',
+                        borderRadius: '12px',
+                        border: '1px solid #E5E7EB',
+                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                        height: '100%'
+                    }}>
+                        <Card.Body style={{ padding: '1.25rem' }}>
+                            <div style={{
+                                fontSize: '0.75rem',
+                                color: '#6B7280',
+                                fontWeight: '600',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em',
+                                marginBottom: '0.5rem'
+                            }}>
+                                Total Mensualidad
+                            </div>
+                            <div style={{
+                                fontSize: '1.75rem',
+                                fontWeight: '700',
+                                color: '#1F2937'
+                            }}>
+                                ${totalMensualidad ? totalMensualidad.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
 
-                                {/* <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
-                                    <div style={{ fontSize: "11px", height: "70%" }}>Total Mensualidad</div>
-                                    <div>${totalMensualidad ? totalMensualidad.toFixed(2) : 0}</div>
-                                </div>
-                                <div style={{ width: "auto", height: "50%", display: "flex", alignItems: "start", fontSize: "16px", marginRight: "3rem", flexDirection: "column" }}>
-                                    <div style={{ fontSize: "11px", height: "70%" }}>Faltantes</div>
-                                    <div>${totalMensualidad ? totalMensualidad.toFixed(2) : 0}</div>
-                                </div> */}
+                {/* Card 2: Pagos Obtenidos */}
+                <Col xl={3} lg={6} md={6} sm={12}>
+                    <Card style={{
+                        borderLeft: '4px solid #10B981',
+                        borderRadius: '12px',
+                        border: '1px solid #E5E7EB',
+                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                        height: '100%'
+                    }}>
+                        <Card.Body style={{ padding: '1.25rem' }}>
+                            <div style={{
+                                fontSize: '0.75rem',
+                                color: '#6B7280',
+                                fontWeight: '600',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em',
+                                marginBottom: '0.5rem'
+                            }}>
+                                Pagos Obtenidos
                             </div>
-                            <div style={{ width: "50%", height: "100%", display: "flex", flexDirection: "row", justifyContent: "start" }}>
-                                <div className='statusMain'>
-                                    {statusColors.map((status, index) => (
-                                        <React.Fragment key={index}>
-                                            <div
-                                                style={{ backgroundColor: status.color, cursor: "pointer" }}
-                                                className='statusButton'
-                                                onClick={() => Alert.fire({
-                                                    title: <div style={{ color: status.color }}>{status.description}</div>,
-                                                    text: "",
-                                                    icon: "info",
-                                                    confirmButtonColor: "#3085d6",
-                                                    confirmButtonText: "Aceptar",
-                                                })}
-                                            ></div>
-                                            <div style={{ marginLeft: "0.15rem" }}>{totalStatus[status.estado] ? totalStatus[status.estado] : "0"}</div>
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-                                <div className='statusTotalMain'>
-                                    <div style={{ fontSize: "clamp(8px, 1vw, 13px)", height: "90%" }}>Total Cursos</div>
-                                    <div>{totalClases}</div>
-                                </div>
+                            <div style={{
+                                fontSize: '1.75rem',
+                                fontWeight: '700',
+                                color: '#10B981'
+                            }}>
+                                ${pagosMes ? pagosMes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
                             </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                {/* Card 3: Pagos Faltantes */}
+                <Col xl={3} lg={6} md={6} sm={12}>
+                    <Card style={{
+                        borderLeft: '4px solid #EF4444',
+                        borderRadius: '12px',
+                        border: '1px solid #E5E7EB',
+                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                        height: '100%'
+                    }}>
+                        <Card.Body style={{ padding: '1.25rem' }}>
+                            <div style={{
+                                fontSize: '0.75rem',
+                                color: '#6B7280',
+                                fontWeight: '600',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em',
+                                marginBottom: '0.5rem'
+                            }}>
+                                Pagos Faltantes
+                            </div>
+                            <div style={{
+                                fontSize: '1.75rem',
+                                fontWeight: '700',
+                                color: '#EF4444'
+                            }}>
+                                ${totalFaltantes ? totalFaltantes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                {/* Card 4: Inscripciones */}
+                <Col xl={3} lg={6} md={6} sm={12}>
+                    <Card style={{
+                        borderLeft: '4px solid #F59E0B',
+                        borderRadius: '12px',
+                        border: '1px solid #E5E7EB',
+                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                        height: '100%'
+                    }}>
+                        <Card.Body style={{ padding: '1.25rem' }}>
+                            <div style={{
+                                fontSize: '0.75rem',
+                                color: '#6B7280',
+                                fontWeight: '600',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em',
+                                marginBottom: '0.5rem'
+                            }}>
+                                Inscripciones
+                            </div>
+                            <div style={{
+                                fontSize: '1.75rem',
+                                fontWeight: '700',
+                                color: '#F59E0B'
+                            }}>
+                                ${totalInscripciones ? totalInscripciones.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+
+            {/* Icono de SuperPagos (solo SUPER) */}
+            {user.data.role === "SUPER" && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                    <FaRegMoneyBillAlt
+                        onClick={() => setIsSuperPagos(true)}
+                        style={{
+                            height: "32px",
+                            width: "32px",
+                            color: "#2563EB",
+                            cursor: 'pointer',
+                            transition: 'color 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#1D4ED8'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#2563EB'}
+                    />
+                </div>
+            )}
+
+            {/* FASE 3: Leyenda de Status y Total Cursos */}
+            <Row className="mb-3 align-items-center">
+                <Col xs={12}>
+                    <div style={{
+                        display: 'flex',
+                        gap: '1rem',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        {/* Leyenda de Status */}
+                        <div style={{
+                            display: 'flex',
+                            gap: '1rem',
+                            flexWrap: 'wrap',
+                            alignItems: 'center'
+                        }}>
+                            {statusColors.map((status, index) => (
+                                <div
+                                    key={index}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={() => Alert.fire({
+                                        title: <div style={{ color: status.color }}>{status.description}</div>,
+                                        text: "",
+                                        icon: "info",
+                                        confirmButtonColor: "#3085d6",
+                                        confirmButtonText: "Aceptar",
+                                    })}
+                                >
+                                    <div style={{
+                                        backgroundColor: status.color,
+                                        width: '18px',
+                                        height: '18px',
+                                        borderRadius: '4px',
+                                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                    }} />
+                                    <span style={{
+                                        fontSize: '0.875rem',
+                                        fontWeight: '600',
+                                        color: '#374151'
+                                    }}>
+                                        {totalStatus[status.estado] || "0"}
+                                    </span>
+                                    <span style={{
+                                        fontSize: '0.75rem',
+                                        color: '#6B7280'
+                                    }}>
+                                        {status.description}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
-                        <DataTable
 
+                        {/* Total Cursos - Badge pequeño */}
+                        <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: '#FFFFFF',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '20px',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            boxShadow: '0 2px 4px rgba(102, 126, 234, 0.3)'
+                        }}>
+                            <span style={{ opacity: 0.9 }}>Total Cursos:</span>
+                            <span style={{ fontSize: '1.125rem', fontWeight: '700' }}>{totalClases}</span>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
 
-                            title={
-
-                                <div style={{ display: "flex", flexDirection: "row" }}>
-
-                                    <div style={{ width: "15%", paddingTop: 3 }}>
+            {/* FASE 4: DataTable en Card */}
+            <Card style={{
+                borderRadius: '16px',
+                border: 'none',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                overflow: 'hidden'
+            }}>
+                <Card.Body className="p-0">
+                    <DataTable
+                        customStyles={customTableStyles}
+                        title={
+                            <div style={{ padding: '1.5rem' }}>
+                                {/* Primera fila: Título y Switches de filtros */}
+                                <div style={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: "1rem",
+                                    alignItems: "center",
+                                    marginBottom: "1rem"
+                                }}>
+                                    <div style={{
+                                        fontSize: "1.5rem",
+                                        fontWeight: "700",
+                                        color: "#1F2937",
+                                        flex: "1 1 auto",
+                                        minWidth: "120px"
+                                    }}>
                                         Alumnos
                                     </div>
 
-                                    {(user.data.campus === 'bugambilias' && user.data.role === 'ENCARGADO') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
-                                        <div className={`switch ${switchCampus ? "switchonC" : "switchoffC"}`} onClick={() => setSwitchCampus(!switchCampus)}>
+                                    {(user.data.campus === 'bugambilias' && user.data.role === 'ENCARGADO') && (
+                                        <div
+                                            className={`switch ${switchCampus ? "switchonC" : "switchoffC"}`}
+                                            onClick={() => setSwitchCampus(!switchCampus)}
+                                            style={{
+                                                borderRadius: '10px',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                overflow: 'hidden'
+                                            }}
+                                        >
                                             <div className={`onoff ${switchCampus ? "" : "switchinactivoC"} `}>Centro</div>
                                             <div className={`onoff ${switchCampus ? "switchactivoC" : ""}`}>Todos</div>
                                         </div>
-                                    </div>}
+                                    )}
 
-                                    {(user.data.role === 'SUPER') && <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem", marginBottom: "0.8rem" }}>
-                                        <div className={`switch switchonC`} style={{ backgroundColor: "rgb(79, 79, 190)" }}>
+                                    {(user.data.role === 'SUPER') && (
+                                        <div
+                                            className={`switch switchonC`}
+                                            style={{
+                                                backgroundColor: "rgb(79, 79, 190)",
+                                                borderRadius: '10px',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                overflow: 'hidden'
+                                            }}
+                                        >
                                             <div className={`onoff ${superCampus === 0 && "switchactivoC"}`} onClick={() => setSuperCampus(0)}>Todos</div>
                                             <div className={`onoff ${superCampus === 1 && "switchactivoC"}`} onClick={() => setSuperCampus(1)}>Centro</div>
                                             <div className={`onoff ${superCampus === 2 && "switchactivoC"}`} onClick={() => setSuperCampus(2)}>Bugambilias</div>
                                             <div className={`onoff ${superCampus === 3 && "switchactivoC"}`} onClick={() => setSuperCampus(3)}>Cuautla</div>
                                             <div className={`onoff ${superCampus === 4 && "switchactivoC"}`} onClick={() => setSuperCampus(4)}>CDMX</div>
                                         </div>
-                                    </div>}
+                                    )}
 
-                                    <div style={{ width: "70%", height: "5vh", display: "flex", flexDirection: "row", justifyContent: "end", marginRight: "1rem" }}>
-                                        <div className={`switch ${switchActivo ? "switchon" : "switchoff"}`} onClick={() => setSwitchActivo(!switchActivo)}>
-                                            <div className={`onoff ${switchActivo ? "switchactivo" : ""} `}>Activo</div>
-                                            <div className={`onoff ${switchActivo ? "" : "switchinactivo"}`}>Inactivo</div>
-                                        </div>
+                                    <div
+                                        className={`switch ${switchActivo ? "switchon" : "switchoff"}`}
+                                        onClick={() => setSwitchActivo(!switchActivo)}
+                                        style={{
+                                            borderRadius: '10px',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                            overflow: 'hidden'
+                                        }}
+                                    >
+                                        <div className={`onoff ${switchActivo ? "switchactivo" : ""} `}>Activo</div>
+                                        <div className={`onoff ${switchActivo ? "" : "switchinactivo"}`}>Inactivo</div>
                                     </div>
+                                </div>
 
+                                {/* Segunda fila: Búsqueda y Agregar alumno */}
+                                <div style={{
+                                    display: "flex",
+                                    gap: "0.75rem",
+                                    alignItems: "center",
+                                    justifyContent: "flex-end",
+                                    position: "relative"
+                                }}>
                                     <input
                                         id='inputFilter'
                                         className='inputSearch'
                                         type="text"
-                                        placeholder="Buscar..."
-                                        style={{ marginBottom: "0.4rem" }}
+                                        placeholder="Buscar por matrícula o nombre..."
+                                        style={{
+                                            width: "320px",
+                                            maxWidth: "100%",
+                                            height: "42px",
+                                            borderRadius: "10px",
+                                            border: "2px solid #E5E7EB",
+                                            backgroundColor: "#F9FAFB",
+                                            padding: "0 1rem",
+                                            fontSize: "0.875rem",
+                                            transition: "all 0.2s ease",
+                                            outline: "none"
+                                        }}
+                                        onFocus={(e) => {
+                                            e.target.style.borderColor = '#2563EB';
+                                            e.target.style.backgroundColor = '#FFFFFF';
+                                            e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+                                        }}
+                                        onBlur={(e) => {
+                                            e.target.style.borderColor = '#E5E7EB';
+                                            e.target.style.backgroundColor = '#F9FAFB';
+                                            e.target.style.boxShadow = 'none';
+                                        }}
                                         onChange={(event) => handleInputChange(event)}
                                     />
-                                    <div >
-                                        <FeatherIcon className='DataIcon' icon={'user-plus'} onClick={() => setIsOpen(true)} style={{ height: 40, width: 40 }} />
+
+                                    <div
+                                        onClick={() => setIsOpen(true)}
+                                        style={{
+                                            height: 42,
+                                            width: 42,
+                                            borderRadius: '10px',
+                                            backgroundColor: '#2563EB',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            boxShadow: '0 2px 4px rgba(37, 99, 235, 0.3)',
+                                            flexShrink: 0
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = '#1D4ED8';
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 4px 6px rgba(37, 99, 235, 0.4)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = '#2563EB';
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 2px 4px rgba(37, 99, 235, 0.3)';
+                                        }}
+                                    >
+                                        <FeatherIcon
+                                            icon={'user-plus'}
+                                            style={{
+                                                height: 20,
+                                                width: 20,
+                                                color: '#FFFFFF'
+                                            }}
+                                        />
                                     </div>
 
-
-
-                                    {showStatusMenu && <div className='StatusMenu' style={{ position: "absolute", width: "20rem", height: "2rem", backgroundColor: "#f0f0f0", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)", borderRadius: "0.8rem", right: 100 }} onClick={() => setShowStatusMenu(false)}>
+                                    {showStatusMenu && <div className='StatusMenu' style={{ position: "absolute", width: "20rem", height: "2rem", backgroundColor: "#f0f0f0", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)", borderRadius: "0.8rem", right: '0', top: '100%', marginTop: '0.5rem', zIndex: 10 }} onClick={() => setShowStatusMenu(false)}>
                                         <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#A0A2A2", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
                                             changeStatus(selectedStudentId, 1);
                                         }}></div>
@@ -612,35 +945,36 @@ export default function Users() {
                                                 ""
                                         }
                                     </div>}
-
                                 </div>
-                            }
-                            columns={columns}
-                            data={showFilter ?
-                                (switchActivo ? filtrados.filter(item => item.estado !== 0) : filtrados.filter(item => item.estado === 0)) :
-                                (switchActivo ? datos.filter(item => item.estado !== 0) : datos.filter(item => item.estado === 0))}
-                            highlightOnHover
-                            paginationPerPage={6}
-                            paginationComponentOptions={{
-                                rowsPerPageText: '',
-                                noRowsPerPage: true,
-                            }}
-                            defaultSortFieldId={4}
 
-                        />
-                    </div>
-                </div>
-            </div >
-
-
-
+                            </div>
+                        }
+                        columns={columns}
+                        data={showFilter ?
+                            (switchActivo ? filtrados.filter(item => item.estado !== 0) : filtrados.filter(item => item.estado === 0)) :
+                            (switchActivo ? datos.filter(item => item.estado !== 0) : datos.filter(item => item.estado === 0))}
+                        highlightOnHover
+                        paginationPerPage={6}
+                        paginationComponentOptions={{
+                            rowsPerPageText: '',
+                            noRowsPerPage: true,
+                        }}
+                        defaultSortFieldId={4}
+                    />
+                </Card.Body>
+            </Card>
+        </Container>
 
 
 
 
 
-            {isOpen && <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />
-            }
+
+
+
+
+            {/* Modales */}
+            {isOpen && <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
             {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
             {isInfo && <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
             {isSuperPagos && <SuperPagos isOpen={isSuperPagos} objeto={selectedObject} onClose={() => setIsSuperPagos(false)} />}
@@ -653,9 +987,7 @@ export default function Users() {
                 alumnoNombre={alumnoParaBaja?.nombre}
                 onSuccess={() => cargarDatos()}
             />
-
         </>
-
     )
 }
 
