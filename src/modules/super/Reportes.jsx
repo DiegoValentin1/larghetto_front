@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Tab, Form, Row, Col, Card } from 'react-bootstrap';
+import { Container, Tabs, Tab, Form, Row, Col, Card } from 'react-bootstrap';
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import AxiosClient from '../../shared/plugins/axios';
@@ -184,14 +184,23 @@ export default function Reportes() {
     };
 
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-12">
-                    <Card className="shadow mb-4">
-                        <Card.Header className="py-3">
-                            <h5 className="m-0 font-weight-bold text-primary">Reportes Históricos</h5>
-                        </Card.Header>
-                        <Card.Body>
+        <Container fluid className="p-4" style={{ minHeight: '92vh' }}>
+            <Card style={{
+                borderRadius: '16px',
+                border: 'none',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                overflow: 'hidden'
+            }}>
+                <Card.Body style={{ padding: '1.5rem' }}>
+                    {/* Título */}
+                    <div style={{
+                        fontSize: "1.5rem",
+                        fontWeight: "700",
+                        color: "#1F2937",
+                        marginBottom: "1.5rem"
+                    }}>
+                        Reportes Históricos
+                    </div>
                             {loading && (
                                 <div className="text-center mb-3">
                                     <BarLoader color="#36d7b7" width="100%" />
@@ -204,10 +213,17 @@ export default function Reportes() {
                                     <Row className="mb-3">
                                         <Col md={3}>
                                             <Form.Group>
-                                                <Form.Label>Año:</Form.Label>
+                                                <Form.Label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6B7280' }}>Año:</Form.Label>
                                                 <Form.Select
                                                     value={yearAlumnos}
                                                     onChange={(e) => setYearAlumnos(e.target.value)}
+                                                    style={{
+                                                        height: '42px',
+                                                        borderRadius: '10px',
+                                                        border: '2px solid #E5E7EB',
+                                                        backgroundColor: '#F9FAFB',
+                                                        fontSize: '0.875rem'
+                                                    }}
                                                 >
                                                     <option value="2024">2024</option>
                                                     <option value="2025">2025</option>
@@ -232,10 +248,17 @@ export default function Reportes() {
                                     <Row className="mb-3">
                                         <Col md={3}>
                                             <Form.Group>
-                                                <Form.Label>Año:</Form.Label>
+                                                <Form.Label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6B7280' }}>Año:</Form.Label>
                                                 <Form.Select
                                                     value={yearPagos}
                                                     onChange={(e) => setYearPagos(e.target.value)}
+                                                    style={{
+                                                        height: '42px',
+                                                        borderRadius: '10px',
+                                                        border: '2px solid #E5E7EB',
+                                                        backgroundColor: '#F9FAFB',
+                                                        fontSize: '0.875rem'
+                                                    }}
                                                 >
                                                     <option value="2024">2024</option>
                                                     <option value="2025">2025</option>
@@ -254,46 +277,85 @@ export default function Reportes() {
                                         )}
                                     </div>
                                     {datosPagos.length > 0 && (
-                                        <div className="mt-4">
-                                            <h6>Resumen del Año {yearPagos}:</h6>
-                                            <Row>
+                                        <div style={{ marginTop: '2rem' }}>
+                                            <div style={{
+                                                fontSize: '1.125rem',
+                                                fontWeight: '600',
+                                                color: '#1F2937',
+                                                marginBottom: '1rem'
+                                            }}>
+                                                Resumen del Año {yearPagos}:
+                                            </div>
+                                            <Row className="g-3">
                                                 <Col md={3}>
-                                                    <Card className="text-center">
+                                                    <Card style={{
+                                                        borderLeft: '4px solid #36A2EB',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid #E5E7EB',
+                                                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                                                        textAlign: 'center'
+                                                    }}>
                                                         <Card.Body>
-                                                            <h6>Total Pagos Normales</h6>
-                                                            <h4 className="text-primary">
+                                                            <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
+                                                                Total Pagos Normales
+                                                            </div>
+                                                            <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#36A2EB' }}>
                                                                 ${datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_normales || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                                            </h4>
+                                                            </div>
                                                         </Card.Body>
                                                     </Card>
                                                 </Col>
                                                 <Col md={3}>
-                                                    <Card className="text-center">
+                                                    <Card style={{
+                                                        borderLeft: '4px solid #FFCE56',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid #E5E7EB',
+                                                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                                                        textAlign: 'center'
+                                                    }}>
                                                         <Card.Body>
-                                                            <h6>Con Descuento 5%</h6>
-                                                            <h4 className="text-warning">
+                                                            <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
+                                                                Con Descuento 5%
+                                                            </div>
+                                                            <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FFCE56' }}>
                                                                 ${datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_descuento || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                                            </h4>
+                                                            </div>
                                                         </Card.Body>
                                                     </Card>
                                                 </Col>
                                                 <Col md={3}>
-                                                    <Card className="text-center">
+                                                    <Card style={{
+                                                        borderLeft: '4px solid #FF6384',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid #E5E7EB',
+                                                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                                                        textAlign: 'center'
+                                                    }}>
                                                         <Card.Body>
-                                                            <h6>Con Recargo 10%</h6>
-                                                            <h4 className="text-danger">
+                                                            <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
+                                                                Con Recargo 10%
+                                                            </div>
+                                                            <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FF6384' }}>
                                                                 ${datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_recargo || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                                            </h4>
+                                                            </div>
                                                         </Card.Body>
                                                     </Card>
                                                 </Col>
                                                 <Col md={3}>
-                                                    <Card className="text-center">
+                                                    <Card style={{
+                                                        borderLeft: '4px solid #10B981',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid #E5E7EB',
+                                                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                                                        textAlign: 'center'
+                                                    }}>
                                                         <Card.Body>
-                                                            <h6>Total General</h6>
-                                                            <h4 className="text-success">
+                                                            <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
+                                                                Total General
+                                                            </div>
+                                                            <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#10B981' }}>
                                                                 ${datosPagos.reduce((sum, item) => sum + parseFloat(item.total_mes || 0), 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                                            </h4>
+                                                            </div>
                                                         </Card.Body>
                                                     </Card>
                                                 </Col>
@@ -304,8 +366,6 @@ export default function Reportes() {
                             </Tabs>
                         </Card.Body>
                     </Card>
-                </div>
-            </div>
-        </div>
+        </Container>
     );
 }
