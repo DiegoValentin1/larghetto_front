@@ -425,247 +425,13 @@ export default function SuperDashboard() {
     return (
         <>
             <Container fluid className="p-4" style={{ minHeight: '92vh' }}>
-                {/* Primera fila de gráficos: Centro, Bugambilias, Cuautla */}
-                <Row className="mb-4 g-3">
-                    <Col lg={4} md={6} sm={12}>
-                        <Card
-                            style={{
-                                borderRadius: '12px',
-                                border: 'none',
-                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                overflow: 'hidden'
-                            }}
-                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Centro'); setSelectedObject(centro) }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
-                            }}
-                        >
-                            <Card.Header style={{
-                                backgroundColor: '#1F2937',
-                                color: '#FFFFFF',
-                                fontWeight: '700',
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                                padding: '1rem',
-                                borderBottom: 'none'
-                            }}>
-                                Centro
-                            </Card.Header>
-                            <Card.Body style={{ padding: '1rem' }}>
-                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: centro && centro, backgroundColor: '#FF6384' }] }} />
-                            </Card.Body>
-                        </Card>
-                    </Col>
-
-                    <Col lg={4} md={6} sm={12}>
-                        <Card
-                            style={{
-                                borderRadius: '12px',
-                                border: 'none',
-                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                overflow: 'hidden'
-                            }}
-                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Bugambilias'); setSelectedObject(buga) }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
-                            }}
-                        >
-                            <Card.Header style={{
-                                backgroundColor: '#1F2937',
-                                color: '#FFFFFF',
-                                fontWeight: '700',
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                                padding: '1rem',
-                                borderBottom: 'none'
-                            }}>
-                                Bugambilias
-                            </Card.Header>
-                            <Card.Body style={{ padding: '1rem' }}>
-                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: buga && buga, backgroundColor: '#36A2EB' }] }} />
-                            </Card.Body>
-                        </Card>
-                    </Col>
-
-                    <Col lg={4} md={6} sm={12}>
-                        <Card
-                            style={{
-                                borderRadius: '12px',
-                                border: 'none',
-                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                overflow: 'hidden'
-                            }}
-                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Cuautla'); setSelectedObject(cuautla) }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
-                            }}
-                        >
-                            <Card.Header style={{
-                                backgroundColor: '#1F2937',
-                                color: '#FFFFFF',
-                                fontWeight: '700',
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                                padding: '1rem',
-                                borderBottom: 'none'
-                            }}>
-                                Cuautla
-                            </Card.Header>
-                            <Card.Body style={{ padding: '1rem' }}>
-                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cuautla && cuautla, backgroundColor: '#FFCE56' }] }} />
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-
-                {/* Segunda fila de gráficos: Larghetto (Total), CDMX, Cambios Recientes */}
-                <Row className="g-3">
-                    <Col lg={4} md={6} sm={12}>
-                        <Card
-                            style={{
-                                borderRadius: '12px',
-                                border: 'none',
-                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                overflow: 'hidden'
-                            }}
-                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Larghetto'); setSelectedObject(total) }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
-                            }}
-                        >
-                            <Card.Header style={{
-                                backgroundColor: '#667eea',
-                                color: '#FFFFFF',
-                                fontWeight: '700',
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                                padding: '1rem',
-                                borderBottom: 'none'
-                            }}>
-                                Larghetto
-                            </Card.Header>
-                            <Card.Body style={{ padding: '1rem' }}>
-                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: total && total, backgroundColor: '#667eea' }] }} />
-                            </Card.Body>
-                        </Card>
-                    </Col>
-
-                    <Col lg={4} md={6} sm={12}>
-                        <Card
-                            style={{
-                                borderRadius: '12px',
-                                border: 'none',
-                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                                overflow: 'hidden'
-                            }}
-                        >
-                            <Card.Header style={{
-                                backgroundColor: '#1F2937',
-                                color: '#FFFFFF',
-                                fontWeight: '700',
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                                padding: '1rem',
-                                borderBottom: 'none'
-                            }}>
-                                CDMX
-                            </Card.Header>
-                            <Card.Body style={{ padding: '1rem' }}>
-                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cdmx && cdmx, backgroundColor: '#4BC0C0' }] }} />
-                            </Card.Body>
-                        </Card>
-                    </Col>
-
-                    <Col lg={4} md={6} sm={12}>
-                        <Card
-                            style={{
-                                borderRadius: '12px',
-                                border: 'none',
-                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                overflow: 'hidden'
-                            }}
-                            onClick={() => setIsLog(!isLog)}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
-                            }}
-                        >
-                            <Card.Header style={{
-                                backgroundColor: '#1F2937',
-                                color: '#FFFFFF',
-                                fontWeight: '700',
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                                padding: '1rem',
-                                borderBottom: 'none'
-                            }}>
-                                Cambios Recientes
-                            </Card.Header>
-                            <Card.Body style={{ padding: '1rem' }}>
-                                <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '0.75rem',
-                                    fontSize: '0.875rem',
-                                    color: '#374151'
-                                }}>
-                                    {[0, 1, 2, 3].map(index => (
-                                        <div key={index} style={{
-                                            padding: '0.5rem',
-                                            backgroundColor: '#F9FAFB',
-                                            borderRadius: '6px',
-                                            borderLeft: '3px solid #2563EB'
-                                        }}>
-                                            {logs[index] ? `${devolverFecha(logs[index].fecha)} ${logs[index].autor} ${logs[index].accion}` : '—'}
-                                        </div>
-                                    ))}
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-
                 {/* Sección de Reportes Históricos */}
                 <Card style={{
                     borderRadius: '16px',
                     border: 'none',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                     overflow: 'hidden',
-                    marginTop: '2rem'
+                    marginBottom: '2rem'
                 }}>
                     <Card.Body style={{ padding: '1.5rem' }}>
                         {/* Título */}
@@ -859,6 +625,252 @@ export default function SuperDashboard() {
                         </Tabs>
                     </Card.Body>
                 </Card>
+
+                {/* Primera fila de gráficos: Centro, Bugambilias, Cuautla */}
+                <Row className="mb-4 g-3">
+                    <Col xxl={4} xl={6} lg={6} md={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden',
+                                height: '100%',
+                                minHeight: '400px'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Centro'); setSelectedObject(centro) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Centro
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: centro && centro, backgroundColor: '#FF6384' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col xxl={4} xl={6} lg={6} md={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden',
+                                height: '100%',
+                                minHeight: '400px'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Bugambilias'); setSelectedObject(buga) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Bugambilias
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: buga && buga, backgroundColor: '#36A2EB' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col xxl={4} xl={6} lg={6} md={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden',
+                                height: '100%',
+                                minHeight: '400px'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Cuautla'); setSelectedObject(cuautla) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Cuautla
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cuautla && cuautla, backgroundColor: '#FFCE56' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+
+                {/* Segunda fila de gráficos: Larghetto (Total), CDMX, Cambios Recientes */}
+                <Row className="g-3">
+                    <Col xxl={4} xl={6} lg={6} md={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden',
+                                height: '100%',
+                                minHeight: '400px'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Larghetto'); setSelectedObject(total) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#667eea',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Larghetto
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: total && total, backgroundColor: '#667eea' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col xxl={4} xl={6} lg={6} md={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                overflow: 'hidden',
+                                height: '100%',
+                                minHeight: '400px'
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                CDMX
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cdmx && cdmx, backgroundColor: '#4BC0C0' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col xxl={4} xl={6} lg={6} md={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden',
+                                height: '100%',
+                                minHeight: '400px'
+                            }}
+                            onClick={() => setIsLog(!isLog)}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Cambios Recientes
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '0.75rem',
+                                    fontSize: '0.875rem',
+                                    color: '#374151'
+                                }}>
+                                    {[0, 1, 2, 3].map(index => (
+                                        <div key={index} style={{
+                                            padding: '0.5rem',
+                                            backgroundColor: '#F9FAFB',
+                                            borderRadius: '6px',
+                                            borderLeft: '3px solid #2563EB'
+                                        }}>
+                                            {logs[index] ? `${devolverFecha(logs[index].fecha)} ${logs[index].autor} ${logs[index].accion}` : '—'}
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
             </Container>
 
             {/* Modales */}
