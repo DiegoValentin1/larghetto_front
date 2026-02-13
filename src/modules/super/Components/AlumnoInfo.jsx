@@ -240,11 +240,22 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
             maxHeight: '80vh',
             overflow: 'auto'
         }}>
-            <div className='AlumnoInfoMain' style={{ paddingRight: "0px", padding: "1.5rem", display: "flex", gap: "1.5rem" }}>
-                <div className="AlumnoInfoLeft" style={{ flex: "1", minWidth: "50%" }}>
-                    <div className="AlumnoInfoMain" style={{ padding: 0, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                        <div className="AlumnoInfoRight" style={{ flexDirection: "column", display: "flex", gap: "1rem" }}>
-                            <div className="AlumnoInfoProfilePicture" style={{
+            <div style={{ padding: "1.5rem", display: "flex", gap: "1.5rem", width: "100%" }}>
+                {/* Lado Izquierdo - Información del Alumno */}
+                <div style={{ flex: "1", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                    {/* Nombre del Alumno */}
+                    <div style={{
+                        padding: "1rem",
+                        borderRadius: "12px",
+                        backgroundColor: "#FFFFFF",
+                        border: "2px solid #E5E7EB",
+                        textAlign: "center"
+                    }}>
+                        <p style={{ fontSize: "1.75rem", fontWeight: "700", color: "#1F2937", margin: 0 }}>{objeto.name}</p>
+                    </div>
+
+                    {/* Foto de Perfil */}
+                    <div className="AlumnoInfoProfilePicture" style={{
                                 width: "200px",
                                 height: "200px",
                                 borderRadius: "12px",
@@ -300,8 +311,10 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                                         </div>
                                         <FaUserGraduate style={{ height: "70%", width: "70%", color: "#9CA3AF" }} />
                                     </div>}
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    </div>
+
+                    {/* Datos Personales */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
                                 <div style={{
                                     padding: "0.75rem",
                                     borderRadius: "8px",
@@ -316,6 +329,16 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                                     borderRadius: "8px",
                                     backgroundColor: "#F9FAFB",
                                     border: "1px solid #E5E7EB"
+                                }}>
+                                    <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Telefono</p>
+                                    <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.telefono}</p>
+                                </div>
+                                <div style={{
+                                    padding: "0.75rem",
+                                    borderRadius: "8px",
+                                    backgroundColor: "#F9FAFB",
+                                    border: "1px solid #E5E7EB",
+                                    gridColumn: "span 2"
                                 }}>
                                     <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Domicilio</p>
                                     <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.domicilio}</p>
@@ -335,144 +358,139 @@ export const AlumnoInfo = ({ isOpen, onClose, objeto }) => {
                                     backgroundColor: "#F9FAFB",
                                     border: "1px solid #E5E7EB"
                                 }}>
-                                    <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Telefono</p>
-                                    <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.telefono}</p>
-                                </div>
-                                <div style={{
-                                    padding: "0.75rem",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#F9FAFB",
-                                    border: "1px solid #E5E7EB"
-                                }}>
                                     <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Contacto de Emergencia</p>
                                     <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.contactoEmergencia}</p>
                                 </div>
-                            </div>
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                            <div style={{
-                                padding: "1rem",
-                                borderRadius: "12px",
-                                backgroundColor: "#FFFFFF",
-                                border: "2px solid #E5E7EB"
-                            }}>
-                                <p style={{ fontSize: "1.5rem", fontWeight: "700", color: "#1F2937", marginBottom: "0.75rem" }}>{objeto.name}</p>
-                                <div style={{
-                                    padding: "0.75rem",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#F9FAFB",
-                                    fontSize: "0.875rem",
-                                    color: "#4B5563",
-                                    minHeight: "60px",
-                                    lineHeight: "1.5"
-                                }}>
-                                    {objeto.observaciones || "Sin observaciones"}
-                                </div>
-                            </div>
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
-                                <div style={{
-                                    padding: "0.75rem",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#F9FAFB",
-                                    border: "1px solid #E5E7EB"
-                                }}>
-                                    <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Mensualidad</p>
-                                    <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>${objeto.mensualidad}</p>
-                                </div>
-                                <div style={{
-                                    padding: "0.75rem",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#F9FAFB",
-                                    border: "1px solid #E5E7EB"
-                                }}>
-                                    <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Inscripción</p>
-                                    <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>${objeto.inscripcion}</p>
-                                </div>
-                                <div style={{
-                                    padding: "0.75rem",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#F9FAFB",
-                                    border: "1px solid #E5E7EB"
-                                }}>
-                                    <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Promoción</p>
-                                    <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.promocion}</p>
-                                </div>
-                                <div style={{
-                                    padding: "0.75rem",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#F9FAFB",
-                                    border: "1px solid #E5E7EB"
-                                }}>
-                                    <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Fecha de Inicio</p>
-                                    <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.fecha_inicio && objeto.fecha_inicio.substring(0, 10)}</p>
-                                </div>
-                                <div style={{
-                                    padding: "0.75rem",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#F9FAFB",
-                                    border: "1px solid #E5E7EB",
-                                    gridColumn: "span 2"
-                                }}>
-                                    <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Próximo Pago</p>
-                                    <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.proximo_pago && objeto.proximo_pago.substring(0, 10)}</p>
-                                </div>
-                            </div>
-                            {objeto.nombreMadre && objeto.nombreMadre !== 'N/A' && (
-                                <>
-                                    <div style={{
-                                        fontSize: "1rem",
-                                        fontWeight: "700",
-                                        color: "#1F2937",
-                                        marginTop: "1rem",
-                                        marginBottom: "0.75rem",
-                                        paddingBottom: "0.5rem",
-                                        borderBottom: "2px solid #E5E7EB"
-                                    }}>
-                                        Información de Tutores
-                                    </div>
-                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
-                                        <div style={{
-                                            padding: "0.75rem",
-                                            borderRadius: "8px",
-                                            backgroundColor: "#F9FAFB",
-                                            border: "1px solid #E5E7EB"
-                                        }}>
-                                            <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Nombre de la Madre</p>
-                                            <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.nombreMadre}</p>
-                                        </div>
-                                        <div style={{
-                                            padding: "0.75rem",
-                                            borderRadius: "8px",
-                                            backgroundColor: "#F9FAFB",
-                                            border: "1px solid #E5E7EB"
-                                        }}>
-                                            <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Contacto de la Madre</p>
-                                            <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.madreTelefono}</p>
-                                        </div>
-                                        <div style={{
-                                            padding: "0.75rem",
-                                            borderRadius: "8px",
-                                            backgroundColor: "#F9FAFB",
-                                            border: "1px solid #E5E7EB"
-                                        }}>
-                                            <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Nombre del Padre</p>
-                                            <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.nombrePadre}</p>
-                                        </div>
-                                        <div style={{
-                                            padding: "0.75rem",
-                                            borderRadius: "8px",
-                                            backgroundColor: "#F9FAFB",
-                                            border: "1px solid #E5E7EB"
-                                        }}>
-                                            <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Contacto del Padre</p>
-                                            <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.telefonoPadre}</p>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
                     </div>
+
+                    {/* Observaciones */}
+                    <div style={{
+                            padding: "1rem",
+                            borderRadius: "12px",
+                            backgroundColor: "#FFFFFF",
+                            border: "2px solid #E5E7EB"
+                        }}>
+                            <p style={{ fontSize: "0.875rem", fontWeight: "700", color: "#1F2937", marginBottom: "0.5rem" }}>Observaciones</p>
+                            <div style={{
+                                padding: "0.75rem",
+                                borderRadius: "8px",
+                                backgroundColor: "#F9FAFB",
+                                fontSize: "0.875rem",
+                                color: "#4B5563",
+                                minHeight: "60px",
+                                lineHeight: "1.5"
+                            }}>
+                                {objeto.observaciones || "Sin observaciones"}
+                            </div>
+                        </div>
+
+                        {/* Información Académica */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
+                            <div style={{
+                                padding: "0.75rem",
+                                borderRadius: "8px",
+                                backgroundColor: "#F9FAFB",
+                                border: "1px solid #E5E7EB"
+                            }}>
+                                <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Mensualidad</p>
+                                <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>${objeto.mensualidad}</p>
+                            </div>
+                            <div style={{
+                                padding: "0.75rem",
+                                borderRadius: "8px",
+                                backgroundColor: "#F9FAFB",
+                                border: "1px solid #E5E7EB"
+                            }}>
+                                <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Inscripción</p>
+                                <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>${objeto.inscripcion}</p>
+                            </div>
+                            <div style={{
+                                padding: "0.75rem",
+                                borderRadius: "8px",
+                                backgroundColor: "#F9FAFB",
+                                border: "1px solid #E5E7EB"
+                            }}>
+                                <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Promoción</p>
+                                <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.promocion}</p>
+                            </div>
+                            <div style={{
+                                padding: "0.75rem",
+                                borderRadius: "8px",
+                                backgroundColor: "#F9FAFB",
+                                border: "1px solid #E5E7EB"
+                            }}>
+                                <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Fecha de Inicio</p>
+                                <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.fecha_inicio && objeto.fecha_inicio.substring(0, 10)}</p>
+                            </div>
+                            <div style={{
+                                padding: "0.75rem",
+                                borderRadius: "8px",
+                                backgroundColor: "#F9FAFB",
+                                border: "1px solid #E5E7EB",
+                                gridColumn: "span 2"
+                            }}>
+                                <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Próximo Pago</p>
+                                <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.proximo_pago && objeto.proximo_pago.substring(0, 10)}</p>
+                            </div>
+                        </div>
+
+                        {/* Información de Tutores */}
+                        {objeto.nombreMadre && objeto.nombreMadre !== 'N/A' && (
+                            <>
+                                <div style={{
+                                    fontSize: "1rem",
+                                    fontWeight: "700",
+                                    color: "#1F2937",
+                                    marginTop: "1rem",
+                                    marginBottom: "0.75rem",
+                                    paddingBottom: "0.5rem",
+                                    borderBottom: "2px solid #E5E7EB"
+                                }}>
+                                    Información de Tutores
+                                </div>
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
+                                    <div style={{
+                                        padding: "0.75rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: "#F9FAFB",
+                                        border: "1px solid #E5E7EB"
+                                    }}>
+                                        <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Nombre de la Madre</p>
+                                        <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.nombreMadre}</p>
+                                    </div>
+                                    <div style={{
+                                        padding: "0.75rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: "#F9FAFB",
+                                        border: "1px solid #E5E7EB"
+                                    }}>
+                                        <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Contacto de la Madre</p>
+                                        <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.madreTelefono}</p>
+                                    </div>
+                                    <div style={{
+                                        padding: "0.75rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: "#F9FAFB",
+                                        border: "1px solid #E5E7EB"
+                                    }}>
+                                        <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Nombre del Padre</p>
+                                        <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.nombrePadre}</p>
+                                    </div>
+                                    <div style={{
+                                        padding: "0.75rem",
+                                        borderRadius: "8px",
+                                        backgroundColor: "#F9FAFB",
+                                        border: "1px solid #E5E7EB"
+                                    }}>
+                                        <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#6B7280", marginBottom: "0.25rem" }}>Contacto del Padre</p>
+                                        <p style={{ fontSize: "0.875rem", color: "#1F2937", margin: 0 }}>{objeto.telefonoPadre}</p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                 </div>
+
+                {/* Lado Derecho - Control de Asistencias */}
                 <div style={{
                     flex: "1",
                     borderLeft: "2px solid #E5E7EB",
