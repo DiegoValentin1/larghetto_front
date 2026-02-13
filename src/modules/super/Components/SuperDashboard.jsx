@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import DataTable from 'react-data-table-component';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
 import "bootstrap/dist/css/bootstrap.min.css";
 import Alert from "../../../shared/plugins/alerts";
-import FeatherIcon from "feather-icons-react/build/FeatherIcon";
 import AxiosClient from "../../../shared/plugins/axios";
-import '../../../utils/styles/SuperDashboard.css'
 import { ChartAlumnos } from './Charts/ChartAlumnos';
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
@@ -245,57 +243,246 @@ export default function SuperDashboard() {
     }
 
     return (
-        < >
-            <div style={{ justifyContent: 'ceneter', alignItems: "center", backgroundColor: "transparent", height: "92vh", padding: 20 }}>
-                <div>
-                    <div className="App">
-                        <div className="ContainerCharts DashboardContainer">
-                            <div className="DashboardTitle">
-                                <div>Centro</div>
-                                <div>Bugambilias</div>
-                                <div>Cuautla</div>
-                            </div>
-                            <div className="ChartBox">
-                                <div className="ChartContainer" onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Centro'); setSelectedObject(centro) }}>
-                                    <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: centro && centro }] }} />
-                                </div>
-                                <div className="ChartContainer" onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Bugambilias'); setSelectedObject(buga) }}>
-                                    <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: buga && buga }] }} />
-                                </div>
-                                <div className="ChartContainer" onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Cuautla'); setSelectedObject(cuautla) }}>
-                                    <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cuautla && cuautla }] }} />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="ContainerLogs DashboardContainer">
-                            <div className="DashboardTitle">
-                                <div>Larghetto</div>
-                                <div>CDMX</div>
-                                <div>Cambios Recientes</div>
-                            </div>
-                            <div className="ChartBox">
-                                <div className="ChartContainer" onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Larghetto'); setSelectedObject(total) }}>
-                                    <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: total && total }] }} />
-                                </div>
-                                <div className="ChartContainer">
-                                    <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cdmx && cdmx }] }} />
-                                </div>
-                                <div className="ChartContainer" style={{ padding: "0.5rem" }} onClick={() => setIsLog(!isLog)}>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[0] ? devolverFecha(logs[0].fecha) : ""}  ${logs[0] ? logs[0].autor : ""} ${logs[0] ? logs[0].accion : ""}`} </div>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[1] ? devolverFecha(logs[1].fecha) : ""}  ${logs[1] ? logs[1].autor : ""}  ${logs[1] ? logs[1].accion : ""}`}</div>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[2] ? devolverFecha(logs[2].fecha) : ""}  ${logs[2] ? logs[2].autor : ""}  ${logs[2] ? logs[2].accion : ""}`}</div>
-                                    <div style={{ fontSize: "14px" }}>{`${logs[3] ? devolverFecha(logs[3].fecha) : ""}  ${logs[3] ? logs[3].autor : ""}  ${logs[3] ? logs[3].accion : ""}`}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <>
+            <Container fluid className="p-4" style={{ minHeight: '92vh' }}>
+                {/* Primera fila de gráficos: Centro, Bugambilias, Cuautla */}
+                <Row className="mb-4 g-3">
+                    <Col lg={4} md={6} sm={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Centro'); setSelectedObject(centro) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Centro
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: centro && centro, backgroundColor: '#FF6384' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
+                    <Col lg={4} md={6} sm={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Bugambilias'); setSelectedObject(buga) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Bugambilias
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: buga && buga, backgroundColor: '#36A2EB' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
+                    <Col lg={4} md={6} sm={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Cuautla'); setSelectedObject(cuautla) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Cuautla
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cuautla && cuautla, backgroundColor: '#FFCE56' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+
+                {/* Segunda fila de gráficos: Larghetto (Total), CDMX, Cambios Recientes */}
+                <Row className="g-3">
+                    <Col lg={4} md={6} sm={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden'
+                            }}
+                            onClick={() => { setIsOpen(true); setTitulo('Registro de Alumnos Larghetto'); setSelectedObject(total) }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#667eea',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Larghetto
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: total && total, backgroundColor: '#667eea' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col lg={4} md={6} sm={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                CDMX
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: cdmx && cdmx, backgroundColor: '#4BC0C0' }] }} />
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col lg={4} md={6} sm={12}>
+                        <Card
+                            style={{
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                overflow: 'hidden'
+                            }}
+                            onClick={() => setIsLog(!isLog)}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+                            }}
+                        >
+                            <Card.Header style={{
+                                backgroundColor: '#1F2937',
+                                color: '#FFFFFF',
+                                fontWeight: '700',
+                                fontSize: '1rem',
+                                textAlign: 'center',
+                                padding: '1rem',
+                                borderBottom: 'none'
+                            }}>
+                                Cambios Recientes
+                            </Card.Header>
+                            <Card.Body style={{ padding: '1rem' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '0.75rem',
+                                    fontSize: '0.875rem',
+                                    color: '#374151'
+                                }}>
+                                    {[0, 1, 2, 3].map(index => (
+                                        <div key={index} style={{
+                                            padding: '0.5rem',
+                                            backgroundColor: '#F9FAFB',
+                                            borderRadius: '6px',
+                                            borderLeft: '3px solid #2563EB'
+                                        }}>
+                                            {logs[index] ? `${devolverFecha(logs[index].fecha)} ${logs[index].autor} ${logs[index].accion}` : '—'}
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+
+            {/* Modales */}
             <ChartAlumnos alumnosActivos={selectedObject} isOpen={isOpen} onClose={() => setIsOpen(false)} titulo={titulo} />
             <LogTable loglist={logs} isOpen={isLog} onClose={() => setIsLog(false)} />
         </>
-
     )
 }
