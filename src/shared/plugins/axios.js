@@ -14,8 +14,8 @@ const requestHandler = (request) => {
     console.log(request);
     const temp = JSON.parse(request.data || null);
     request.data = {...temp, empleado:session?.data ? session.data.name : "N/A"};
-    if(session?.isLogged && session?.token) {
-        request.headers["Authorization"] = `Bearer ${session.token}`;
+    if(session?.isLogged && session?.data?.token) {
+        request.headers["Authorization"] = `Bearer ${session.data.token}`;
     }
     return request;
 };

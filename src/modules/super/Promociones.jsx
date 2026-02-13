@@ -48,24 +48,22 @@ export default function Promociones() {
             selector: row => row.vigente,
             sortable: true,
             cell: (row) => {
-                const hoy = new Date();
-                const inicio = row.fecha_inicio ? new Date(row.fecha_inicio) : null;
-                const fin = row.fecha_fin ? new Date(row.fecha_fin) : null;
-
+                // CONFIAR EN EL BACKEND - Priorizar el campo vigente
                 let badge = { text: 'Sin límite', color: '#6c757d' };
 
-                if (inicio && fin) {
-                    if (hoy < inicio) {
-                        badge = { text: 'Futura', color: '#0dcaf0' };
-                    } else if (hoy > fin) {
-                        badge = { text: 'Caducada', color: '#dc3545' };
-                    } else {
-                        badge = { text: 'Vigente', color: '#198754' };
-                    }
-                } else if (fin && hoy > fin) {
-                    badge = { text: 'Caducada', color: '#dc3545' };
-                } else if (inicio && hoy >= inicio) {
+                if (row.vigente === 1 || row.vigente === true) {
                     badge = { text: 'Vigente', color: '#198754' };
+                } else if (row.vigente === 0 || row.vigente === false) {
+                    // Solo si NO es vigente, determinamos por qué
+                    const hoy = new Date();
+                    const inicio = row.fecha_inicio ? new Date(row.fecha_inicio + 'T00:00:00') : null;
+                    const fin = row.fecha_fin ? new Date(row.fecha_fin + 'T23:59:59') : null;
+
+                    if (inicio && hoy < inicio) {
+                        badge = { text: 'Futura', color: '#0dcaf0' };
+                    } else if (fin && hoy > fin) {
+                        badge = { text: 'Caducada', color: '#dc3545' };
+                    }
                 }
 
                 return (
