@@ -78,102 +78,157 @@ export const LoginScreen = () => {
   //   return <Navigate to={"/"} />;
   // }
   return (
-    <div className="loginMainFrame">
-      <div className={`loginContainer ${expanded ? 'expandedContainer' : ''}`}>
-        <div className={`loginLeftContainer ${expanded ? 'expandedL' : ''}`}>
-        <div className="formContainer">
-          <Form className="loginSelect" onSubmit={formik.handleSubmit}>
-                        <Form.Group className="form-outline mb-4">
-                          <Form.Label htmlFor="email">
-                            USUARIO
-                          </Form.Label>
-                          <Form.Control
-                            placeholder="correo@dominio.com"
-                            id="email"
-                            autoComplete="off"
-                            name="email"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                          />
-                          {formik.errors.email ? (
-                            <span className="error-text">
-                              {formik.errors.email}
-                            </span>
-                          ) : null}
-                        </Form.Group>
-                        <Form.Group className="form-outline mb-4">
-                          <Form.Label htmlFor="password">
-                            CONTRASEÑA
-                          </Form.Label>
-                          <Form.Control
-                            placeholder="********"
-                            id="password"
-                            autoComplete="off"
-                            name="password"
-                            value={formik.values.password}
-                            onChange={formik.handleChange}
-                            type='password'
-                          />
-                          {formik.errors.password ? (
-                            <span className="error-text">
-                              {formik.errors.password}
-                            </span>
-                          ) : null}
-                        </Form.Group>
-                        <Form.Group className='form-outline mb-1'>
-                            <div className="text-center pt-1 pb-1">
-                                <Button
-                                // onClick={()=>setExpanded(!expanded)}
-                                className='btn-hover gradient-custom-2'
-                                type="submit"
-                                disable={!(formik.isValid&&formik.dirty)}
-                                >
-                                    <FeatherIcon icon={'log-in'}/>
-                                    &nbsp; INICIAR SESION
-                                </Button>
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="form-outline mb-4">
-                          <div className="text-center pt-1 pb-1">
-                          <a href="#!" className="text-muted">
-                            {/* ¿HAS OLVIDADO TU CONTRASEÑA? */}
-                          </a>
-                          </div>
-                        </Form.Group>
-          </Form>
-        </div>
+    <div style={{
+      minHeight: '100vh',
+      width: '100%',
+      background: '#F3F4F6',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem'
+    }}>
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        padding: '3rem',
+        borderRadius: '24px',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+        width: '100%',
+        maxWidth: '420px'
+      }}>
+        {/* Branding Header */}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#2563EB' }}>🎵</div>
+          <h1 style={{
+            fontSize: '1.8rem',
+            fontWeight: '800',
+            color: '#1F2937',
+            margin: '0 0 0.5rem 0'
+          }}>
+            Bienvenido a Larghetto
+          </h1>
+          <p style={{ color: '#6B7280', fontSize: '0.95rem', margin: 0 }}>
+            Sistema de Gestión Académica
+          </p>
         </div>
 
-        <div className={`loginRightContainer ${expanded ? 'expandedR' : ''}`}>
-          {/* <img className="loginImg" src={require('../../utils/img/prueba.png')} alt="" /> */}
-          {success && (
-          <div className="success">
-            <div class="wrapper"> <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/> <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-              </svg>
+        <Form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="email"
+              placeholder="Correo electrónico"
+              id="email"
+              autoComplete="off"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              style={{
+                height: '50px',
+                borderRadius: '12px',
+                border: '2px solid #E5E7EB',
+                backgroundColor: '#F9FAFB',
+                fontSize: '15px',
+                padding: '0 1rem'
+              }}
+            />
+            {formik.errors.email && (
+              <span style={{
+                display: 'block',
+                marginTop: '0.5rem',
+                color: '#EF4444',
+                fontSize: '0.875rem'
+              }}>
+                {formik.errors.email}
+              </span>
+            )}
+          </Form.Group>
+
+          <Form.Group className="mb-4">
+            <Form.Control
+              type="password"
+              placeholder="Contraseña"
+              id="password"
+              autoComplete="off"
+              name="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              style={{
+                height: '50px',
+                borderRadius: '12px',
+                border: '2px solid #E5E7EB',
+                backgroundColor: '#F9FAFB',
+                fontSize: '15px',
+                padding: '0 1rem'
+              }}
+            />
+            {formik.errors.password && (
+              <span style={{
+                display: 'block',
+                marginTop: '0.5rem',
+                color: '#EF4444',
+                fontSize: '0.875rem'
+              }}>
+                {formik.errors.password}
+              </span>
+            )}
+          </Form.Group>
+
+          <Button
+            type="submit"
+            disabled={!(formik.isValid && formik.dirty) || expanded}
+            style={{
+              width: '100%',
+              height: '50px',
+              borderRadius: '12px',
+              background: '#2563EB',
+              border: 'none',
+              fontWeight: '600',
+              fontSize: '15px',
+              letterSpacing: '0.5px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 10px 15px -3px rgba(37, 99, 235, 0.4)';
+              e.target.style.background = '#1D4ED8';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = 'none';
+              e.target.style.background = '#2563EB';
+            }}
+          >
+            {expanded ? (
+              <div className="spinner-border spinner-border-sm text-light" role="status">
+                <span className="visually-hidden">Cargando...</span>
+              </div>
+            ) : (
+              <>
+                <FeatherIcon icon={'log-in'} size={18}/>
+                INICIAR SESIÓN
+              </>
+            )}
+          </Button>
+        </Form>
+
+        {/* Mensajes de éxito/fallo */}
+        {success && (
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <div style={{ color: '#10B981', fontSize: '1rem', fontWeight: '600' }}>
+              ✓ Inicio exitoso
             </div>
-            <div className="loginImgText" style={{color:"#333", width:"100%"}}>Inicio Exitoso</div>
           </div>
         )}
         {failure && (
-          <div className="failure">
-            <div className="wrapper">
-              <svg class="checkmarkX" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark_circleX" cx="26" cy="26" r="25" fill="none"/><path class="checkmark_checkX" fill="#C52929" d="M14.1 14.1l23.8 23.8 m0,-23.8 l-23.8,23.8"/></svg>
-              </div>
-              <div className="loginImgText" style={{color:"#333", width:"100%"}}>Validar Datos</div>
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <div style={{ color: '#EF4444', fontSize: '1rem', fontWeight: '600' }}>
+              ✗ Credenciales inválidas
+            </div>
           </div>
         )}
-        {!success && !failure && expanded && (
-          <React.Fragment>
-            <div className="logo">
-              <div class="progress-bar">
-                <div class="progress"></div>
-              </div>
-            </div>
-          </React.Fragment>
-        )}
-          <div className="loginImgText" style={expanded ? {display:"none"} : {}}>Cambia la Forma en la Que Calculas Espesores</div>
-          <div className="loginTextSmall" style={expanded ? {display:"none"} : {}}>Sistema de Cálculo y Generación de Reportes</div>
-        </div>
       </div>
     </div>
   );
