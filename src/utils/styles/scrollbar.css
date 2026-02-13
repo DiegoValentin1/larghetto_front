@@ -1,0 +1,49 @@
+/* ========================================
+   SCROLLBAR PERSONALIZADO - LARGHETTO 2026
+   ======================================== */
+
+/* Para navegadores basados en WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F3F4F6;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #D1D5DB;
+    border-radius: 10px;
+    border: 2px solid #F3F4F6;
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9CA3AF;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #6B7280;
+}
+
+/* Para Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #D1D5DB #F3F4F6;
+}
+
+/* Scrollbar en elementos específicos con fondo oscuro (opcional) */
+.dark-scrollbar::-webkit-scrollbar-track {
+    background: #1F2937;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+    background: #374151;
+    border: 2px solid #1F2937;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #4B5563;
+}

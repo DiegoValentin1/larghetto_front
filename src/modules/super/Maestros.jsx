@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
+import { Container, Card } from 'react-bootstrap';
 import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
 import { MdDeleteForever } from 'react-icons/md'
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -288,65 +289,213 @@ useEffect(() => {
 }, [isEditing, isOpen]);
 
 
-const aplicarEstilosAlSiguienteDiv = () => {
-    const div1 = document.querySelector('.sc-kgTSHT');
-    const div2 = div1 && div1.nextElementSibling;
-    if (div1) {
-        console.log(div1)
-        div1.style.overflowY = 'scroll';
-        div1.style.height = "80%";
-    }
-};
 useEffect(() => {
     cargarDatos();
 }, []);
 
-useEffect(() => aplicarEstilosAlSiguienteDiv());
-
-
+// Estilos personalizados para DataTable
+const customTableStyles = {
+    headRow: {
+        style: {
+            backgroundColor: '#F3F4F6',
+            borderBottom: '2px solid #E5E7EB',
+            minHeight: '52px',
+        },
+    },
+    headCells: {
+        style: {
+            color: '#1F2937',
+            fontSize: '0.875rem',
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            paddingLeft: '1rem',
+            paddingRight: '1rem',
+        },
+    },
+    rows: {
+        style: {
+            minHeight: '60px',
+            fontSize: '0.875rem',
+            color: '#1F2937',
+            borderBottom: '1px solid #E5E7EB',
+            transition: 'background-color 0.2s ease',
+            '&:nth-of-type(odd)': {
+                backgroundColor: '#FFFFFF',
+            },
+            '&:nth-of-type(even)': {
+                backgroundColor: '#F9FAFB',
+            },
+        },
+        highlightOnHoverStyle: {
+            backgroundColor: '#F3F4F6',
+            borderBottomColor: '#D1D5DB',
+            outline: '1px solid #E5E7EB',
+        },
+    },
+    cells: {
+        style: {
+            paddingLeft: '1rem',
+            paddingRight: '1rem',
+        },
+    },
+    pagination: {
+        style: {
+            borderTop: '1px solid #E5E7EB',
+            backgroundColor: '#FFFFFF',
+            minHeight: '56px',
+        },
+        pageButtonsStyle: {
+            borderRadius: '8px',
+            height: '36px',
+            width: '36px',
+            padding: '8px',
+            margin: '0 4px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            backgroundColor: 'transparent',
+            color: '#6B7280',
+            fill: '#6B7280',
+            '&:disabled': {
+                cursor: 'not-allowed',
+                color: '#D1D5DB',
+                fill: '#D1D5DB',
+            },
+            '&:hover:not(:disabled)': {
+                backgroundColor: '#F3F4F6',
+                color: '#1F2937',
+            },
+            '&:focus': {
+                outline: 'none',
+            },
+        },
+    },
+};
 
 return (
-    < >
-        <div style={{ justifyContent: 'ceneter', alignItems: "center", backgroundColor: "transparent", height: "92vh", padding: 20 }}>
-            <div>
-                <div className="App">
+    <>
+        <Container fluid className="p-4" style={{ minHeight: '92vh' }}>
+            <Card style={{
+                borderRadius: '16px',
+                border: 'none',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                overflow: 'hidden'
+            }}>
+                <Card.Body className="p-0">
                     <DataTable
-
-
+                        customStyles={customTableStyles}
                         title={
-
-                            <div style={{ display: "flex", flexDirection: "row" }}>
-
-                                <div style={{ width: "95%", paddingTop: 3 }}>
-                                    Maestros
+                            <div style={{ padding: '1.5rem' }}>
+                                {/* Primera fila: Título */}
+                                <div style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    marginBottom: "1rem"
+                                }}>
+                                    <div style={{
+                                        fontSize: "1.5rem",
+                                        fontWeight: "700",
+                                        color: "#1F2937",
+                                        flex: "1 1 auto"
+                                    }}>
+                                        Maestros
+                                    </div>
                                 </div>
-                                <input
+
+                                {/* Segunda fila: Búsqueda y Agregar */}
+                                <div style={{
+                                    display: "flex",
+                                    gap: "0.75rem",
+                                    alignItems: "center",
+                                    justifyContent: "flex-end"
+                                }}>
+                                    <input
                                         id='inputFilter'
                                         className='inputSearch'
                                         type="text"
-                                        placeholder="Buscar..."
+                                        placeholder="Buscar por nombre..."
+                                        style={{
+                                            width: "320px",
+                                            maxWidth: "100%",
+                                            height: "42px",
+                                            borderRadius: "10px",
+                                            border: "2px solid #E5E7EB",
+                                            backgroundColor: "#F9FAFB",
+                                            padding: "0 1rem",
+                                            fontSize: "0.875rem",
+                                            transition: "all 0.2s ease",
+                                            outline: "none"
+                                        }}
+                                        onFocus={(e) => {
+                                            e.target.style.borderColor = '#2563EB';
+                                            e.target.style.backgroundColor = '#FFFFFF';
+                                            e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+                                        }}
+                                        onBlur={(e) => {
+                                            e.target.style.borderColor = '#E5E7EB';
+                                            e.target.style.backgroundColor = '#F9FAFB';
+                                            e.target.style.boxShadow = 'none';
+                                        }}
                                         onChange={(event) => handleInputChange(event)}
                                     />
-                                { session.data.role === 'RECEPCION' ? "" : <div >
-                                    <FeatherIcon className='DataIcon' icon={'plus'} onClick={() => setIsOpen(true)} style={{ height: 40, width: 40 }} />
-                                </div>}
+
+                                    {session.data.role !== 'RECEPCION' && (
+                                        <div
+                                            onClick={() => setIsOpen(true)}
+                                            style={{
+                                                height: 42,
+                                                width: 42,
+                                                borderRadius: '10px',
+                                                backgroundColor: '#2563EB',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                boxShadow: '0 2px 4px rgba(37, 99, 235, 0.3)',
+                                                flexShrink: 0
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#1D4ED8';
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                                e.currentTarget.style.boxShadow = '0 4px 6px rgba(37, 99, 235, 0.4)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#2563EB';
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                                e.currentTarget.style.boxShadow = '0 2px 4px rgba(37, 99, 235, 0.3)';
+                                            }}
+                                        >
+                                            <FeatherIcon
+                                                icon={'plus'}
+                                                style={{
+                                                    height: 20,
+                                                    width: 20,
+                                                    color: '#FFFFFF'
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         }
                         columns={columns}
                         data={showFilter ? filtrados : datos}
                         highlightOnHover
+                        pagination
+                        paginationPerPage={10}
+                        paginationRowsPerPageOptions={[10, 20, 30, 50]}
                     />
-                </div>
-            </div>
-        </div>
+                </Card.Body>
+            </Card>
+        </Container>
 
-
+        {/* Modales */}
         {isOpen && <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
         {isEditing && <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos} />}
         {isChart && <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />}
         {isPayment && <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />}
         {isClases && <MaestroClases isOpen={isClases} cargarDatos={cargarDatos} onClose={() => setIsClases(false)} objeto={selectedObject} />}
     </>
-
 )
 }

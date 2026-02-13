@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
-import { Button, Badge, Form, Modal } from 'react-bootstrap';
+import { Container, Card, Button, Badge, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import AxiosClient from '../../shared/plugins/axios';
 import Swal from 'sweetalert2';
@@ -97,6 +97,85 @@ export default function SolicitudesBaja() {
                 text: error.response?.data?.message || 'Error al procesar la solicitud',
             });
         }
+    };
+
+    // Estilos personalizados para DataTable
+    const customTableStyles = {
+        headRow: {
+            style: {
+                backgroundColor: '#F3F4F6',
+                borderBottom: '2px solid #E5E7EB',
+                minHeight: '52px',
+            },
+        },
+        headCells: {
+            style: {
+                color: '#1F2937',
+                fontSize: '0.875rem',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                paddingLeft: '1rem',
+                paddingRight: '1rem',
+            },
+        },
+        rows: {
+            style: {
+                minHeight: '60px',
+                fontSize: '0.875rem',
+                color: '#1F2937',
+                borderBottom: '1px solid #E5E7EB',
+                transition: 'background-color 0.2s ease',
+                '&:nth-of-type(odd)': {
+                    backgroundColor: '#FFFFFF',
+                },
+                '&:nth-of-type(even)': {
+                    backgroundColor: '#F9FAFB',
+                },
+            },
+            highlightOnHoverStyle: {
+                backgroundColor: '#F3F4F6',
+                borderBottomColor: '#D1D5DB',
+                outline: '1px solid #E5E7EB',
+            },
+        },
+        cells: {
+            style: {
+                paddingLeft: '1rem',
+                paddingRight: '1rem',
+            },
+        },
+        pagination: {
+            style: {
+                borderTop: '1px solid #E5E7EB',
+                backgroundColor: '#FFFFFF',
+                minHeight: '56px',
+            },
+            pageButtonsStyle: {
+                borderRadius: '8px',
+                height: '36px',
+                width: '36px',
+                padding: '8px',
+                margin: '0 4px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backgroundColor: 'transparent',
+                color: '#6B7280',
+                fill: '#6B7280',
+                '&:disabled': {
+                    cursor: 'not-allowed',
+                    color: '#D1D5DB',
+                    fill: '#D1D5DB',
+                },
+                '&:hover:not(:disabled)': {
+                    backgroundColor: '#F3F4F6',
+                    color: '#1F2937',
+                },
+                '&:focus': {
+                    outline: 'none',
+                },
+            },
+        },
     };
 
     const columns = [
@@ -208,48 +287,74 @@ export default function SolicitudesBaja() {
     ];
 
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-12">
-                    <div className="card shadow mb-4">
-                        <div className="card-header py-3 d-flex justify-content-between align-items-center">
-                            <h5 className="m-0 font-weight-bold text-primary">
-                                Solicitudes de Baja de Alumnos
-                            </h5>
-                            <Form.Select
-                                value={filtroEstado}
-                                onChange={(e) => setFiltroEstado(e.target.value)}
-                                style={{ width: '200px' }}
-                            >
-                                <option value="">Todas</option>
-                                <option value="PENDIENTE">Pendientes</option>
-                                <option value="APROBADA">Aprobadas</option>
-                                <option value="RECHAZADA">Rechazadas</option>
-                            </Form.Select>
-                        </div>
-                        <div className="card-body">
-                            {loading ? (
-                                <div className="text-center">
-                                    <div className="spinner-border" role="status">
+        <>
+            <Container fluid className="p-4" style={{ minHeight: '92vh' }}>
+                <Card style={{
+                    borderRadius: '16px',
+                    border: 'none',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    overflow: 'hidden'
+                }}>
+                    <Card.Body className="p-0">
+                        <DataTable
+                            customStyles={customTableStyles}
+                            title={
+                                <div style={{ padding: '1.5rem' }}>
+                                    <div style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between"
+                                    }}>
+                                        <div style={{
+                                            fontSize: "1.5rem",
+                                            fontWeight: "700",
+                                            color: "#1F2937"
+                                        }}>
+                                            Solicitudes de Baja de Alumnos
+                                        </div>
+
+                                        <Form.Select
+                                            value={filtroEstado}
+                                            onChange={(e) => setFiltroEstado(e.target.value)}
+                                            style={{
+                                                width: '200px',
+                                                height: '42px',
+                                                borderRadius: '10px',
+                                                border: '2px solid #E5E7EB',
+                                                backgroundColor: '#F9FAFB',
+                                                fontSize: '0.875rem',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                        >
+                                            <option value="">Todas</option>
+                                            <option value="PENDIENTE">Pendientes</option>
+                                            <option value="APROBADA">Aprobadas</option>
+                                            <option value="RECHAZADA">Rechazadas</option>
+                                        </Form.Select>
+                                    </div>
+                                </div>
+                            }
+                            columns={columns}
+                            data={solicitudes}
+                            pagination
+                            paginationPerPage={10}
+                            paginationRowsPerPageOptions={[10, 20, 30, 50]}
+                            highlightOnHover
+                            noDataComponent="No hay solicitudes de baja"
+                            defaultSortFieldId={5}
+                            defaultSortAsc={false}
+                            progressPending={loading}
+                            progressComponent={
+                                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                                    <div className="spinner-border text-primary" role="status">
                                         <span className="visually-hidden">Cargando...</span>
                                     </div>
                                 </div>
-                            ) : (
-                                <DataTable
-                                    columns={columns}
-                                    data={solicitudes}
-                                    pagination
-                                    paginationPerPage={10}
-                                    highlightOnHover
-                                    noDataComponent="No hay solicitudes de baja"
-                                    defaultSortFieldId={5}
-                                    defaultSortAsc={false}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            }
+                        />
+                    </Card.Body>
+                </Card>
+            </Container>
 
             {/* Modal para Aprobar/Rechazar */}
             <Modal show={showModal} onHide={cerrarModal} centered>

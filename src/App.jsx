@@ -3,6 +3,7 @@ const { useEffect, useReducer } = require("react");
 const { AuthContext } = require("./modules/auth/authContext");
 const { AppRouter } = require("./shared/components/AppRouter");
 const { SidebarProvider } = require("./shared/contexts/SidebarContext");
+require("./utils/styles/scrollbar.css");
 
 const init = () => {
     return JSON.parse(
