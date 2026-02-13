@@ -20,15 +20,15 @@ import Modal from 'react-modal';
 import SolicitarBajaModal from './Components/SolicitarBajaModal';
 
 const statusColors = [
-    { color: "#A0A2A2", description: "Activo" },
-    { color: "#F0BA14", description: "Nuevo" },
-    { color: "#14F0B7", description: "Curso doble" },
-    { color: "#40DC51", description: "Curso triple" },
-    { color: "#ED2C75", description: "Curso cuadruple (Certificación)" },
-    { color: "#1F175A", description: "Reingreso" },
-    { color: "#DAE175", description: "Situación" },
-    { color: "#702390", description: "Inglés" },
-    { color: "rgb(220, 48, 48)", description: "Bajo" }
+    { color: "#A0A2A2", description: "Activo", estado: 1 },
+    { color: "#F0BA14", description: "Nuevo", estado: 2 },
+    { color: "#14F0B7", description: "Curso doble", estado: 3 },
+    { color: "#40DC51", description: "Curso triple", estado: 4 },
+    { color: "#ED2C75", description: "Curso cuadruple (Certificación)", estado: 5 },
+    { color: "#1F175A", description: "Reingreso", estado: 6 },
+    { color: "#DAE175", description: "Situación", estado: 7 },
+    { color: "#702390", description: "Inglés", estado: 8 },
+    { color: "rgb(220, 48, 48)", description: "Bajo", estado: 0 }
 ];
 
 
@@ -94,7 +94,13 @@ export default function Users() {
         },
         {
             name: 'Pago del Mes',
-            selector: (row) => (new Date() < new Date(row.proximo_pago)) ? <div>✅</div> : <div>✖️</div>,
+            selector: (row) => {
+                if (!row.proximo_pago) return <div>N/A</div>;
+                // Normalizar ambas fechas a solo YYYY-MM-DD sin horas
+                const hoy = new Date().setHours(0, 0, 0, 0);
+                const vencimiento = new Date(row.proximo_pago).setHours(0, 0, 0, 0);
+                return hoy <= vencimiento ? <div>✅</div> : <div>✖️</div>;
+            },
             sortable: true,
         },
         (user.data.role === 'SUPER' || switchCampus) &&
@@ -514,7 +520,7 @@ export default function Users() {
                                                     confirmButtonText: "Aceptar",
                                                 })}
                                             ></div>
-                                            <div style={{ marginLeft: "0.15rem" }}>{totalStatus[index] ? totalStatus[index] : "0"}</div>
+                                            <div style={{ marginLeft: "0.15rem" }}>{totalStatus[status.estado] ? totalStatus[status.estado] : "0"}</div>
                                         </React.Fragment>
                                     ))}
                                 </div>
