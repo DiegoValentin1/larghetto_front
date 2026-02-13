@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Tabs, Tab, Form, Row, Col, Card } from 'react-bootstrap';
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { FaChartLine, FaMoneyBillWave } from 'react-icons/fa';
 import AxiosClient from '../../shared/plugins/axios';
 import Alert from '../../shared/plugins/alerts';
 import { BarLoader } from 'react-spinners';
@@ -209,7 +210,15 @@ export default function Reportes() {
 
                             <Tabs defaultActiveKey="alumnos" className="mb-3">
                                 {/* TAB 1: Histórico de Alumnos */}
-                                <Tab eventKey="alumnos" title="📊 Histórico de Alumnos">
+                                <Tab
+                                    eventKey="alumnos"
+                                    title={
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <FaChartLine size={16} />
+                                            Histórico de Alumnos
+                                        </span>
+                                    }
+                                >
                                     <Row className="mb-3">
                                         <Col md={3}>
                                             <Form.Group>
@@ -244,7 +253,15 @@ export default function Reportes() {
                                 </Tab>
 
                                 {/* TAB 2: Histórico de Pagos */}
-                                <Tab eventKey="pagos" title="💰 Histórico de Pagos">
+                                <Tab
+                                    eventKey="pagos"
+                                    title={
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <FaMoneyBillWave size={16} />
+                                            Histórico de Pagos
+                                        </span>
+                                    }
+                                >
                                     <Row className="mb-3">
                                         <Col md={3}>
                                             <Form.Group>
