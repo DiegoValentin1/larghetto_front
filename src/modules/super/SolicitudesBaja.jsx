@@ -403,6 +403,6 @@ export default function SolicitudesBaja() {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </div>
+        </>
     );
 }
