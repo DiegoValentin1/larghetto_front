@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Row, Form, Modal, FormGroup } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import FeatherIcon from 'feather-icons-react'
-import AxiosClient from '../../../../shared/plugins/axios';
-import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../../shared/plugins/alerts';
-import '../../../../utils/styles/SuperDashboard.css';
-import { TbHomeSearch } from 'react-icons/tb';
+import { Modal } from 'react-bootstrap';
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js/auto'
 
@@ -16,22 +9,68 @@ export const ChartAlumnos = ({ isOpen, onClose, alumnosActivos, titulo }) => {
   const handleClose = () => {
     onClose();
   }
-  return <Modal
-    backdrop='static'
-    keyboard={false}
-    show={isOpen}
-    onHide={handleClose}
-    
-    dialogClassName="modalChart"
-    id="modalChartAlumno"
-  >
-    <Modal.Header closeButton >
-      <Modal.Title>{titulo}</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <div style={{width:"100%", display:"flex", justifyContent:"center", alignItems:"center"}}>
-      <Bar data={{ labels: diasAnio, datasets: [{ label: "Alumnos Inscritos", data: alumnosActivos && alumnosActivos }] }} />
-      </div>
-    </Modal.Body>
-  </Modal>
+
+  return (
+    <Modal
+      show={isOpen}
+      onHide={handleClose}
+      size="xl"
+      centered
+      style={{
+        backdropFilter: 'blur(4px)'
+      }}
+    >
+      <Modal.Header
+        closeButton
+        style={{
+          backgroundColor: '#F9FAFB',
+          borderBottom: '2px solid #E5E7EB',
+          padding: '1.25rem 1.5rem'
+        }}
+      >
+        <Modal.Title style={{
+          fontSize: '1.25rem',
+          fontWeight: '700',
+          color: '#1F2937'
+        }}>
+          {titulo}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{
+        padding: '2rem',
+        backgroundColor: '#FFFFFF'
+      }}>
+        <div style={{
+          width: "100%",
+          height: "500px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <Bar
+            data={{
+              labels: diasAnio,
+              datasets: [{
+                label: "Alumnos Inscritos",
+                data: alumnosActivos && alumnosActivos,
+                backgroundColor: '#2563EB',
+                borderColor: '#1D4ED8',
+                borderWidth: 1
+              }]
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: 'top'
+                }
+              }
+            }}
+          />
+        </div>
+      </Modal.Body>
+    </Modal>
+  );
 };
