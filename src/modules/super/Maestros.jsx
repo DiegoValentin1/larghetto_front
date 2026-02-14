@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component';
 import { Container, Card } from 'react-bootstrap';
-import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'
+import { FaPlus, FaTrashAlt, FaEdit, FaArchive } from 'react-icons/fa'
 import { MdDeleteForever } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 import "bootstrap/dist/css/bootstrap.min.css";
 import AxiosClient from "../../shared/plugins/axios";
 import Alert from "../../shared/plugins/alerts";
@@ -23,6 +24,7 @@ import { GrSchedule } from "react-icons/gr";
 
 
 export default function SuperMaterialesTee() {
+    const navigate = useNavigate();
     useEffect(() => {
         console.log("Activoooo");
     }, []);
@@ -108,23 +110,10 @@ export default function SuperMaterialesTee() {
                             setIsEditting(true);
                         }} style={{ height: 25, width: 25, marginBottom: 0 }} />
                     </div>
-                    {
-                        row.status ? (<div>
-                            <FaTrashAlt className='DataIcon' onClick={() => {
-                                changeStatus(row.user_id);
-                            }} style={{ height: 25, width: 25, marginBottom: 0 }} />
-                        </div>) : (
-                            <div >
-                                <FaPlus className='DataIcon' onClick={() => {
-                                    changeStatus(row.user_id);
-                                }} style={{ height: 25, width: 25, marginBottom: 0 }} />
-                            </div>
-                        )
-                    }
                     <div style={{ paddingLeft: 10 }}>
-                        <MdDeleteForever className='DataIcon' onClick={() => {
-                            eliminarMaestroPermanente(row.user_id, row.name);
-                        }} style={{ height: 28, width: 28, marginBottom: 0, color: '#dc3545' }} title="Eliminar/Inactivar permanente" />
+                        <FaArchive className='DataIcon' onClick={() => {
+                            archivarMaestro(row.user_id, row.name);
+                        }} style={{ height: 25, width: 25, marginBottom: 0, color: '#f59e0b' }} title="Archivar maestro" />
                     </div>
 
                 </div>
@@ -149,22 +138,19 @@ const [filtrados, setFiltrados] = useState([]);
 const [showFilter, setShowFilter] = useState(false);
 
 
-const eliminarMaestroPermanente = async (id, nombre) => {
+const archivarMaestro = async (id, nombre) => {
     Alert.fire({
-        title: '¿Eliminar o Inactivar Maestro?',
+        title: '¿Archivar Maestro?',
         html: `
             <p><strong>Maestro:</strong> ${nombre}</p>
-            <p class="text-warning"><strong>⚠️ IMPORTANTE:</strong></p>
-            <ul style="text-align: left;">
-                <li>Si tiene clases o historial, solo se inactivará</li>
-                <li>Si no tiene historial, se eliminará permanentemente</li>
-            </ul>
+            <p>El maestro será movido a la sección de "Archivados" y no aparecerá en la lista principal.</p>
+            <p style="font-size: 0.875rem; color: #6c757d;">Podrás restaurarlo más tarde desde la vista de Archivados.</p>
         `,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
+        confirmButtonColor: '#f59e0b',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, proceder',
+        confirmButtonText: 'Sí, archivar',
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
@@ -174,27 +160,43 @@ const eliminarMaestroPermanente = async (id, nombre) => {
                     method: "DELETE",
                 });
 
-                if (response.deleted) {
+                if (response.archived) {
                     Alert.fire({
-                        title: "Maestro Eliminado",
-                        text: "El maestro ha sido eliminado permanentemente (no tenía historial)",
-                        icon: "success",
-                    });
-                } else if (response.inactivated) {
-                    Alert.fire({
-                        title: "Maestro Inactivado",
+                        title: "Maestro Archivado",
                         html: `
                             <p>${response.message}</p>
-                            <p><strong>Registros históricos:</strong> ${response.registros_historicos}</p>
-                            <ul style="text-align: left;">
-                                ${response.detalles.map(d => `<li>${d}</li>`).join('')}
-                            </ul>
+                            ${response.registros_historicos > 0 ? `
+                                <p><strong>Registros históricos preservados:</strong> ${response.registros_historicos}</p>
+                                <ul style="text-align: left; font-size: 0.875rem; color: #6c757d;">
+                                    ${response.detalles.map(d => `<li>${d}</li>`).join('')}
+                                </ul>
+                            ` : ''}
                         `,
-                        icon: "info",
+                        icon: "success",
                     });
-                }
 
-                cargarDatos();
+                    // Limpiar búsqueda y recargar DIRECTAMENTE del servidor
+                    const inputBusqueda = document.getElementById('inputFilter');
+                    if (inputBusqueda) {
+                        inputBusqueda.value = '';
+                    }
+                    setShowFilter(false);
+
+                    // Petición directa al servidor (sin depender de estados)
+                    AxiosClient({
+                        url: '/personal/teacher',
+                        method: 'GET'
+                    }).then(response => {
+                        if (!response.error) {
+                            // Filtrar por campus si no es SUPER
+                            const responseCamp = session.data.role === 'SUPER'
+                                ? response
+                                : response.filter(item => item.campus === session.data.campus);
+                            setDatos(responseCamp);
+                            setFiltrados([]);
+                        }
+                    }).catch(err => console.error('Error al recargar:', err));
+                }
             } catch (err) {
                 Alert.fire({
                     title: "ERROR",
@@ -439,6 +441,45 @@ return (
                                         onChange={(event) => handleInputChange(event)}
                                     />
 
+                                    {/* Botón Ver Archivados - Solo SUPER y ENCARGADO */}
+                                    {(session.data.role === 'SUPER' || session.data.role === 'ENCARGADO') && (
+                                        <div
+                                            onClick={() => navigate('/maestros-archivados')}
+                                            style={{
+                                                height: 42,
+                                                width: 42,
+                                                borderRadius: '10px',
+                                                backgroundColor: '#6B7280',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                boxShadow: '0 2px 4px rgba(107, 114, 128, 0.3)',
+                                                flexShrink: 0
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#4B5563';
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                                e.currentTarget.style.boxShadow = '0 4px 6px rgba(107, 114, 128, 0.4)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#6B7280';
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                                e.currentTarget.style.boxShadow = '0 2px 4px rgba(107, 114, 128, 0.3)';
+                                            }}
+                                            title="Ver Maestros Archivados"
+                                        >
+                                            <FaArchive
+                                                style={{
+                                                    height: 18,
+                                                    width: 18,
+                                                    color: '#FFFFFF'
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+
                                     {session.data.role !== 'RECEPCION' && (
                                         <div
                                             onClick={() => setIsOpen(true)}
@@ -482,9 +523,6 @@ return (
                         columns={columns}
                         data={showFilter ? filtrados : datos}
                         highlightOnHover
-                        pagination
-                        paginationPerPage={10}
-                        paginationRowsPerPageOptions={[10, 20, 30, 50]}
                     />
                 </Card.Body>
             </Card>

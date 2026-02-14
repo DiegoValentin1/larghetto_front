@@ -9,6 +9,7 @@ import AppLayout from "./AppLayout";
 import Users from "../../modules/super/Alumnos";
 import SuperMaterialesBrida from "../../modules/super/Instrumentos";
 import SuperMaterialesTee from "../../modules/super/Maestros";
+import MaestrosArchivados from "../../modules/super/MaestrosArchivados";
 import Promociones from "../../modules/super/Promociones";
 import Encargados from "../../modules/super/Encargados";
 import Recepcionistas from "../../modules/super/Recepcionistas";
@@ -38,6 +39,7 @@ export const AppRouter = () => {
                       <Route index element={<Users />} />
                       <Route path="instrumentos" element={<SuperMaterialesBrida />} />
                       <Route path="maestros" element={<SuperMaterialesTee />} />
+                      <Route path="maestros-archivados" element={<MaestrosArchivados />} />
                       {/* <Route path="promociones" element={<Promociones/>} /> */}
                       <Route path="recepcionistas" element={<Recepcionistas />} />
                       <Route path="cuautla" element={<CuautlaNoti />} />
@@ -57,6 +59,7 @@ export const AppRouter = () => {
                         <Route path="alumnos" element={<Users />} />
                         <Route path="instrumentos" element={<SuperMaterialesBrida />} />
                         <Route path="maestros" element={<SuperMaterialesTee />} />
+                        <Route path="maestros-archivados" element={<MaestrosArchivados />} />
                         <Route path="promociones" element={<Promociones />} />
                         <Route path="encargados" element={<Encargados />} />
                         <Route path="recepcionistas" element={<Recepcionistas />} />
