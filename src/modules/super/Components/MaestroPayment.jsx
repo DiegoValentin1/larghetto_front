@@ -379,17 +379,37 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
     keyboard={false}
     show={isOpen}
     onHide={handleClose}
-    style={{ width: "90vw", display: "flex", alignContent: "start", justifyItems: "start", marginLeft: "5vw", padding: "0", height: "auto", backgroundColor: "white", borderRadius: "1rem", marginTop: "1rem" }}
-    dialogClassName="modalAlumnoActualizar"
-    id="modalAlumnoR"
+    size="xl"
+    centered
+    style={{
+      backdropFilter: 'blur(4px)'
+    }}
   >
-    <Modal.Header closeButton >
-      <Modal.Title>
-        Larghetto Nomina
+    <Modal.Header
+      closeButton
+      style={{
+        backgroundColor: '#F9FAFB',
+        borderBottom: '2px solid #E5E7EB',
+        padding: '1.25rem 1.5rem'
+      }}
+    >
+      <Modal.Title style={{
+        fontSize: '1.5rem',
+        fontWeight: '700',
+        color: '#1F2937'
+      }}>
+        Larghetto Nómina - {objeto.name}
       </Modal.Title>
     </Modal.Header>
 
-    <Modal.Body>
+    <Modal.Body style={{
+      padding: '0',
+      backgroundColor: '#FFFFFF',
+      maxHeight: '75vh',
+      overflow: 'auto',
+      position: 'relative',
+      paddingBottom: '5rem'
+    }}>
       <div className='AlumnoInfoMain' style={{ paddingRight: "0px" }}>
         <div className="AlumnoInfoLeft"  >
           <div className="AlumnoInfoMain" style={{ padding: 0 }}>
@@ -535,17 +555,69 @@ export const MaestroPayment = ({ isOpen, cargarDatos, onClose, option, objeto })
       </div>
     </Modal.Body>
 
-    <div style={{ height: "10%", width: "100%", display: "flex", justifyContent: "end", color: "#f2f2f2", position: "absolute", bottom: 0, fontSize: "25px", fontWeight: "bold" }}>
-      <div style={{ width: "68%" }}></div>
-      <div style={{ width: "30%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <div style={{ width: "40%", textAlign: "right", cursor: "pointer", paddingInline: "0.5rem", backgroundColor: "green", borderRadius: "1rem", display: "flex", justifyContent: "center", alignItems: "center", marginLeft: "3rem" }} onClick={() => obtenerContenidoDivs()}>
-          Save
-        </div>
-        <div style={{ width: "40%", textAlign: "right", cursor: "pointer", paddingInline: "0.5rem", backgroundColor: "green", borderRadius: "1rem", display: "flex", justifyContent: "center", alignItems: "center", marginLeft: "3rem" }} onClick={() => obtenerContenidoDivsExcel()}>
-          Excel
-        </div>
-      </div>
-
+    <div style={{
+      position: 'sticky',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: '1rem 2rem',
+      backgroundColor: '#FFFFFF',
+      borderTop: '2px solid #E5E7EB',
+      display: 'flex',
+      justifyContent: 'flex-end',
+      gap: '1rem',
+      zIndex: 10
+    }}>
+      <button
+        onClick={() => obtenerContenidoDivs()}
+        style={{
+          backgroundColor: '#10B981',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          padding: '0.75rem 2rem',
+          fontSize: '0.875rem',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#059669';
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#10B981';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        }}
+      >
+        Guardar
+      </button>
+      <button
+        onClick={() => obtenerContenidoDivsExcel()}
+        style={{
+          backgroundColor: '#2563EB',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          padding: '0.75rem 2rem',
+          fontSize: '0.875rem',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#1D4ED8';
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#2563EB';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        }}
+      >
+        Exportar Excel
+      </button>
     </div>
   </Modal>
 };

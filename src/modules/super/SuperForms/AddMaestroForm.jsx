@@ -470,14 +470,16 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                   key={item.id}
                   onClick={() => handleAddInstrumento(item.instrumento)}
                   style={{
-                      padding: '0.5rem 1rem',
+                      padding: '0.5rem 1rem 0.5rem 0.75rem',
                       borderRadius: '8px',
                       backgroundColor: '#F3F4F6',
                       color: '#4B5563',
                       fontSize: '0.875rem',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      border: '2px solid #E5E7EB'
+                      border: '2px solid #E5E7EB',
+                      position: 'relative',
+                      paddingRight: '2rem'
                   }}
                   onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#10B981';
@@ -491,6 +493,24 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                   }}
                 >
                   {item.instrumento}
+                  <span style={{
+                      position: 'absolute',
+                      top: '-4px',
+                      right: '-4px',
+                      backgroundColor: '#10B981',
+                      color: 'white',
+                      borderRadius: '50%',
+                      width: '18px',
+                      height: '18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      border: '2px solid white'
+                  }}>
+                      +
+                  </span>
                 </div>
               ))}
             </div>
@@ -520,14 +540,16 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                   key={item.id}
                   onClick={()=>handleSubInstrumento(item.instrumento)}
                   style={{
-                      padding: '0.5rem 1rem',
+                      padding: '0.5rem 1rem 0.5rem 0.75rem',
                       borderRadius: '8px',
                       backgroundColor: '#2563EB',
                       color: '#FFFFFF',
                       fontSize: '0.875rem',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      border: '2px solid #2563EB'
+                      border: '2px solid #2563EB',
+                      position: 'relative',
+                      paddingRight: '2rem'
                   }}
                   onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#EF4444';
@@ -539,6 +561,24 @@ export const AddMaestroForm = ({ isOpen, cargarDatos, onClose, option }) => {
                   }}
                 >
                   {item.instrumento}
+                  <span style={{
+                      position: 'absolute',
+                      top: '-4px',
+                      right: '-4px',
+                      backgroundColor: '#EF4444',
+                      color: 'white',
+                      borderRadius: '50%',
+                      width: '18px',
+                      height: '18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      border: '2px solid white'
+                  }}>
+                      -
+                  </span>
                 </div>
               ))}
             </div>

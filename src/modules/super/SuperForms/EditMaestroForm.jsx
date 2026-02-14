@@ -30,6 +30,24 @@ export const EditMaestroForm = ({
   const [promociones, setPromociones] = useState([]);
   const [maestroInstrumentos, setMaestroInstrumentos] = useState([]);
   const [numInstrumentos, setNumInstrumentos] = useState(1);
+
+  // Estilos modernos
+  const inputStyle = {
+    height: '42px',
+    borderRadius: '10px',
+    border: '2px solid #E5E7EB',
+    backgroundColor: '#F9FAFB',
+    fontSize: '0.875rem',
+    transition: 'all 0.2s ease',
+  };
+
+  const labelStyle = {
+    fontSize: '0.875rem',
+    fontWeight: '600',
+    color: '#6B7280',
+    marginBottom: '0.5rem'
+  };
+
   const [errorConf, setErrorConf] = useState({
     name: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
     email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
@@ -273,51 +291,80 @@ export const EditMaestroForm = ({
       keyboard={false}
       show={isOpen}
       onHide={handleClose}
-      style={{ width: "90vw", display: "flex", alignContent: "start", justifyItems: "start", marginLeft: "5vw", padding: "0", height: "auto", backgroundColor: "white", borderRadius: "1rem", marginTop: "1rem" }}
-      dialogClassName="modalAlumnoActualizar"
-      id="modalAlumnoR"
+      size="xl"
+      centered
+      style={{
+        backdropFilter: 'blur(4px)'
+      }}
     >
-      <Modal.Header closeButton >
-        <Modal.Title>Actualizar Maestro</Modal.Title>
+      <Modal.Header
+        closeButton
+        style={{
+          backgroundColor: '#F9FAFB',
+          borderBottom: '2px solid #E5E7EB',
+          padding: '1.25rem 1.5rem'
+        }}
+      >
+        <Modal.Title style={{
+          fontSize: '1.5rem',
+          fontWeight: '700',
+          color: '#1F2937'
+        }}>
+          Actualizar Maestro
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{
+        padding: '2rem',
+        backgroundColor: '#FFFFFF',
+        maxHeight: '75vh',
+        overflow: 'auto'
+      }}>
         <Form onSubmit={form.handleSubmit}>
-          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos del Maestro</div>
+          <div style={{
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            color: "#1F2937",
+            marginBottom: "1.5rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #E5E7EB"
+          }}>
+            Datos del Maestro
+          </div>
           <div className="InputContainer4">
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='name'>Nombre</Form.Label>
-              <Form.Control name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='name'>Nombre</Form.Label>
+              <Form.Control style={inputStyle} name='name' placeholder="Pablo" value={form.values.name} onChange={form.handleChange} />
               {
-                form.errors.name && (<span className='error-text'>{form.errors.name}</span>)
+                form.errors.name && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.name}</span>)
               }
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='fechaNacimiento'>Fecha de Nacimiento</Form.Label>
-              <Form.Control type='date' name='fechaNacimiento' placeholder="" value={form.values.fechaNacimiento} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='fechaNacimiento'>Fecha de Nacimiento</Form.Label>
+              <Form.Control style={inputStyle} type='date' name='fechaNacimiento'  value={form.values.fechaNacimiento} onChange={form.handleChange} />
               {
-                form.errors.fechaNacimiento && (<span className='error-text'>{form.errors.fechaNacimiento}</span>)
+                form.errors.fechaNacimiento && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.fechaNacimiento}</span>)
               }
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='email'>Email</Form.Label>
-              <Form.Control type='email' name='email' placeholder="correo@dominio.com" value={form.values.email} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='email'>Email</Form.Label>
+              <Form.Control style={inputStyle} type='email' name='email' placeholder="correo@dominio.com" value={form.values.email} onChange={form.handleChange} />
               {
-                form.errors.email && (<span className='error-text'>{form.errors.email}</span>)
+                form.errors.email && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.email}</span>)
               }
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='fecha_inicio'>Fecha de Inicio</Form.Label>
-              <Form.Control type='date' name='fecha_inicio' placeholder="" value={form.values.fecha_inicio} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='fecha_inicio'>Fecha de Inicio</Form.Label>
+              <Form.Control style={inputStyle} type='date' name='fecha_inicio'  value={form.values.fecha_inicio} onChange={form.handleChange} />
               {
-                form.errors.fecha_inicio && (<span className='error-text'>{form.errors.fecha_inicio}</span>)
+                form.errors.fecha_inicio && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.fecha_inicio}</span>)
               }
             </Form.Group>
             {/* <Form.Group className="mb-3">
-                        <Form.Label htmlFor="hora">Horario</Form.Label>
-                        <div className="InputSelect">
-                            <Form.Select
-                                className="TeeRedInputCompleto"
-                                placeholder=""
+                        <Form.Label style={labelStyle} htmlFor="hora">Horario</Form.Label>
+                        
+                            <Form.Select style={inputStyle}
+                                
+                                
                                 name="hora"
                                 value={form.values.hora}
                                 onChange={form.handleChange}
@@ -335,55 +382,55 @@ export const EditMaestroForm = ({
                                 <option value="17:00">17:00</option>
                                 <option value="18:00">18:00</option>
                             </Form.Select>
-                        </div>
+                        
 
                         {form.errors.hora && (
                             <span className="error-text">{form.errors.hora}</span>
                         )}
                     </Form.Group> */}
             {/* <Form.Group className='mb-3'>
-                            <Form.Label htmlFor='abbreviation'>Contraseña</Form.Label>
-                            <Form.Control type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
+                            <Form.Label style={labelStyle} htmlFor='abbreviation'>Contraseña</Form.Label>
+                            <Form.Control style={inputStyle} type='password' name='password' placeholder="*****" value={form.values.password} onChange={form.handleChange} />
                             {
-                                form.errors.password && (<span className='error-text'>{form.errors.password}</span>)
+                                form.errors.password && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.password}</span>)
                             }
                         </Form.Group> */}
           </div>
           <div className="InputContainer4" style={{ width: "100%" }}>
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='domicilio'>Domicilio</Form.Label>
-              <Form.Control name='domicilio' placeholder="Calle #34" value={form.values.domicilio} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='domicilio'>Domicilio</Form.Label>
+              <Form.Control style={inputStyle} name='domicilio' placeholder="Calle #34" value={form.values.domicilio} onChange={form.handleChange} />
               {
-                form.errors.domicilio && (<span className='error-text'>{form.errors.domicilio}</span>)
+                form.errors.domicilio && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.domicilio}</span>)
               }
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='municipio'>Municipio</Form.Label>
-              <Form.Control name='municipio' placeholder="Temixco" value={form.values.municipio} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='municipio'>Municipio</Form.Label>
+              <Form.Control style={inputStyle} name='municipio' placeholder="Temixco" value={form.values.municipio} onChange={form.handleChange} />
               {
-                form.errors.municipio && (<span className='error-text'>{form.errors.municipio}</span>)
+                form.errors.municipio && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.municipio}</span>)
               }
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='telefono'>Telefono</Form.Label>
-              <Form.Control type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='telefono'>Telefono</Form.Label>
+              <Form.Control style={inputStyle} type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} />
               {
-                form.errors.telefono && (<span className='error-text'>{form.errors.telefono}</span>)
+                form.errors.telefono && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.telefono}</span>)
               }
             </Form.Group>
             <Form.Group className='mb-3'>
-              <Form.Label htmlFor='contactoEmergencia'>Contacto de Emergencia</Form.Label>
-              <Form.Control type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
+              <Form.Label style={labelStyle} htmlFor='contactoEmergencia'>Contacto de Emergencia</Form.Label>
+              <Form.Control style={inputStyle} type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} />
               {
-                form.errors.contactoEmergencia && (<span className='error-text'>{form.errors.contactoEmergencia}</span>)
+                form.errors.contactoEmergencia && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.contactoEmergencia}</span>)
               }
             </Form.Group>
             {/* <Form.Group className="mb-3">
-                        <Form.Label htmlFor="dia">Día</Form.Label>
-                        <div className="InputSelect">
-                            <Form.Select
-                                className="TeeRedInputCompleto"
-                                placeholder=""
+                        <Form.Label style={labelStyle} htmlFor="dia">Día</Form.Label>
+                        
+                            <Form.Select style={inputStyle}
+                                
+                                
                                 name="dia"
                                 value={form.values.dia}
                                 onChange={form.handleChange}
@@ -397,45 +444,55 @@ export const EditMaestroForm = ({
                                 <option value="Sabado">Sabado</option>
                                 <option value="Domingo">Domingo</option>
                             </Form.Select>
-                        </div>
+                        
 
                         {form.errors.dia && (
-                            <span className="error-text">{form.errors.dia}</span>
+                            <span className="error-text">{form.errors.dia}</span>)
                         )}
                     </Form.Group> */}
           </div>
-          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Datos Bancarios</div>
+          <div style={{
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            color: "#1F2937",
+            marginBottom: "1.5rem",
+            marginTop: "2rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #E5E7EB"
+          }}>
+            Datos Bancarios
+          </div>
           <div className="InputContainer4-2">
             <div className="InputContainer3" style={{ width: "89%" }}>
               <Form.Group className='mb-3'>
-                <Form.Label htmlFor='clabe'>Clabe</Form.Label>
-                <Form.Control name='clabe' placeholder="123456789012345678" value={form.values.clabe} onChange={form.handleChange} />
+                <Form.Label style={labelStyle} htmlFor='clabe'>Clabe</Form.Label>
+                <Form.Control style={inputStyle} name='clabe' placeholder="123456789012345678" value={form.values.clabe} onChange={form.handleChange} />
                 {
-                  form.errors.clabe && (<span className='error-text'>{form.errors.clabe}</span>)
+                  form.errors.clabe && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.clabe}</span>)
                 }
               </Form.Group>
               <Form.Group className='mb-3'>
-                <Form.Label htmlFor='cuenta'>Cuenta</Form.Label>
-                <Form.Control name='cuenta' placeholder="1234567890123456" value={form.values.cuenta} onChange={form.handleChange} />
+                <Form.Label style={labelStyle} htmlFor='cuenta'>Cuenta</Form.Label>
+                <Form.Control style={inputStyle} name='cuenta' placeholder="1234567890123456" value={form.values.cuenta} onChange={form.handleChange} />
                 {
-                  form.errors.cuenta && (<span className='error-text'>{form.errors.cuenta}</span>)
+                  form.errors.cuenta && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.cuenta}</span>)
                 }
               </Form.Group>
               <Form.Group className='mb-3'>
-                <Form.Label htmlFor='banco'>Banco</Form.Label>
-                <Form.Control name='banco' placeholder="BBVA" value={form.values.banco} onChange={form.handleChange} />
+                <Form.Label style={labelStyle} htmlFor='banco'>Banco</Form.Label>
+                <Form.Control style={inputStyle} name='banco' placeholder="BBVA" value={form.values.banco} onChange={form.handleChange} />
                 {
-                  form.errors.banco && (<span className='error-text'>{form.errors.banco}</span>)
+                  form.errors.banco && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.banco}</span>)
                 }
               </Form.Group>
             </div>
             <div className="InputContainer1" style={{ width: "10%" }}>
               <Form.Group className='mb-3' id='ComprobanteInput'>
-                <Form.Label htmlFor='comprobante'>
+                <Form.Label style={labelStyle} htmlFor='comprobante'>
                   <TbHomeSearch className='DataIcon' style={{ height: 20, width: 25, marginBottom: 0 }} /></Form.Label>
-                <Form.Check checked={form.values.comprobante} id='CheckInput' name='comprobante' placeholder="" value={form.values.comprobante} onChange={form.handleChange} />
+                <Form.Check checked={form.values.comprobante} id='CheckInput' name='comprobante'  value={form.values.comprobante} onChange={form.handleChange} />
                 {
-                  form.errors.comprobante && (<span className='error-text'>{form.errors.comprobante}</span>)
+                  form.errors.comprobante && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.comprobante}</span>)
                 }
               </Form.Group>
             </div>
@@ -443,14 +500,70 @@ export const EditMaestroForm = ({
 
           {/* Horario de los profesores */}
 
-          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black", display: "flex", paddingBottom: "5px" }}>
-            <div style={{ width: "58%" }}>Horarios</div>
-            <div className="InstrumentosSub" onClick={() => numInstrumentos > 1 && setNumInstrumentos(numInstrumentos - 1)}>
+          <div style={{
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            color: "#1F2937",
+            marginBottom: "1.5rem",
+            marginTop: "2rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #E5E7EB",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem"
+          }}>
+            <div style={{ flex: "1" }}>Horarios</div>
+            <button
+              type="button"
+              onClick={() => numInstrumentos > 1 && setNumInstrumentos(numInstrumentos - 1)}
+              disabled={numInstrumentos === 1}
+              style={{
+                backgroundColor: numInstrumentos === 1 ? '#D1D5DB' : '#EF4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: numInstrumentos === 1 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (numInstrumentos > 1) {
+                  e.currentTarget.style.backgroundColor = '#DC2626';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (numInstrumentos > 1) {
+                  e.currentTarget.style.backgroundColor = '#EF4444';
+                }
+              }}
+            >
               Disminuir Horarios
-            </div>
-            <div className="InstrumentosAdd" onClick={() => handleInstrumentosNumber()}>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleInstrumentosNumber()}
+              style={{
+                backgroundColor: '#10B981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#059669';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#10B981';
+              }}
+            >
               Añadir Horarios
-            </div>
+            </button>
           </div>
           {
             Array.from({ length: 10 }, (_, index) => {
@@ -458,11 +571,11 @@ export const EditMaestroForm = ({
               return numInstrumentos >= instrumentoIndex && (
                 <div className="InputContainer3" style={{ height: "100%" }} key={instrumentoIndex}>
                   <Form.Group className="mb-3">
-                    <Form.Label htmlFor={`instrumento${instrumentoIndex}`}>Instrumento</Form.Label>
-                    <div className="InputSelect">
-                      <Form.Select
-                        className="TeeRedInputCompleto"
-                        placeholder=""
+                    <Form.Label style={labelStyle} htmlFor={`instrumento${instrumentoIndex}`}>Instrumento</Form.Label>
+                    
+                      <Form.Select style={inputStyle}
+                        
+                        
                         name={`instrumento${instrumentoIndex}`}
                         value={form.values[`instrumento${instrumentoIndex}`]}
                         onChange={form.handleChange}
@@ -474,18 +587,18 @@ export const EditMaestroForm = ({
                           </option>
                         ))}
                       </Form.Select>
-                    </div>
+                    
 
                     {form.errors[`instrumento${instrumentoIndex}`] && (
                       <span className="error-text">{form.errors[`instrumento${instrumentoIndex}`]}</span>
                     )}
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label htmlFor={`dia${instrumentoIndex}`}>Día</Form.Label>
-                    <div className="InputSelect">
-                      <Form.Select
-                        className="TeeRedInputCompleto"
-                        placeholder=""
+                    <Form.Label style={labelStyle} htmlFor={`dia${instrumentoIndex}`}>Día</Form.Label>
+                    
+                      <Form.Select style={inputStyle}
+                        
+                        
                         name={`dia${instrumentoIndex}`}
                         value={form.values[`dia${instrumentoIndex}`]}
                         onChange={form.handleChange}
@@ -499,18 +612,18 @@ export const EditMaestroForm = ({
                         <option value="Sábado">Sábado</option>
                         <option value="Domingo">Domingo</option>
                       </Form.Select>
-                    </div>
+                    
 
                     {form.errors[`dia${instrumentoIndex}`] && (
                       <span className="error-text">{form.errors[`dia${instrumentoIndex}`]}</span>
                     )}
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label htmlFor={`hora${instrumentoIndex}`}>Horario</Form.Label>
-                    <div className="InputSelect">
-                      <Form.Select
-                        className="TeeRedInputCompleto"
-                        placeholder=""
+                    <Form.Label style={labelStyle} htmlFor={`hora${instrumentoIndex}`}>Horario</Form.Label>
+                    
+                      <Form.Select style={inputStyle}
+                        
+                        
                         name={`hora${instrumentoIndex}`}
                         value={form.values[`hora${instrumentoIndex}`]}
                         onChange={form.handleChange}
@@ -528,7 +641,7 @@ export const EditMaestroForm = ({
                         <option value="17:00">17:00</option>
                         <option value="18:00">18:00</option>
                       </Form.Select>
-                    </div>
+                    
 
                     {form.errors[`hora${instrumentoIndex}`] && (
                       <span className="error-text">{form.errors[`hora${instrumentoIndex}`]}</span>
@@ -541,39 +654,224 @@ export const EditMaestroForm = ({
 
 
 
-          <div style={{ fontSize: "20px", fontWeight: "bolder", borderBottom: "solid 1px black" }}>Instrumentos</div>
-          <div className="MaestroInstrumentosContainer">
-            <div className="InstrumentosContainer">
-              <p className="InstrumentosInstrumentoTitulo">Instrumentos No Impartidos</p>
-              {instrumentos.filter(objeto1 =>
-                !maestroInstrumentos.some(objeto2 => objeto1.instrumento === objeto2.instrumento)
-              ).map((item) => (
-                <div className="InstrumentosInstrumento" key={item.id} onClick={() => handleAddInstrumento(item.instrumento)}>
-                  {item.instrumento}
-                </div>
-              ))}
+          <div style={{
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            color: "#1F2937",
+            marginBottom: "1.5rem",
+            marginTop: "2rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #E5E7EB"
+          }}>
+            Instrumentos
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '1.5rem' }}>
+            <div style={{
+                padding: '1rem',
+                borderRadius: '12px',
+                backgroundColor: '#FFFFFF',
+                border: '2px solid #E5E7EB',
+                minHeight: '200px'
+            }}>
+              <p style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '700',
+                  color: '#1F2937',
+                  marginBottom: '1rem',
+                  padding: '0.75rem',
+                  backgroundColor: '#F9FAFB',
+                  borderRadius: '8px',
+                  textAlign: 'center'
+              }}>
+                  Instrumentos No Impartidos
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {instrumentos.filter(objeto1 =>
+                  !maestroInstrumentos.some(objeto2 => objeto1.instrumento === objeto2.instrumento)
+                ).map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleAddInstrumento(item.instrumento)}
+                    style={{
+                        padding: '0.5rem 1rem 0.5rem 0.75rem',
+                        borderRadius: '8px',
+                        backgroundColor: '#F3F4F6',
+                        color: '#4B5563',
+                        fontSize: '0.875rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        border: '2px solid #E5E7EB',
+                        position: 'relative',
+                        paddingRight: '2rem'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#10B981';
+                        e.currentTarget.style.color = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#10B981';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F3F4F6';
+                        e.currentTarget.style.color = '#4B5563';
+                        e.currentTarget.style.borderColor = '#E5E7EB';
+                    }}
+                  >
+                    {item.instrumento}
+                    <span style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        backgroundColor: '#10B981',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: '18px',
+                        height: '18px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        border: '2px solid white'
+                    }}>
+                        +
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="InstrumentosContainer">
-              <p className="InstrumentosInstrumentoTitulo">Instrumentos Impartidos</p>
-              {maestroInstrumentos.map((item) => (
-                <div className="InstrumentosInstrumento" key={item.id} onClick={() => handleSubInstrumento(item.instrumento)}>
-                  {item.instrumento}
-                </div>
-              ))}
+            <div style={{
+                padding: '1rem',
+                borderRadius: '12px',
+                backgroundColor: '#FFFFFF',
+                border: '2px solid #E5E7EB',
+                minHeight: '200px'
+            }}>
+              <p style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '700',
+                  color: '#1F2937',
+                  marginBottom: '1rem',
+                  padding: '0.75rem',
+                  backgroundColor: '#EFF6FF',
+                  borderRadius: '8px',
+                  textAlign: 'center'
+              }}>
+                  Instrumentos Impartidos
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {maestroInstrumentos.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleSubInstrumento(item.instrumento)}
+                    style={{
+                        padding: '0.5rem 1rem 0.5rem 0.75rem',
+                        borderRadius: '8px',
+                        backgroundColor: '#2563EB',
+                        color: '#FFFFFF',
+                        fontSize: '0.875rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        border: '2px solid #2563EB',
+                        position: 'relative',
+                        paddingRight: '2rem'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#EF4444';
+                        e.currentTarget.style.borderColor = '#EF4444';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#2563EB';
+                        e.currentTarget.style.borderColor = '#2563EB';
+                    }}
+                  >
+                    {item.instrumento}
+                    <span style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        backgroundColor: '#EF4444',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: '18px',
+                        height: '18px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        border: '2px solid white'
+                    }}>
+                        -
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
 
 
           <FormGroup className='mb-3'>
-            <Row style={{ padding: "10px" }}>
-              <Col className='text-end'>
-                <Button variant='outline-danger' className='me-2' onClick={handleClose}>
-                  <FeatherIcon icon='x' />&nbsp;Cancelar
-                </Button>
-                <Button variant='outline-success' type='submit'>
-                  <FeatherIcon icon='check'>&nbsp;Guardar</FeatherIcon>
-                </Button>
+            <Row style={{ padding: "1.5rem 0 0 0", borderTop: "2px solid #E5E7EB", marginTop: "2rem" }}>
+              <Col className='text-end' style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  style={{
+                    backgroundColor: '#EF4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.625rem 1.25rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#DC2626';
+                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#EF4444';
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                  }}
+                >
+                  <FeatherIcon icon='x' size={18} />
+                  Cancelar
+                </button>
+                <button
+                  type='submit'
+                  style={{
+                    backgroundColor: '#10B981',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.625rem 1.25rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#059669';
+                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#10B981';
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                  }}
+                >
+                  <FeatherIcon icon='check' size={18} />
+                  Guardar
+                </button>
               </Col>
             </Row>
           </FormGroup>
