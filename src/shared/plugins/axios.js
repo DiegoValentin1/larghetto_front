@@ -21,6 +21,12 @@ const requestHandler = (request) => {
 };
 
 const errorResponseHandler = (error) => {
+    // Manejo automático de errores de autenticación
+    if(error.response?.status === 401 || error.response?.status === 403) {
+        console.log('Sesión expirada o usuario inactivo. Cerrando sesión...');
+        localStorage.removeItem('user');
+        window.location.href = '/auth';
+    }
     return Promise.reject(error);
 };
 const successResponseHandler = (response) => Promise.resolve(response.data);
