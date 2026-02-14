@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, Suspense } from 'react'
+import React, { useContext, useState, useEffect, Suspense, useRef } from 'react'
 import DataTable from 'react-data-table-component';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FaPlus, FaTrashAlt, FaEdit, FaRegMoneyBillAlt } from 'react-icons/fa'
@@ -18,6 +18,7 @@ import { AuthContext } from '../auth/authContext';
 import { BarLoader } from 'react-spinners';
 import { SuperPagos } from './Components/SuperPagos';
 import Modal from 'react-modal';
+import { useInView } from 'react-intersection-observer';
 import SolicitarBajaModal from './Components/SolicitarBajaModal';
 
 const statusColors = [
@@ -50,6 +51,7 @@ export default function Users() {
     const [switchActivo, setSwitchActivo] = useState(true);
     const [switchCampus, setSwitchCampus] = useState(false);
     const [cargando, setCargando] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true); // Solo para carga inicial
     const { user } = useContext(AuthContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalDescription, setModalDescription] = useState("");
@@ -57,6 +59,18 @@ export default function Users() {
     // Estados para modal de solicitud de baja
     const [showSolicitudBajaModal, setShowSolicitudBajaModal] = useState(false);
     const [alumnoParaBaja, setAlumnoParaBaja] = useState(null);
+
+    // Estados para infinite scroll
+    const [offset, setOffset] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const searchTimeoutRef = useRef(null);
+    const isLoadingRef = useRef(false); // Flag para evitar llamadas múltiples
+    const { ref: loadMoreRef, inView } = useInView({
+        threshold: 0.5,
+        triggerOnce: false
+    });
 
     const openModal = (description) => {
         setModalDescription(description);
@@ -198,22 +212,58 @@ export default function Users() {
     const [pagosMes, setPagosMes] = useState(0);
     const [idUser, setIdUser] = useState();
 
+    // Trigger loadMore cuando el usuario llega al final (solo cuando inView cambia a true)
+    useEffect(() => {
+        const loadMore = async () => {
+            // Verificaciones para evitar bucle infinito
+            if (!inView) return;
+            if (!hasMore) return;
+            if (isLoadingMore) return;
+            if (searchQuery) return;
+            if (isLoadingRef.current) return; // Evitar llamadas múltiples
+
+            console.log('🔄 Cargando más alumnos desde offset:', offset);
+            isLoadingRef.current = true;
+            setIsLoadingMore(true);
+
+            try {
+                await cargarDatos(false);
+            } catch (error) {
+                console.error('Error cargando más:', error);
+            } finally {
+                setIsLoadingMore(false);
+                isLoadingRef.current = false;
+            }
+        };
+
+        loadMore();
+    }, [inView]); // Solo depende de inView
+
     const handleInputChange = (event) => {
         if (!event) {
             setShowFilter(false);
+            setSearchQuery('');
             const imp = document.getElementById('inputFilter');
             if (imp) imp.value = "";
+            // Resetear y cargar desde inicio
+            cargarDatos(true);
             return
         }
+
         const valorInput = event.target.value;
-        setShowFilter(valorInput.lenght === 0 ? false : true)
+        setShowFilter(valorInput.length === 0 ? false : true);
+        setSearchQuery(valorInput);
         console.log('Valor actual del input:', valorInput);
-        setFiltrados(datos.filter(item => {
-            return (
-                (item.matricula && item.matricula.toLowerCase().includes(valorInput.toLowerCase())) ||
-                (item.name && item.name.toLowerCase().includes(valorInput.toLowerCase()))
-            );
-        }));
+
+        // Debounce de 300ms
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            // Resetear y buscar en backend
+            cargarDatos(true);
+        }, 300);
     }
 
     useEffect(() => {
@@ -331,7 +381,7 @@ export default function Users() {
                     text: "Cambio de Status Exitoso",
                     icon: "success",
                 });
-                await cargarDatos();
+                await cargarDatos(true);
             }
         } catch (err) {
             Alert.fire({
@@ -372,7 +422,7 @@ export default function Users() {
                             text: "Alumno Eliminado Exitosamente",
                             icon: "success",
                         });
-                        await cargarDatos();
+                        await cargarDatos(true);
                     }
                 } catch (err) {
                     Alert.fire({
@@ -389,71 +439,85 @@ export default function Users() {
 
     }
 
-    const cargarDatos = async () => {
-        setCargando(false);
+    const cargarDatos = async (reset = false) => {
+        // Solo mostrar loading en toda la tabla si es reset (carga inicial o cambio de filtros)
+        if (reset) {
+            setIsInitialLoad(true);
+        }
+
         try {
+            // Reset para cuando cambian filtros
+            const currentOffset = reset ? 0 : offset;
+            if (reset) {
+                setDatos([]);
+                setOffset(0);
+                setHasMore(true);
+            }
+
+            // Determinar campus según filtros
+            const campusParam = (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                null : (superCampus === 1 ? "centro" :
+                    (superCampus === 2 ? "bugambilias" :
+                        (superCampus === 3 ? "cuautla" :
+                            (superCampus === 4 ? "CDMX" : user.data.campus))));
+
+            // Cargar alumnos con infinite scroll
+            const url = searchQuery ?
+                `/personal/search?q=${encodeURIComponent(searchQuery)}&offset=${currentOffset}&limit=100${campusParam ? `&campus=${campusParam}` : ''}` :
+                `/personal/lazy?offset=${currentOffset}&limit=100${campusParam ? `&campus=${campusParam}` : ''}`;
+
             const response = await AxiosClient({
-                url: (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
-                    "/personal/" : (superCampus === 1 ?
-                        "/personal/getalumno/centro" :
-                        (superCampus === 2 ? "/personal/getalumno/bugambilias" :
-                            (superCampus === 3 ? "/personal/getalumno/cuautla" :
-                                (superCampus === 4 ? "/personal/getalumno/CDMX" : "/personal/getalumno/" + user.data.campus)
-                            ))),
+                url: url,
                 method: "GET",
             });
-            console.log(response);
-            if (!response.error) {
-                console.log(response);
-                const responseCamp = response;
-                setDatos(responseCamp);
-                // setTotalMensualidad(await responseCamp.reduce((acum, item) => {
-                //     var temp = item.estado !== 0 ? acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) : acum + 0;
-                //     return temp;
 
-                // }, 0));
-                // console.log(responseCamp.reduce((acum, item) => { return acum + (item.mensualidad - (item.mensualidad * (item.descuento / 100))) }, 0));
-                setTotalStatus(responseCamp.reduce((contador, item) => {
-                    const estado = item.estado;
-                    if (contador[estado] !== undefined) {
-                        contador[estado]++;
-                    } else {
-                        contador[estado] = 1;
-                    }
-                    return contador;
-                }, {}));
-                console.log(responseCamp.reduce((contador, item) => {
-                    const estado = item.estado;
-                    if (contador[estado] !== undefined) {
-                        contador[estado]++;
-                    } else {
-                        contador[estado] = 1;
-                    }
-                    return contador;
-                }, {}))
-                handleInputChange(null);
+            console.log('Alumnos cargados:', response.length);
+
+            if (!response.error) {
+                if (reset) {
+                    setDatos(response);
+                } else {
+                    setDatos(prev => [...prev, ...response]);
+                }
+
+                // Si retorna menos de 100, ya no hay más
+                if (response.length < 100) {
+                    setHasMore(false);
+                } else {
+                    setOffset(currentOffset + 100);
+                }
+
+                // Cargar conteo de status desde backend
+                const statusUrl = `/personal/status-count${campusParam ? `?campus=${campusParam}` : ''}`;
+                const statusResponse = await AxiosClient({
+                    url: statusUrl,
+                    method: "GET",
+                });
+                setTotalStatus(statusResponse);
             }
         } catch (err) {
             Alert.fire({
                 title: "VERIFICAR DATOS",
-                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
+                text: "Error al cargar datos",
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "Aceptar",
             });
             console.log(err);
+        } finally {
+            // SIEMPRE poner isInitialLoad en false al terminar (éxito o error)
+            setIsInitialLoad(false);
+            setCargando(true);
         }
-
-        setCargando(true);
     }
 
 
     useEffect(() => {
-        cargarDatos();
+        cargarDatos(true);
     }, []);
 
     useEffect(() => {
-        cargarDatos();
+        cargarDatos(true);
     }, [switchCampus, superCampus]);
 
     // Estilos personalizados para DataTable
@@ -950,17 +1014,44 @@ export default function Users() {
                             </div>
                         }
                         columns={columns}
-                        data={showFilter ?
-                            (switchActivo ? filtrados.filter(item => item.estado !== 0) : filtrados.filter(item => item.estado === 0)) :
-                            (switchActivo ? datos.filter(item => item.estado !== 0) : datos.filter(item => item.estado === 0))}
+                        data={switchActivo ? datos.filter(item => item.estado !== 0) : datos.filter(item => item.estado === 0)}
                         highlightOnHover
-                        paginationPerPage={6}
-                        paginationComponentOptions={{
-                            rowsPerPageText: '',
-                            noRowsPerPage: true,
-                        }}
                         defaultSortFieldId={4}
+                        pagination={false}
+                        progressPending={isInitialLoad}
                     />
+
+                    {/* Indicador de carga para infinite scroll */}
+                    {!searchQuery && hasMore && datos.length > 0 && cargando && (
+                        <div
+                            ref={loadMoreRef}
+                            style={{
+                                padding: '1rem',
+                                textAlign: 'center',
+                                color: '#6B7280',
+                                fontSize: '0.875rem',
+                                backgroundColor: '#F9FAFB',
+                                borderTop: '1px solid #E5E7EB'
+                            }}
+                        >
+                            {isLoadingMore ? 'Cargando más alumnos...' : 'Scroll para cargar más'}
+                        </div>
+                    )}
+
+                    {!hasMore && !searchQuery && datos.length > 0 && (
+                        <div
+                            style={{
+                                padding: '1rem',
+                                textAlign: 'center',
+                                color: '#9CA3AF',
+                                fontSize: '0.875rem',
+                                backgroundColor: '#F9FAFB',
+                                borderTop: '1px solid #E5E7EB'
+                            }}
+                        >
+                            No hay más alumnos para mostrar
+                        </div>
+                    )}
                 </Card.Body>
             </Card>
         </Container>
