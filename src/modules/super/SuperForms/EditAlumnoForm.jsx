@@ -3,6 +3,7 @@ import { Button, Col, Row, Form, Modal, FormGroup } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import FeatherIcon from "feather-icons-react";
+import Select from 'react-select';
 import AxiosClient from "../../../shared/plugins/axios";
 import Alert, {
   confirmMsj,
@@ -158,6 +159,63 @@ export const EditUserForm = ({
     fontWeight: '600',
     color: '#6B7280',
     marginBottom: '0.5rem'
+  };
+
+  // Estilos personalizados para react-select
+  const customSelectStyles = {
+    control: (base, state) => ({
+      ...base,
+      height: '42px',
+      minHeight: '42px',
+      borderRadius: '10px',
+      border: `2px solid ${state.isFocused ? '#2563EB' : '#E5E7EB'}`,
+      backgroundColor: '#F9FAFB',
+      fontSize: '0.875rem',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(37, 99, 235, 0.1)' : 'none',
+      '&:hover': {
+        border: `2px solid ${state.isFocused ? '#2563EB' : '#D1D5DB'}`
+      }
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '10px',
+      border: '2px solid #E5E7EB',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      overflow: 'hidden'
+    }),
+    menuList: (base) => ({
+      ...base,
+      padding: '0.25rem',
+      maxHeight: '200px'
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? '#EFF6FF' : state.isSelected ? '#2563EB' : 'white',
+      color: state.isSelected ? 'white' : '#1F2937',
+      fontSize: '0.875rem',
+      padding: '0.5rem 0.75rem',
+      cursor: 'pointer',
+      borderRadius: '6px',
+      margin: '0.125rem 0',
+      '&:active': {
+        backgroundColor: '#2563EB'
+      }
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: '#9CA3AF',
+      fontSize: '0.875rem'
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: '#1F2937',
+      fontSize: '0.875rem'
+    }),
+    input: (base) => ({
+      ...base,
+      color: '#1F2937',
+      fontSize: '0.875rem'
+    })
   };
 
   const form = useFormik({
@@ -913,23 +971,21 @@ export const EditUserForm = ({
           <div className="InputContainer4" style={{ height: "100%" }}>
             <Form.Group className="mb-3">
               <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-
-                <Form.Select style={inputStyle}
-                  
-                  
-                  name="maestro1"
-                  value={form.values.maestro1}
-                  onChange={form.handleChange}
-                >
-                  <option value="">Selecciona un Maestro</option>
-                  {maestros.map((item) => (
-                    <option key={item.id} value={item.user_id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </Form.Select>
-
-
+              <Select
+                name="maestro1"
+                value={maestros.find(m => m.user_id === form.values.maestro1) ? {
+                  value: maestros.find(m => m.user_id === form.values.maestro1).user_id,
+                  label: maestros.find(m => m.user_id === form.values.maestro1).name
+                } : null}
+                onChange={(selectedOption) => {
+                  form.setFieldValue('maestro1', selectedOption ? selectedOption.value : '');
+                }}
+                options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                styles={customSelectStyles}
+                placeholder="Buscar maestro..."
+                isClearable
+                noOptionsMessage={() => "No se encontraron maestros"}
+              />
               {form.errors.maestro1 && (
                 <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro1}</span>
               )}
@@ -1018,21 +1074,21 @@ export const EditUserForm = ({
               <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-                    <Form.Select style={inputStyle}
-                      
-                      
-                      name="maestro2"
-                      value={form.values.maestro2}
-                      onChange={form.handleChange}
-                    >
-                      <option value="">Selecciona un Maestro</option>
-                      {maestros.map((item) => (
-                        <option key={item.id} value={item.user_id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-
+                  <Select
+                    name="maestro2"
+                    value={maestros.find(m => m.user_id === form.values.maestro2) ? {
+                      value: maestros.find(m => m.user_id === form.values.maestro2).user_id,
+                      label: maestros.find(m => m.user_id === form.values.maestro2).name
+                    } : null}
+                    onChange={(selectedOption) => {
+                      form.setFieldValue('maestro2', selectedOption ? selectedOption.value : '');
+                    }}
+                    options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                    styles={customSelectStyles}
+                    placeholder="Buscar maestro..."
+                    isClearable
+                    noOptionsMessage={() => "No se encontraron maestros"}
+                  />
                   {form.errors.maestro2 && (
                     <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro2}</span>
                   )}
@@ -1117,21 +1173,21 @@ export const EditUserForm = ({
               <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-                    <Form.Select style={inputStyle}
-                      
-                      
-                      name="maestro3"
-                      value={form.values.maestro3}
-                      onChange={form.handleChange}
-                    >
-                      <option value="">Selecciona un Maestro</option>
-                      {maestros.map((item) => (
-                        <option key={item.id} value={item.user_id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-
+                  <Select
+                    name="maestro3"
+                    value={maestros.find(m => m.user_id === form.values.maestro3) ? {
+                      value: maestros.find(m => m.user_id === form.values.maestro3).user_id,
+                      label: maestros.find(m => m.user_id === form.values.maestro3).name
+                    } : null}
+                    onChange={(selectedOption) => {
+                      form.setFieldValue('maestro3', selectedOption ? selectedOption.value : '');
+                    }}
+                    options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                    styles={customSelectStyles}
+                    placeholder="Buscar maestro..."
+                    isClearable
+                    noOptionsMessage={() => "No se encontraron maestros"}
+                  />
                   {form.errors.maestro3 && (
                     <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro3}</span>
                   )}
@@ -1216,21 +1272,21 @@ export const EditUserForm = ({
               <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-                    <Form.Select style={inputStyle}
-                      
-                      
-                      name="maestro4"
-                      value={form.values.maestro4}
-                      onChange={form.handleChange}
-                    >
-                      <option value="">Selecciona un Maestro</option>
-                      {maestros.map((item) => (
-                        <option key={item.id} value={item.user_id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-
+                  <Select
+                    name="maestro4"
+                    value={maestros.find(m => m.user_id === form.values.maestro4) ? {
+                      value: maestros.find(m => m.user_id === form.values.maestro4).user_id,
+                      label: maestros.find(m => m.user_id === form.values.maestro4).name
+                    } : null}
+                    onChange={(selectedOption) => {
+                      form.setFieldValue('maestro4', selectedOption ? selectedOption.value : '');
+                    }}
+                    options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                    styles={customSelectStyles}
+                    placeholder="Buscar maestro..."
+                    isClearable
+                    noOptionsMessage={() => "No se encontraron maestros"}
+                  />
                   {form.errors.maestro4 && (
                     <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro4}</span>
                   )}
@@ -1315,21 +1371,21 @@ export const EditUserForm = ({
               <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-                    <Form.Select style={inputStyle}
-                      
-                      
-                      name="maestro5"
-                      value={form.values.maestro5}
-                      onChange={form.handleChange}
-                    >
-                      <option value="">Selecciona un Maestro</option>
-                      {maestros.map((item) => (
-                        <option key={item.id} value={item.user_id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-
+                  <Select
+                    name="maestro5"
+                    value={maestros.find(m => m.user_id === form.values.maestro5) ? {
+                      value: maestros.find(m => m.user_id === form.values.maestro5).user_id,
+                      label: maestros.find(m => m.user_id === form.values.maestro5).name
+                    } : null}
+                    onChange={(selectedOption) => {
+                      form.setFieldValue('maestro5', selectedOption ? selectedOption.value : '');
+                    }}
+                    options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                    styles={customSelectStyles}
+                    placeholder="Buscar maestro..."
+                    isClearable
+                    noOptionsMessage={() => "No se encontraron maestros"}
+                  />
                   {form.errors.maestro5 && (
                     <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro5}</span>
                   )}
@@ -1414,21 +1470,21 @@ export const EditUserForm = ({
               <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-                    <Form.Select style={inputStyle}
-                      
-                      
-                      name="maestro6"
-                      value={form.values.maestro6}
-                      onChange={form.handleChange}
-                    >
-                      <option value="">Selecciona un Maestro</option>
-                      {maestros.map((item) => (
-                        <option key={item.id} value={item.user_id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-
+                  <Select
+                    name="maestro6"
+                    value={maestros.find(m => m.user_id === form.values.maestro6) ? {
+                      value: maestros.find(m => m.user_id === form.values.maestro6).user_id,
+                      label: maestros.find(m => m.user_id === form.values.maestro6).name
+                    } : null}
+                    onChange={(selectedOption) => {
+                      form.setFieldValue('maestro6', selectedOption ? selectedOption.value : '');
+                    }}
+                    options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                    styles={customSelectStyles}
+                    placeholder="Buscar maestro..."
+                    isClearable
+                    noOptionsMessage={() => "No se encontraron maestros"}
+                  />
                   {form.errors.maestro6 && (
                     <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro6}</span>
                   )}
@@ -1513,21 +1569,21 @@ export const EditUserForm = ({
               <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-                    <Form.Select style={inputStyle}
-                      
-                      
-                      name="maestro7"
-                      value={form.values.maestro7}
-                      onChange={form.handleChange}
-                    >
-                      <option value="">Selecciona un Maestro</option>
-                      {maestros.map((item) => (
-                        <option key={item.id} value={item.user_id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-
+                  <Select
+                    name="maestro7"
+                    value={maestros.find(m => m.user_id === form.values.maestro7) ? {
+                      value: maestros.find(m => m.user_id === form.values.maestro7).user_id,
+                      label: maestros.find(m => m.user_id === form.values.maestro7).name
+                    } : null}
+                    onChange={(selectedOption) => {
+                      form.setFieldValue('maestro7', selectedOption ? selectedOption.value : '');
+                    }}
+                    options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                    styles={customSelectStyles}
+                    placeholder="Buscar maestro..."
+                    isClearable
+                    noOptionsMessage={() => "No se encontraron maestros"}
+                  />
                   {form.errors.maestro7 && (
                     <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro7}</span>
                   )}
@@ -1612,21 +1668,21 @@ export const EditUserForm = ({
               <div className="InputContainer4" style={{ width: "100%" }}>
                 <Form.Group className="mb-3">
                   <Form.Label htmlFor="maestro" style={labelStyle}>Maestro</Form.Label>
-                    <Form.Select style={inputStyle}
-                      
-                      
-                      name="maestro8"
-                      value={form.values.maestro8}
-                      onChange={form.handleChange}
-                    >
-                      <option value="">Selecciona un Maestro</option>
-                      {maestros.map((item) => (
-                        <option key={item.id} value={item.user_id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-
+                  <Select
+                    name="maestro8"
+                    value={maestros.find(m => m.user_id === form.values.maestro8) ? {
+                      value: maestros.find(m => m.user_id === form.values.maestro8).user_id,
+                      label: maestros.find(m => m.user_id === form.values.maestro8).name
+                    } : null}
+                    onChange={(selectedOption) => {
+                      form.setFieldValue('maestro8', selectedOption ? selectedOption.value : '');
+                    }}
+                    options={maestros.map(item => ({ value: item.user_id, label: item.name }))}
+                    styles={customSelectStyles}
+                    placeholder="Buscar maestro..."
+                    isClearable
+                    noOptionsMessage={() => "No se encontraron maestros"}
+                  />
                   {form.errors.maestro8 && (
                     <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.maestro8}</span>
                   )}
