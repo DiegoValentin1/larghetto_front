@@ -252,17 +252,70 @@ export default function Users() {
 
         const valorInput = event.target.value;
         setShowFilter(valorInput.length === 0 ? false : true);
-        setSearchQuery(valorInput);
-        console.log('Valor actual del input:', valorInput);
 
-        // Debounce de 300ms
+        // Limpiar timeout anterior
         if (searchTimeoutRef.current) {
             clearTimeout(searchTimeoutRef.current);
         }
 
+        // Si el input está vacío, limpiar búsqueda inmediatamente
+        if (valorInput.length === 0) {
+            setSearchQuery('');
+            setDatos([]);
+            setOffset(0);
+            setHasMore(true);
+
+            // Cargar INMEDIATAMENTE todos los alumnos (sin esperar al estado)
+            const campusParam = (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                null : (superCampus === 1 ? "centro" :
+                    (superCampus === 2 ? "bugambilias" :
+                        (superCampus === 3 ? "cuautla" :
+                            (superCampus === 4 ? "CDMX" : user.data.campus))));
+
+            const url = `/personal/lazy?offset=0&limit=100${campusParam ? `&campus=${campusParam}` : ''}`;
+
+            AxiosClient({ url, method: "GET" })
+                .then(response => {
+                    if (!response.error) {
+                        setDatos(response);
+                        setHasMore(response.length >= 100);
+                        setOffset(response.length >= 100 ? 100 : 0);
+                    }
+                })
+                .catch(err => console.error('Error al cargar:', err));
+
+            return;
+        }
+
+        // CORRECCIÓN: Actualizar searchQuery y usar valorInput directamente en el setTimeout
+        setSearchQuery(valorInput);
+        console.log('Buscando:', valorInput);
+
+        // Usar valorInput directamente (no depender del estado searchQuery que es asíncrono)
         searchTimeoutRef.current = setTimeout(() => {
-            // Resetear y buscar en backend
-            cargarDatos(true);
+            console.log('Ejecutando búsqueda con:', valorInput);
+            setDatos([]);
+            setOffset(0);
+            setHasMore(true);
+
+            // Construir URL directamente con valorInput
+            const campusParam = (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                null : (superCampus === 1 ? "centro" :
+                    (superCampus === 2 ? "bugambilias" :
+                        (superCampus === 3 ? "cuautla" :
+                            (superCampus === 4 ? "CDMX" : user.data.campus))));
+
+            const url = `/personal/search?q=${encodeURIComponent(valorInput)}&offset=0&limit=100${campusParam ? `&campus=${campusParam}` : ''}`;
+
+            AxiosClient({ url, method: "GET" })
+                .then(response => {
+                    if (!response.error) {
+                        setDatos(response);
+                        setHasMore(response.length >= 100);
+                        setOffset(response.length >= 100 ? 100 : 0);
+                    }
+                })
+                .catch(err => console.error('Error en búsqueda:', err));
         }, 300);
     }
 

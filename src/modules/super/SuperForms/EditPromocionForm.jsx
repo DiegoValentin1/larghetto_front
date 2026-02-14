@@ -23,11 +23,17 @@ export const EditPromocionForm = ({
     initialValues: {
       instrumento: "",
       fecha_inicio: "",
-      fecha_fin: ""
+      fecha_fin: "",
+      duracion_meses: ""
     },
     validationSchema: yup.object().shape({
       promocion: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
       descuento: yup.string().matches(/^[0-9]+(\.[0-9]+)?$/, 'Ingrese un número válido').required('Campoobligatorio'),
+      duracion_meses: yup.number()
+        .nullable()
+        .integer('Debe ser un número entero')
+        .min(0, 'No puede ser negativo')
+        .transform((value, originalValue) => originalValue === '' ? null : value),
       fecha_inicio: yup.date().nullable(),
       fecha_fin: yup.date().nullable()
         .when('fecha_inicio', (fecha_inicio, schema) => {
@@ -86,10 +92,11 @@ export const EditPromocionForm = ({
   })
 
   React.useMemo(() => {
-    const { id, promocion, descuento, fecha_inicio, fecha_fin} = objeto;
+    const { id, promocion, descuento, fecha_inicio, fecha_fin, duracion_meses} = objeto;
     form.values.id = id;
     form.values.promocion = promocion;
     form.values.descuento = descuento;
+    form.values.duracion_meses = duracion_meses || "";
     form.values.fecha_inicio = fecha_inicio || "";
     form.values.fecha_fin = fecha_fin || "";
   }, [objeto]);
@@ -124,6 +131,23 @@ export const EditPromocionForm = ({
                     {
                         form.errors.descuento && (<span className='error-text'>{form.errors.descuento}</span>)
                     }
+                </Form.Group>
+                <Form.Group className='mb-3'>
+                    <Form.Label htmlFor='duracion_meses'>Duración del Beneficio (Meses)</Form.Label>
+                    <Form.Control
+                        type='number'
+                        name='duracion_meses'
+                        placeholder="0"
+                        min="0"
+                        value={form.values.duracion_meses || ''}
+                        onChange={form.handleChange}
+                    />
+                    {
+                        form.errors.duracion_meses && (<span className='error-text'>{form.errors.duracion_meses}</span>)
+                    }
+                    <Form.Text className="text-muted">
+                        Dejar en 0 o vacío para que sea permanente. Ejemplo: 6 meses = descuento válido por 6 meses desde la inscripción del alumno.
+                    </Form.Text>
                 </Form.Group>
                 <Form.Group className='mb-3'>
                     <Form.Label htmlFor='fecha_inicio'>Fecha de Inicio (Opcional)</Form.Label>

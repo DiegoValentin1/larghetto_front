@@ -142,7 +142,48 @@ export const EditUserForm = ({
   const [promociones, setPromociones] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
+  const [montosPorMes, setMontosPorMes] = useState({});
   const { user } = useContext(AuthContext);
+
+  // ========================================
+  // FUNCIONES HELPER PARA PROMOCIONES CON DURACIÓN
+  // ========================================
+
+  const calcularMesesTranscurridos = (fechaInicio, fechaReferencia) => {
+    if (!fechaInicio || !fechaReferencia) return 0;
+    const inicio = new Date(fechaInicio);
+    const referencia = new Date(fechaReferencia);
+    return (referencia.getFullYear() - inicio.getFullYear()) * 12 +
+           (referencia.getMonth() - inicio.getMonth());
+  };
+
+  const calcularDescuentoVigente = (descuento_original, duracion_meses, fecha_inicio_promo, fecha_referencia) => {
+    if (!duracion_meses || duracion_meses === 0) return descuento_original;
+    if (!fecha_inicio_promo) return 0;
+    const mesesTranscurridos = calcularMesesTranscurridos(fecha_inicio_promo, fecha_referencia);
+    if (mesesTranscurridos < duracion_meses) return descuento_original;
+    return 0;
+  };
+
+  const calcularMontoMes = (numeroMes, mensualidad, promocionSeleccionada, fechaInicioPromo) => {
+    const mensualidadFloat = parseFloat(mensualidad) || 0;
+
+    if (!mensualidadFloat) return 0;
+    if (!promocionSeleccionada) return mensualidadFloat;
+
+    const currentYear = new Date().getFullYear();
+    const fechaMes = new Date(currentYear, numeroMes - 1, 1);
+
+    const descuentoOriginal = parseFloat(promocionSeleccionada.descuento) || 0;
+    const descuentoVigente = calcularDescuentoVigente(
+      descuentoOriginal,
+      promocionSeleccionada.duracion_meses,
+      fechaInicioPromo,
+      fechaMes
+    );
+
+    return mensualidadFloat - (mensualidadFloat * descuentoVigente / 100);
+  };
 
   // Estilos modernos para inputs y selects
   const inputStyle = {
@@ -295,7 +336,7 @@ export const EditUserForm = ({
             });
             console.log(response);
             if (!response.error) {
-              cargarDatos();
+              cargarDatos(true);
               Alert.fire({
                 title: successTitle,
                 text: succesMsj,
@@ -484,6 +525,57 @@ export const EditUserForm = ({
     fetchMaterial();
 
   }, []);
+
+  // ========================================
+  // CALCULAR MONTOS POR MES CON PROMOCIÓN TEMPORAL
+  // ========================================
+  useEffect(() => {
+    const calcularTodosLosMontos = () => {
+      const mensualidad = parseFloat(form.values.mensualidad) || parseFloat(objeto.mensualidad) || 0;
+      const promocionId = form.values.promocion || objeto.promocion_id;
+
+      if (!mensualidad) {
+        setMontosPorMes({});
+        return;
+      }
+
+      // Buscar promoción: primero en el estado de promociones, luego usar datos del objeto
+      let promocionSeleccionada = null;
+      if (promocionId && promociones.length > 0) {
+        promocionSeleccionada = promociones.find(p => p.id === parseInt(promocionId));
+      }
+
+      // Si no encontramos la promoción en el estado, crear un objeto temporal con los datos del objeto
+      if (!promocionSeleccionada && objeto.descuento !== undefined) {
+        promocionSeleccionada = {
+          descuento: parseFloat(objeto.descuento) || 0,
+          duracion_meses: objeto.duracion_meses || null
+        };
+      }
+
+      if (!promocionSeleccionada) {
+        // Si no hay promoción, usar mensualidad completa
+        const montosDefault = {};
+        for (let mes = 1; mes <= 12; mes++) {
+          montosDefault[mes] = mensualidad;
+        }
+        setMontosPorMes(montosDefault);
+        return;
+      }
+
+      const fechaInicioPromo = objeto.fecha_inicio_promo || objeto.fecha_inicio || form.values.fechaInicio;
+      const nuevosMontos = {};
+
+      for (let mes = 1; mes <= 12; mes++) {
+        const monto = calcularMontoMes(mes, mensualidad, promocionSeleccionada, fechaInicioPromo);
+        nuevosMontos[mes] = monto;
+      }
+
+      setMontosPorMes(nuevosMontos);
+    };
+
+    calcularTodosLosMontos();
+  }, [form.values.mensualidad, form.values.promocion, promociones, objeto.mensualidad, objeto.descuento, objeto.duracion_meses, objeto.fecha_inicio, objeto.fecha_inicio_promo, objeto.promocion_id]);
 
   React.useMemo(() => {
     const { personal_id, name, email, fechaNacimiento, nivel, domicilio, municipio, telefono, contactoEmergencia, mensualidad, promocion_id, observaciones, nombreMadre, nombrePadre, madreTelefono, padreTelefono, inscripcion, fecha_inicio } = objeto;
@@ -753,14 +845,84 @@ export const EditUserForm = ({
           }}>
             Pagos Por Mes
           </div>
+          {/* Información de Promoción Temporal */}
+          {(() => {
+            const promocionSeleccionada = promociones.find(p => p.id === parseInt(form.values.promocion));
+            if (!promocionSeleccionada || !promocionSeleccionada.duracion_meses || promocionSeleccionada.duracion_meses === 0) return null;
+
+            const fechaInicioPromo = objeto.fecha_inicio_promo || objeto.fecha_inicio;
+            if (!fechaInicioPromo) return null;
+
+            const mesesTranscurridos = calcularMesesTranscurridos(fechaInicioPromo, new Date());
+            const mesesRestantes = promocionSeleccionada.duracion_meses - mesesTranscurridos;
+            const promoVigente = mesesRestantes > 0;
+
+            return (
+              <div style={{
+                backgroundColor: promoVigente ? '#EFF6FF' : '#FEE2E2',
+                border: `2px solid ${promoVigente ? '#3B82F6' : '#EF4444'}`,
+                borderRadius: '8px',
+                padding: '1rem',
+                marginBottom: '1rem'
+              }}>
+                <div style={{ fontSize: '0.875rem', fontWeight: '600', color: promoVigente ? '#1E40AF' : '#991B1B', marginBottom: '0.5rem' }}>
+                  {promoVigente ? '🎉 Promoción Temporal Vigente' : '⏰ Promoción Temporal Expirada'}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>
+                  <div><strong>Promoción:</strong> {promocionSeleccionada.promocion} ({promocionSeleccionada.descuento}% de descuento)</div>
+                  <div><strong>Duración:</strong> {promocionSeleccionada.duracion_meses} meses desde inscripción</div>
+                  <div><strong>Inicio:</strong> {new Date(fechaInicioPromo).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                  {promoVigente ? (
+                    <div style={{ color: '#059669', fontWeight: '600' }}>
+                      <strong>Quedan:</strong> {mesesRestantes} mes{mesesRestantes !== 1 ? 'es' : ''} de descuento
+                    </div>
+                  ) : (
+                    <div style={{ color: '#DC2626', fontWeight: '600' }}>
+                      El descuento expiró hace {Math.abs(mesesRestantes)} mes{Math.abs(mesesRestantes) !== 1 ? 'es' : ''}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
           <div className="InputContainer12" style={{ height: "50%" }}>
             <div>
-              <div id="mes1" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Enero</div>
-              <div id="mes2" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Febrero</div>
-              <div id="mes3" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Marzo</div>
-              <div id="mes4" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Abril</div>
-              <div id="mes5" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Mayo</div>
-              <div id="mes6" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Junio</div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes1" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Enero</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[1]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes2" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Febrero</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[2]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes3" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Marzo</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[3]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes4" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Abril</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[4]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes5" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Mayo</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[5]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes6" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Junio</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[6]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
             </div>
             {/* <div>
               <input type="checkbox" name="" id="pago1" className="pagoInput" onChange={(e) => manejarCambioCheckbox(e, '01')} />
@@ -836,12 +998,42 @@ export const EditUserForm = ({
 
             </div>
             <div>
-              <div id="mes7" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Julio</div>
-              <div id="mes8" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Agosto</div>
-              <div id="mes9" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Septiembre</div>
-              <div id="mes10" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Octubre</div>
-              <div id="mes11" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Noviembre</div>
-              <div id="mes12" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.5rem' }}>Diciembre</div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes7" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Julio</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[7]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes8" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Agosto</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[8]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes9" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Septiembre</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[9]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes10" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Octubre</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[10]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes11" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Noviembre</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[11]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div id="mes12" style={{ padding: '0.5rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.875rem', color: '#1F2937', textAlign: 'center', marginBottom: '0.25rem', width: '100%' }}>Diciembre</div>
+                <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: '500' }}>
+                  ${montosPorMes[12]?.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </div>
+              </div>
             </div>
             <div>
               <select id="pago7" className="pagoInput" style={{ height: '38px', borderRadius: '8px', border: '2px solid #E5E7EB', backgroundColor: '#F9FAFB', fontSize: '0.75rem', padding: '0.5rem', cursor: 'pointer' }} onChange={(e) => manejarCambioSelect(e, '07')}>
