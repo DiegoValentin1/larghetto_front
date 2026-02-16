@@ -46,7 +46,7 @@ export default function Users() {
     const [superCampus, setSuperCampus] = useState(0);
     const [inner, setInner] = useState("");
     const [totalStatus, setTotalStatus] = useState({});
-    const [showStatusMenu, setShowStatusMenu] = useState(false);
+    const [showStatusMenu, setShowStatusMenu] = useState(null); // Guarda el ID del alumno con menú abierto
     const [showFilter, setShowFilter] = useState(false);
     const [switchActivo, setSwitchActivo] = useState(true);
     const [switchCampus, setSwitchCampus] = useState(false);
@@ -154,7 +154,7 @@ export default function Users() {
         {
             name: '',
             cell: (row) => (
-                <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
+                <div style={{ width: "100%", display: "flex", justifyContent: "end", position: "relative" }}>
                     {(row.estado == 0 && (user.data.role === 'SUPER' || (user.data.campus === 'bugambilias' && user.data.role === 'ENCARGADO'))) && <div style={{ paddingRight: "10px" }}>
                         <MdDeleteOutline className='DataIcon' onClick={async () => {
                             await eliminateStudent(row.user_id, row.personal_id);
@@ -179,21 +179,71 @@ export default function Users() {
                             setIsEditting(true);
                         }} style={{ height: 20, width: 25, marginBottom: 0 }} />
                     </div>
-                    <div style={{ paddingLeft: 10 }}>
-                        <IoMdRepeat className='DataIcon' onClick={() => {
-                            // Si es RECEPCION, abrir modal de solicitud de baja
-                            if (user.data.role === 'RECEPCION') {
-                                setAlumnoParaBaja({
-                                    id: row.user_id,
-                                    nombre: row.nombre
-                                });
-                                setShowSolicitudBajaModal(true);
-                            } else {
-                                // Si es SUPER o ENCARGADO, mostrar menú de estados
-                                setSelectedStudentId(row.alu_id)
-                                setShowStatusMenu(!showStatusMenu);
-                            }
+                    <div style={{ paddingLeft: 10, position: "relative" }}>
+                        <IoMdRepeat className='DataIcon' onClick={(e) => {
+                            e.stopPropagation();
+                            // TODOS los roles pueden ver el menú de status
+                            setSelectedStudentId(row.alu_id);
+                            setAlumnoParaBaja({
+                                id: row.user_id,
+                                nombre: row.name
+                            });
+                            setShowStatusMenu(showStatusMenu === row.alu_id ? null : row.alu_id);
                         }} style={{ height: 20, width: 25, marginBottom: 0 }} />
+
+                        {/* Menú de status como tooltip */}
+                        {showStatusMenu === row.alu_id && (
+                            <div style={{
+                                position: "absolute",
+                                right: '0',
+                                top: '100%',
+                                marginTop: '0.5rem',
+                                zIndex: 1000,
+                                backgroundColor: "#ffffff",
+                                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+                                borderRadius: "0.8rem",
+                                padding: '0.75rem',
+                                minWidth: '22rem'
+                            }} onClick={(e) => e.stopPropagation()}>
+                                {/* Título del tooltip */}
+                                <div style={{
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600',
+                                    color: '#374151',
+                                    marginBottom: '0.75rem',
+                                    paddingBottom: '0.5rem',
+                                    borderBottom: '1px solid #E5E7EB'
+                                }}>
+                                    Cambiar estatus de {row.name}
+                                </div>
+
+                                {/* Grid de status */}
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(9, 1fr)',
+                                    gap: '0.5rem'
+                                }}>
+                                <div title="Activo" className="StatusMenuOption" style={{ backgroundColor: "#A0A2A2", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 1); }}></div>
+                                <div title="Nuevo" className="StatusMenuOption" style={{ backgroundColor: "#F0BA14", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 2); }}></div>
+                                <div title="Curso Doble" className="StatusMenuOption" style={{ backgroundColor: "#14F0B7", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 3); }}></div>
+                                <div title="Curso Triple" className="StatusMenuOption" style={{ backgroundColor: "#40DC51", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 4); }}></div>
+                                <div title="Curso Cuádruple" className="StatusMenuOption" style={{ backgroundColor: "#ED2C75", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 5); }}></div>
+                                <div title="Reingreso" className="StatusMenuOption" style={{ backgroundColor: "#1F175A", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 6); }}></div>
+                                <div title="Situación" className="StatusMenuOption" style={{ backgroundColor: "#DAE175", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 7); }}></div>
+                                <div title="Inglés" className="StatusMenuOption" style={{ backgroundColor: "#702390", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(row.alu_id, 8); }}></div>
+                                {(((user.data.role === "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'bugambilias') || (user.data.role === "SUPER")) &&
+                                    <div title="Bajo" className="StatusMenuOption" style={{ backgroundColor: "rgb(220, 48, 48)", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => {
+                                        setShowStatusMenu(null);
+                                        if (user.data.role === 'RECEPCION') {
+                                            setShowSolicitudBajaModal(true);
+                                        } else {
+                                            changeStatus(row.alu_id, 0);
+                                        }
+                                    }}></div>
+                                }
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             ),
@@ -1028,42 +1078,7 @@ export default function Users() {
                                             }}
                                         />
                                     </div>
-
-                                    {showStatusMenu && <div className='StatusMenu' style={{ position: "absolute", width: "20rem", height: "2rem", backgroundColor: "#f0f0f0", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)", borderRadius: "0.8rem", right: '0', top: '100%', marginTop: '0.5rem', zIndex: 10 }} onClick={() => setShowStatusMenu(false)}>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#A0A2A2", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 1);
-                                        }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#F0BA14", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 2);
-                                        }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#14F0B7", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 3);
-                                        }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#40DC51", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 4);
-                                        }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#ED2C75", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 5);
-                                        }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#1F175A", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 6);
-                                        }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#DAE175", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 7);
-                                        }}></div>
-                                        <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "#702390", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                            changeStatus(selectedStudentId, 8);
-                                        }}></div>
-                                        {
-                                            (((user.data.role === "RECEPCION" || user.data.role === "ENCARGADO") && new Date().getDate() < 15) || (user.data.role === "ENCARGADO" && user.data.campus === 'bugambilias') || (user.data.role === "SUPER")) ?
-                                                <div className="StatusMenuOption" style={{ marginTop: "0.4rem", marginLeft: "0.6rem", backgroundColor: "rgb(220, 48, 48)", padding: "0.6rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }} onClick={() => {
-                                                    changeStatus(selectedStudentId, 0);
-                                                }}></div> :
-                                                ""
-                                        }
-                                    </div>}
                                 </div>
-
                             </div>
                         }
                         columns={columns}
@@ -1107,6 +1122,22 @@ export default function Users() {
                     )}
                 </Card.Body>
             </Card>
+
+            {/* Backdrop para cerrar menú al click afuera */}
+            {showStatusMenu && (
+                <div
+                    onClick={() => setShowStatusMenu(null)}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 999,
+                        backgroundColor: 'transparent'
+                    }}
+                />
+            )}
         </Container>
 
 

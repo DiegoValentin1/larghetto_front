@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import DataTable from 'react-data-table-component';
 import { Container, Card, Button, Badge, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import AxiosClient from '../../shared/plugins/axios';
 import Swal from 'sweetalert2';
 import '../../utils/styles/DataTable.css';
+import { AuthContext } from '../auth/authContext';
 
 export default function SolicitudesBaja() {
+    const { user } = useContext(AuthContext);
     const [solicitudes, setSolicitudes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filtroEstado, setFiltroEstado] = useState('PENDIENTE');
@@ -76,6 +78,7 @@ export default function SolicitudesBaja() {
                 method: 'PUT',
                 data: JSON.stringify({
                     respuesta: respuesta.trim() || (modalTipo === 'aprobar' ? 'Aprobado' : 'Rechazado'),
+                    empleado: user.data.name,
                 }),
             });
 

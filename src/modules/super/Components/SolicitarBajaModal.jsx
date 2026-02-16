@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import AxiosClient from '../../../shared/plugins/axios';
 import Swal from 'sweetalert2';
+import { AuthContext } from '../../auth/authContext';
 
 const SolicitarBajaModal = ({ show, onHide, alumnoId, alumnoNombre, onSuccess }) => {
+    const { user } = useContext(AuthContext);
     const [motivo, setMotivo] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -28,6 +30,7 @@ const SolicitarBajaModal = ({ show, onHide, alumnoId, alumnoNombre, onSuccess })
                 data: JSON.stringify({
                     alumno_id: alumnoId,
                     motivo: motivo.trim(),
+                    empleado: user.data.name,
                 }),
             });
 
