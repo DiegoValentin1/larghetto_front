@@ -34,8 +34,7 @@ export default function SuperDashboard() {
 
     // Estados de Reportes
     const [loading, setLoading] = useState(false);
-    const [yearAlumnos, setYearAlumnos] = useState(new Date().getFullYear());
-    const [yearPagos, setYearPagos] = useState(new Date().getFullYear());
+    const [year, setYear] = useState(new Date().getFullYear());
     const [datosAlumnos, setDatosAlumnos] = useState([]);
     const [datosPagos, setDatosPagos] = useState([]);
 
@@ -99,116 +98,101 @@ export default function SuperDashboard() {
         return totales;
     };
 
-    const cargarCentro = async (mactu, total) => {
+    const cargarCentro = async (mactu, total, yearFilter) => {
         try {
             const response = await AxiosClient({
-                url: "/stats/centro/",
+                url: `/stats/centro/?year=${yearFilter}`,
                 method: "GET",
             });
-            console.log(response);
             if (!response.error) {
                 let temp = procesarLista(response);
                 temp[mactu] = total;
                 setCentro(temp);
-                console.log(temp)
             }
         } catch (err) {
             console.log(err);
         }
     }
 
-    const cargarBuga = async (mactu, total) => {
+    const cargarBuga = async (mactu, total, yearFilter) => {
         try {
             const response = await AxiosClient({
-                url: "/stats/buga/",
+                url: `/stats/buga/?year=${yearFilter}`,
                 method: "GET",
             });
-            console.log(response);
             if (!response.error) {
                 let temp = procesarLista(response);
                 temp[mactu] = total;
                 setBuga(temp);
-                console.log(temp)
             }
         } catch (err) {
             console.log(err);
         }
     }
 
-    const cargarCDMX = async (mactu, total) => {
+    const cargarCDMX = async (mactu, total, yearFilter) => {
         try {
             const response = await AxiosClient({
-                url: "/stats/cdmx/",
+                url: `/stats/cdmx/?year=${yearFilter}`,
                 method: "GET",
             });
-            console.log(response);
             if (!response.error) {
                 let temp = procesarLista(response);
-                console.log(temp);
                 temp[mactu] = total;
-                console.log(temp, mactu, total);
                 setCdmx(temp);
-                console.log(temp)
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    }
-    const cargarCuautla = async (mactu, total) => {
-        try {
-            const response = await AxiosClient({
-                url: "/stats/cuautla/",
-                method: "GET",
-            });
-            console.log(response);
-            if (!response.error) {
-                let temp = procesarLista(response);
-                console.log(temp);
-                temp[mactu] = total;
-                console.log(temp, mactu, total);
-                setCuautla(temp);
-                console.log(temp)
             }
         } catch (err) {
             console.log(err);
         }
     }
 
-    const cargarTotal = async (mactu, total) => {
+    const cargarCuautla = async (mactu, total, yearFilter) => {
         try {
             const response = await AxiosClient({
-                url: "/stats/total/",
+                url: `/stats/cuautla/?year=${yearFilter}`,
                 method: "GET",
             });
-            console.log(response);
+            if (!response.error) {
+                let temp = procesarLista(response);
+                temp[mactu] = total;
+                setCuautla(temp);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const cargarTotal = async (mactu, total, yearFilter) => {
+        try {
+            const response = await AxiosClient({
+                url: `/stats/total/?year=${yearFilter}`,
+                method: "GET",
+            });
             if (!response.error) {
                 let temp = procesarLista(response);
                 temp[mactu] = total;
                 setTotal(temp);
-                console.log(temp)
             }
         } catch (err) {
             console.log(err);
         }
     }
 
-    const cargarActual = async () => {
+    const cargarActual = async (yearFilter) => {
         try {
             const response = await AxiosClient({
                 url: "/stats/actual/",
                 method: "GET",
             });
-            console.log(response);
             if (!response.error) {
                 let fechaActual = new Date();
                 let mactu = fechaActual.getMonth();
                 const ordenada = ordenarLista(response);
-                console.log(ordenada);
-                cargarCentro(mactu, ordenada[0]);
-                cargarBuga(mactu, ordenada[1]);
-                cargarCuautla(mactu, ordenada[2]);
-                cargarCDMX(mactu, ordenada[3])
-                cargarTotal(mactu, ordenada[4]);
+                cargarCentro(mactu, ordenada[0], yearFilter);
+                cargarBuga(mactu, ordenada[1], yearFilter);
+                cargarCuautla(mactu, ordenada[2], yearFilter);
+                cargarCDMX(mactu, ordenada[3], yearFilter);
+                cargarTotal(mactu, ordenada[4], yearFilter);
             }
         } catch (err) {
             console.log(err);
@@ -241,9 +225,8 @@ export default function SuperDashboard() {
     const cargarHistoricoAlumnos = async () => {
         try {
             setLoading(true);
-            console.log('Cargando histórico de alumnos para el año:', yearAlumnos);
             const response = await AxiosClient({
-                url: `/stats/alumnos/historico?year=${yearAlumnos}`,
+                url: `/stats/alumnos/historico?year=${year}`,
                 method: 'GET',
             });
 
@@ -264,9 +247,8 @@ export default function SuperDashboard() {
     const cargarHistoricoPagos = async () => {
         try {
             setLoading(true);
-            console.log('Cargando histórico de pagos para el año:', yearPagos);
             const response = await AxiosClient({
-                url: `/stats/pagos/historico?year=${yearPagos}`,
+                url: `/stats/pagos/historico?year=${year}`,
                 method: 'GET',
             });
 
@@ -368,7 +350,7 @@ export default function SuperDashboard() {
             },
             title: {
                 display: true,
-                text: `Evolución de Alumnos por Campus - ${yearAlumnos}`,
+                text: `Evolución de Alumnos por Campus - ${year}`,
             },
         },
         scales: {
@@ -386,7 +368,7 @@ export default function SuperDashboard() {
             },
             title: {
                 display: true,
-                text: `Ingresos por Tipo de Pago - ${yearPagos}`,
+                text: `Ingresos por Tipo de Pago - ${year}`,
             },
         },
         scales: {
@@ -403,16 +385,13 @@ export default function SuperDashboard() {
 
     useEffect(() => {
         cargarLogs();
-        cargarActual();
     }, []);
 
     useEffect(() => {
+        cargarActual(year);
         cargarHistoricoAlumnos();
-    }, [yearAlumnos]);
-
-    useEffect(() => {
         cargarHistoricoPagos();
-    }, [yearPagos]);
+    }, [year]);
 
     // Calcular totales de pagos
     const calcularTotalesPagos = () => {
@@ -441,6 +420,32 @@ export default function SuperDashboard() {
     return (
         <>
             <Container fluid className="p-4" style={{ minHeight: '92vh' }}>
+
+                {/* Selector de año GLOBAL */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <span style={{ fontSize: '1rem', fontWeight: '700', color: '#1F2937' }}>Año:</span>
+                    <Form.Select
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                        style={{
+                            width: '120px',
+                            height: '42px',
+                            borderRadius: '10px',
+                            border: '2px solid #E5E7EB',
+                            backgroundColor: '#F9FAFB',
+                            fontSize: '0.875rem',
+                            fontWeight: '600'
+                        }}
+                    >
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                    </Form.Select>
+                    <span style={{ fontSize: '0.875rem', color: '#6B7280' }}>
+                        Filtrando todos los módulos por {year}
+                    </span>
+                </div>
+
                 {/* Sección de Reportes Históricos */}
                 <Card style={{
                     borderRadius: '16px',
@@ -477,34 +482,12 @@ export default function SuperDashboard() {
                                     </span>
                                 }
                             >
-                                <Row className="mb-3">
-                                    <Col md={3}>
-                                        <Form.Group>
-                                            <Form.Label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6B7280' }}>Año:</Form.Label>
-                                            <Form.Select
-                                                value={yearAlumnos}
-                                                onChange={(e) => setYearAlumnos(e.target.value)}
-                                                style={{
-                                                    height: '42px',
-                                                    borderRadius: '10px',
-                                                    border: '2px solid #E5E7EB',
-                                                    backgroundColor: '#F9FAFB',
-                                                    fontSize: '0.875rem'
-                                                }}
-                                            >
-                                                <option value="2024">2024</option>
-                                                <option value="2025">2025</option>
-                                                <option value="2026">2026</option>
-                                            </Form.Select>
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
                                 <div style={{ height: '400px' }}>
                                     {datosAlumnos.length > 0 ? (
                                         <Line data={prepararDatosAlumnos()} options={optionsLine} />
                                     ) : (
                                         <div className="text-center text-muted mt-5">
-                                            <p>No hay datos disponibles para el año {yearAlumnos}</p>
+                                            <p>No hay datos disponibles para el año {year}</p>
                                         </div>
                                     )}
                                 </div>
@@ -520,34 +503,12 @@ export default function SuperDashboard() {
                                     </span>
                                 }
                             >
-                                <Row className="mb-3">
-                                    <Col md={3}>
-                                        <Form.Group>
-                                            <Form.Label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6B7280' }}>Año:</Form.Label>
-                                            <Form.Select
-                                                value={yearPagos}
-                                                onChange={(e) => setYearPagos(e.target.value)}
-                                                style={{
-                                                    height: '42px',
-                                                    borderRadius: '10px',
-                                                    border: '2px solid #E5E7EB',
-                                                    backgroundColor: '#F9FAFB',
-                                                    fontSize: '0.875rem'
-                                                }}
-                                            >
-                                                <option value="2024">2024</option>
-                                                <option value="2025">2025</option>
-                                                <option value="2026">2026</option>
-                                            </Form.Select>
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
                                 <div style={{ height: '400px' }}>
                                     {datosPagos.length > 0 ? (
                                         <Bar data={prepararDatosPagos()} options={optionsBar} />
                                     ) : (
                                         <div className="text-center text-muted mt-5">
-                                            <p>No hay datos de pagos disponibles para el año {yearPagos}</p>
+                                            <p>No hay datos de pagos disponibles para el año {year}</p>
                                         </div>
                                     )}
                                 </div>
@@ -559,7 +520,7 @@ export default function SuperDashboard() {
                                             color: '#1F2937',
                                             marginBottom: '1rem'
                                         }}>
-                                            Resumen del Año {yearPagos}:
+                                            Resumen del Año {year}:
                                         </div>
                                         <Row className="g-3">
                                             <Col md={3}>

@@ -165,7 +165,7 @@ export const EditUserForm = ({
     return 0;
   };
 
-  const calcularMontoMes = (numeroMes, mensualidad, promocionSeleccionada, fechaInicioPromo) => {
+  const calcularMontoMes = (numeroMes, mensualidad, promocionSeleccionada, fechaInicioPromo, fechaInicioAlumno) => {
     const mensualidadFloat = parseFloat(mensualidad) || 0;
 
     if (!mensualidadFloat) return 0;
@@ -173,6 +173,14 @@ export const EditUserForm = ({
 
     const currentYear = new Date().getFullYear();
     const fechaMes = new Date(currentYear, numeroMes - 1, 1);
+
+    // Verificar si el mes es anterior a la fecha de inicio del alumno
+    if (fechaInicioAlumno) {
+      const fechaInicioDate = new Date(fechaInicioAlumno);
+      if (fechaMes < new Date(fechaInicioDate.getFullYear(), fechaInicioDate.getMonth(), 1)) {
+        return 0; // No mostrar pago si el alumno aún no había iniciado
+      }
+    }
 
     const descuentoOriginal = parseFloat(promocionSeleccionada.descuento) || 0;
     const descuentoVigente = calcularDescuentoVigente(
@@ -564,10 +572,11 @@ export const EditUserForm = ({
       }
 
       const fechaInicioPromo = objeto.fecha_inicio_promo || objeto.fecha_inicio || form.values.fechaInicio;
+      const fechaInicioAlumno = objeto.fecha_inicio || form.values.fechaInicio;
       const nuevosMontos = {};
 
       for (let mes = 1; mes <= 12; mes++) {
-        const monto = calcularMontoMes(mes, mensualidad, promocionSeleccionada, fechaInicioPromo);
+        const monto = calcularMontoMes(mes, mensualidad, promocionSeleccionada, fechaInicioPromo, fechaInicioAlumno);
         nuevosMontos[mes] = monto;
       }
 

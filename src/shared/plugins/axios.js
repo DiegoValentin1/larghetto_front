@@ -1,7 +1,8 @@
 import instance from 'axios';
 
 // Configuración de la URL base desde variables de entorno
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+// Usa ruta relativa para que nginx haga el proxy correctamente
+const API_URL = process.env.REACT_APP_API_URL || '/api';
 
 const AxiosClient = instance.create({
     baseURL: API_URL,

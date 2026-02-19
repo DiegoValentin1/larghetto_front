@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.ee1ed33f.css",
-    "main.js": "/static/js/main.aaa033be.js",
+    "main.css": "/static/css/main.b3041399.css",
+    "main.js": "/static/js/main.ecc70be5.js",
     "static/media/doorbell.mp3": "/static/media/doorbell.b94db003c7b08fba98b5.mp3",
-    "static/media/profilePicture.jpg": "/static/media/profilePicture.98c7e41d62c073831f7a.jpg",
+    "static/media/Logo_Larghetto.png": "/static/media/Logo_Larghetto.2a0678445395e216a045.png",
     "index.html": "/index.html",
-    "main.ee1ed33f.css.map": "/static/css/main.ee1ed33f.css.map",
-    "main.aaa033be.js.map": "/static/js/main.aaa033be.js.map"
+    "main.b3041399.css.map": "/static/css/main.b3041399.css.map",
+    "main.ecc70be5.js.map": "/static/js/main.ecc70be5.js.map"
   },
   "entrypoints": [
-    "static/css/main.ee1ed33f.css",
-    "static/js/main.aaa033be.js"
+    "static/css/main.b3041399.css",
+    "static/js/main.ecc70be5.js"
   ]
 }

@@ -21,7 +21,9 @@ export const EditPromocionForm = ({
 }) => {
   const form = useFormik({
     initialValues: {
-      instrumento: "",
+      id: "",
+      promocion: "",
+      descuento: "",
       fecha_inicio: "",
       fecha_fin: "",
       duracion_meses: ""
@@ -91,14 +93,18 @@ export const EditPromocionForm = ({
     },
   })
 
-  React.useMemo(() => {
-    const { id, promocion, descuento, fecha_inicio, fecha_fin, duracion_meses} = objeto;
-    form.values.id = id;
-    form.values.promocion = promocion;
-    form.values.descuento = descuento;
-    form.values.duracion_meses = duracion_meses || "";
-    form.values.fecha_inicio = fecha_inicio || "";
-    form.values.fecha_fin = fecha_fin || "";
+  React.useEffect(() => {
+    if (objeto) {
+      const { id, promocion, descuento, fecha_inicio, fecha_fin, duracion_meses } = objeto;
+      form.setValues({
+        id: id || "",
+        promocion: promocion || "",
+        descuento: descuento || "",
+        duracion_meses: duracion_meses || "",
+        fecha_inicio: fecha_inicio ? fecha_inicio.split('T')[0] : "",
+        fecha_fin: fecha_fin ? fecha_fin.split('T')[0] : ""
+      });
+    }
   }, [objeto]);
 
   const handleClose = () => {
