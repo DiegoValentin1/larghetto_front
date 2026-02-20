@@ -199,24 +199,16 @@ export default function SuperDashboard() {
         }
     }
 
-    const cargarLogs = async () => {
+    const cargarLogs = async (yearFilter) => {
         try {
             const response = await AxiosClient({
-                url: "/instrumento/lastest",
+                url: `/instrumento/lastest?year=${yearFilter}`,
                 method: "GET",
             });
-            console.log(response);
             if (!response.error) {
                 setLogs(response);
             }
         } catch (err) {
-            Alert.fire({
-                title: "VERIFICAR DATOS",
-                text: "USUARIO Y/O CONTRASEÑA INCORRECTOS",
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "Aceptar",
-            });
             console.log(err);
         }
     }
@@ -306,40 +298,44 @@ export default function SuperDashboard() {
         };
     };
 
-    // Preparar datos para gráfico de pagos
+    // Preparar datos para gráfico de pagos por campus
+    const campusConfig = {
+        'centro':      { label: 'Centro',      color: '#FF6384' },
+        'bugambilias': { label: 'Bugambilias', color: '#36A2EB' },
+        'cuautla':     { label: 'Cuautla',     color: '#FFCE56' },
+        'CDMX':        { label: 'CDMX',        color: '#4BC0C0' },
+    };
+
     const prepararDatosPagos = () => {
         const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-        const normales = Array(12).fill(0);
-        const descuentos = Array(12).fill(0);
-        const recargos = Array(12).fill(0);
+        const porCampus = {};
 
         datosPagos.forEach(item => {
-            const index = item.mes - 1;
-            normales[index] = parseFloat(item.pagos_normales) || 0;
-            descuentos[index] = parseFloat(item.pagos_descuento) || 0;
-            recargos[index] = parseFloat(item.pagos_recargo) || 0;
+            const campus = item.campus;
+            if (!porCampus[campus]) porCampus[campus] = Array(12).fill(0);
+            porCampus[campus][item.mes - 1] = parseFloat(item.total_mes) || 0;
         });
 
-        return {
-            labels: meses,
-            datasets: [
-                {
-                    label: 'Pagos Normales',
-                    data: normales,
-                    backgroundColor: '#36A2EB',
-                },
-                {
-                    label: 'Con Descuento 5%',
-                    data: descuentos,
-                    backgroundColor: '#FFCE56',
-                },
-                {
-                    label: 'Con Recargo 10%',
-                    data: recargos,
-                    backgroundColor: '#FF6384',
-                }
-            ]
-        };
+        // Calcular Larghetto (suma de todos los campus por mes)
+        const larghetto = Array(12).fill(0);
+        Object.values(porCampus).forEach(datos => {
+            datos.forEach((val, i) => { larghetto[i] += val; });
+        });
+
+        const datasets = Object.entries(porCampus).map(([campus, datos]) => ({
+            label: campusConfig[campus]?.label || campus,
+            data: datos,
+            backgroundColor: campusConfig[campus]?.color || '#999',
+        }));
+
+        // Larghetto al final con color verde destacado
+        datasets.push({
+            label: 'Larghetto',
+            data: larghetto,
+            backgroundColor: '#10B981',
+        });
+
+        return { labels: meses, datasets };
     };
 
     const optionsLine = {
@@ -368,7 +364,7 @@ export default function SuperDashboard() {
             },
             title: {
                 display: true,
-                text: `Ingresos por Tipo de Pago - ${year}`,
+                text: `Ingresos por Campus - ${year}`,
             },
         },
         scales: {
@@ -384,25 +380,25 @@ export default function SuperDashboard() {
     };
 
     useEffect(() => {
-        cargarLogs();
-    }, []);
-
-    useEffect(() => {
         cargarActual(year);
         cargarHistoricoAlumnos();
         cargarHistoricoPagos();
+        cargarLogs(year);
     }, [year]);
 
-    // Calcular totales de pagos
+    // Calcular totales de pagos por campus + Larghetto
     const calcularTotalesPagos = () => {
-        if (datosPagos.length === 0) return { normales: 0, descuentos: 0, recargos: 0, total: 0 };
+        if (datosPagos.length === 0) return { porCampus: {}, larghetto: 0 };
 
-        return {
-            normales: datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_normales || 0), 0),
-            descuentos: datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_descuento || 0), 0),
-            recargos: datosPagos.reduce((sum, item) => sum + parseFloat(item.pagos_recargo || 0), 0),
-            total: datosPagos.reduce((sum, item) => sum + parseFloat(item.total_mes || 0), 0)
-        };
+        const porCampus = {};
+        datosPagos.forEach(item => {
+            const campus = item.campus;
+            if (!porCampus[campus]) porCampus[campus] = 0;
+            porCampus[campus] += parseFloat(item.total_mes || 0);
+        });
+
+        const larghetto = Object.values(porCampus).reduce((sum, v) => sum + v, 0);
+        return { porCampus, larghetto };
     };
 
     const totalesPagos = calcularTotalesPagos();
@@ -522,79 +518,56 @@ export default function SuperDashboard() {
                                         }}>
                                             Resumen del Año {year}:
                                         </div>
-                                        <Row className="g-3">
-                                            <Col md={3}>
-                                                <Card style={{
-                                                    borderLeft: '4px solid #36A2EB',
-                                                    borderRadius: '12px',
-                                                    border: '1px solid #E5E7EB',
-                                                    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-                                                    textAlign: 'center'
-                                                }}>
-                                                    <Card.Body>
-                                                        <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
-                                                            Total Pagos Normales
-                                                        </div>
-                                                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#36A2EB' }}>
-                                                            ${totalesPagos.normales.toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                                        </div>
-                                                    </Card.Body>
-                                                </Card>
-                                            </Col>
-                                            <Col md={3}>
-                                                <Card style={{
-                                                    borderLeft: '4px solid #FFCE56',
-                                                    borderRadius: '12px',
-                                                    border: '1px solid #E5E7EB',
-                                                    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-                                                    textAlign: 'center'
-                                                }}>
-                                                    <Card.Body>
-                                                        <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
-                                                            Con Descuento 5%
-                                                        </div>
-                                                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FFCE56' }}>
-                                                            ${totalesPagos.descuentos.toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                                        </div>
-                                                    </Card.Body>
-                                                </Card>
-                                            </Col>
-                                            <Col md={3}>
-                                                <Card style={{
-                                                    borderLeft: '4px solid #FF6384',
-                                                    borderRadius: '12px',
-                                                    border: '1px solid #E5E7EB',
-                                                    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-                                                    textAlign: 'center'
-                                                }}>
-                                                    <Card.Body>
-                                                        <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
-                                                            Con Recargo 10%
-                                                        </div>
-                                                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FF6384' }}>
-                                                            ${totalesPagos.recargos.toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                                        </div>
-                                                    </Card.Body>
-                                                </Card>
-                                            </Col>
-                                            <Col md={3}>
+                                        {/* Card Larghetto */}
+                                        <Row className="g-3 mb-3">
+                                            <Col md={4}>
                                                 <Card style={{
                                                     borderLeft: '4px solid #10B981',
                                                     borderRadius: '12px',
-                                                    border: '1px solid #E5E7EB',
-                                                    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                                                    border: '1px solid #D1FAE5',
+                                                    backgroundColor: '#F0FDF4',
+                                                    boxShadow: '0 2px 6px rgba(16, 185, 129, 0.15)',
                                                     textAlign: 'center'
                                                 }}>
-                                                    <Card.Body>
-                                                        <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.5rem' }}>
-                                                            Total General
+                                                    <Card.Body style={{ padding: '1rem' }}>
+                                                        <div style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '0.25rem', fontWeight: '600' }}>
+                                                            Larghetto
                                                         </div>
-                                                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#10B981' }}>
-                                                            ${totalesPagos.total.toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                                        <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#059669' }}>
+                                                            ${totalesPagos.larghetto.toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '0.2rem' }}>
+                                                            Total general
                                                         </div>
                                                     </Card.Body>
                                                 </Card>
                                             </Col>
+                                        </Row>
+                                        {/* Cards pequeñas por campus */}
+                                        <Row className="g-3">
+                                            {Object.entries(totalesPagos.porCampus).map(([campus, total]) => (
+                                                <Col key={campus} md={3}>
+                                                    <Card style={{
+                                                        borderLeft: `4px solid ${campusConfig[campus]?.color || '#999'}`,
+                                                        borderRadius: '12px',
+                                                        border: '1px solid #E5E7EB',
+                                                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                                                        textAlign: 'center'
+                                                    }}>
+                                                        <Card.Body style={{ padding: '0.875rem' }}>
+                                                            <div style={{ fontSize: '0.8rem', color: '#6B7280', marginBottom: '0.25rem' }}>
+                                                                {campusConfig[campus]?.label || campus}
+                                                            </div>
+                                                            <div style={{ fontSize: '1.1rem', fontWeight: '700', color: campusConfig[campus]?.color || '#999' }}>
+                                                                ${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                                            </div>
+                                                            <div style={{ fontSize: '0.7rem', color: '#9CA3AF', marginTop: '0.2rem' }}>
+                                                                {totalesPagos.larghetto > 0 ? `${((total / totalesPagos.larghetto) * 100).toFixed(1)}% del total` : ''}
+                                                            </div>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </Col>
+                                            ))}
                                         </Row>
                                     </div>
                                 )}
@@ -852,7 +825,7 @@ export default function SuperDashboard() {
 
             {/* Modales */}
             <ChartAlumnos alumnosActivos={selectedObject} isOpen={isOpen} onClose={() => setIsOpen(false)} titulo={titulo} />
-            <LogTable loglist={logs} isOpen={isLog} onClose={() => setIsLog(false)} />
+            <LogTable isOpen={isLog} onClose={() => setIsLog(false)} />
         </>
     )
 }
