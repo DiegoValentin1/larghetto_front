@@ -104,11 +104,13 @@ export default function Promociones() {
                             </div>
                         )
                     }
-                    <div style={{ paddingLeft: 10 }}>
-                        <MdDeleteForever className='DataIcon' onClick={() => {
-                            eliminarPermanente(row.id, row.promocion);
-                        }} style={{ height: 24, width: 25, marginBottom: 0, color: '#dc3545' }} title="Eliminar permanentemente" />
-                    </div>
+                    {row.id !== 1 && (
+                        <div style={{ paddingLeft: 10 }}>
+                            <MdDeleteForever className='DataIcon' onClick={() => {
+                                eliminarPermanente(row.id, row.promocion);
+                            }} style={{ height: 24, width: 25, marginBottom: 0, color: '#dc3545' }} title="Eliminar permanentemente" />
+                        </div>
+                    )}
 
                 </div>
             ),
@@ -125,14 +127,14 @@ export default function Promociones() {
             title: '¿Eliminar Promoción Permanentemente?',
             html: `
                 <p><strong>Promoción:</strong> ${nombre}</p>
-                <p class="text-danger"><strong>⚠️ ADVERTENCIA:</strong> Esta acción es irreversible.</p>
-                <p>Si hay alumnos usando esta promoción, solo se inactivará.</p>
+                <p class="text-danger"><strong>⚠️ Esta acción es irreversible.</strong></p>
+                <p>Los alumnos que tengan esta promoción serán reasignados a <strong>"Sin Promoción"</strong> automáticamente.</p>
             `,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
+            confirmButtonText: 'Sí, eliminar definitivamente',
             cancelButtonText: 'Cancelar'
         }).then(async (result) => {
             if (result.isConfirmed) {
@@ -142,24 +144,21 @@ export default function Promociones() {
                         method: "DELETE",
                     });
 
-                    if (response.deleted) {
+                    if (response.eliminada) {
+                        const msg = response.alumnosReasignados > 0
+                            ? `Promoción eliminada. ${response.alumnosReasignados} alumno(s) reasignado(s) a "Sin Promoción".`
+                            : 'La promoción ha sido eliminada permanentemente.';
                         Alert.fire({
                             title: "Eliminada",
-                            text: "La promoción ha sido eliminada permanentemente",
+                            text: msg,
                             icon: "success",
-                        });
-                    } else if (response.inactivated) {
-                        Alert.fire({
-                            title: "Promoción Inactivada",
-                            html: `<p>${response.message}</p><p><strong>Alumnos afectados:</strong> ${response.alumnos_afectados}</p>`,
-                            icon: "info",
                         });
                     }
 
                     cargarDatos();
                 } catch (err) {
                     Alert.fire({
-                        title: "ERROR",
+                        title: "Error",
                         text: err.response?.data?.message || "Error al eliminar la promoción",
                         icon: "error",
                     });

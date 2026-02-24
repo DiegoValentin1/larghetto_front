@@ -264,7 +264,8 @@ export default function SuperDashboard() {
         const campusData = {};
 
         datosAlumnos.forEach(item => {
-            const mes = new Date(item.fecha).getMonth();
+            // Extraer mes directo del string ISO para evitar problemas de timezone
+            const mes = new Date(item.fecha).getUTCMonth();
             const campus = item.campus;
 
             if (!campusData[campus]) {
