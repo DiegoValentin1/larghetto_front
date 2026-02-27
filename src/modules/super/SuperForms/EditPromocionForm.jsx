@@ -38,6 +38,7 @@ export const EditPromocionForm = ({
         .transform((value, originalValue) => originalValue === '' ? null : value),
       fecha_inicio: yup.date().nullable(),
       fecha_fin: yup.date().nullable()
+        .min(new Date(new Date().setHours(0, 0, 0, 0)), 'La fecha fin no puede ser anterior al día de hoy')
         .when('fecha_inicio', (fecha_inicio, schema) => {
             return fecha_inicio ? schema.min(fecha_inicio, 'La fecha fin debe ser posterior a la fecha inicio') : schema;
         }),
@@ -165,7 +166,7 @@ export const EditPromocionForm = ({
                 </Form.Group>
                 <Form.Group className='mb-3'>
                     <Form.Label htmlFor='fecha_fin'>Fecha de Fin (Opcional)</Form.Label>
-                    <Form.Control type='date' name='fecha_fin' value={form.values.fecha_fin} onChange={form.handleChange} />
+                    <Form.Control type='date' name='fecha_fin' min={new Date().toISOString().split('T')[0]} value={form.values.fecha_fin} onChange={form.handleChange} />
                     {
                         form.errors.fecha_fin && (<span className='error-text'>{form.errors.fecha_fin}</span>)
                     }

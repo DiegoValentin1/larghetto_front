@@ -340,7 +340,7 @@ export const EditUserForm = ({
             const response = await AxiosClient({
               method: "PUT",
               url: "/personal/alumno",
-              data: JSON.stringify({ ...values, role: "ALUMNO", clases, user_id: objeto.user_id, pagos }),
+              data: JSON.stringify({ ...values, role: "ALUMNO", clases, user_id: objeto.user_id, pagos, matricula: objeto.matricula }),
             });
             console.log(response);
             if (!response.error) {
