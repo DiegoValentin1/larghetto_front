@@ -87,7 +87,7 @@ export const AddEncargadoForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         console.log(error);
                         Alert.fire({
                             title: errorTitle,
-                            text: errorMsj,
+                            text: error.response?.data?.message || errorMsj,
                             icon: "error",
                             confirmButtonColor: "#3085d6",
                             confirmButtonText: "Aceptar"
