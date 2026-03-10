@@ -193,7 +193,7 @@ export default function Users() {
                             });
                             if (showStatusMenu !== row.alu_id) {
                                 const rect = e.currentTarget.getBoundingClientRect();
-                                setMenuPosition({ top: rect.bottom + window.scrollY + 8, right: window.innerWidth - rect.right });
+                                setMenuPosition({ rectTop: rect.top, rectBottom: rect.bottom, right: window.innerWidth - rect.right });
                             }
                             setShowStatusMenu(showStatusMenu === row.alu_id ? null : row.alu_id);
                         }} style={{ height: 20, width: 25, marginBottom: 0 }} />
@@ -363,6 +363,15 @@ export default function Users() {
         };
         fetchMaterial();
     }, [switchCampus, superCampus]);
+
+    useEffect(() => {
+        if (showStatusMenu) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [showStatusMenu]);
 
     useEffect(() => {
         const fetchMaterial = async () => {
@@ -1078,13 +1087,28 @@ export default function Users() {
                 </Card.Body>
             </Card>
 
+            {/* Backdrop oscuro — cierra el menú al hacer click afuera */}
+            {showStatusMenu && (
+                <div
+                    onClick={() => setShowStatusMenu(null)}
+                    style={{
+                        position: 'fixed',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        zIndex: 1000,
+                        backgroundColor: 'rgba(0, 0, 0, 0.45)'
+                    }}
+                />
+            )}
+
             {/* Menú de status — position fixed para escapar overflow:hidden del DataTable */}
             {showStatusMenu && (
                 <div
                     onClick={(e) => e.stopPropagation()}
                     style={{
                         position: 'fixed',
-                        top: menuPosition.top,
+                        top: (window.innerHeight - menuPosition.rectBottom) < 130
+                            ? menuPosition.rectTop - 130 - 8
+                            : menuPosition.rectBottom + 8,
                         right: menuPosition.right,
                         zIndex: 1001,
                         backgroundColor: "#ffffff",
@@ -1095,6 +1119,9 @@ export default function Users() {
                     }}
                 >
                     <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                         fontSize: '0.875rem',
                         fontWeight: '600',
                         color: '#374151',
@@ -1102,7 +1129,13 @@ export default function Users() {
                         paddingBottom: '0.5rem',
                         borderBottom: '1px solid #E5E7EB'
                     }}>
-                        Cambiar estatus de {selectedStudentName}
+                        <span>Cambiar estatus de {selectedStudentName}</span>
+                        <button
+                            onClick={() => setShowStatusMenu(null)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 0 0.5rem', color: '#6B7280', display: 'flex', alignItems: 'center' }}
+                        >
+                            <FeatherIcon icon="x" size={16} />
+                        </button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '0.5rem' }}>
                         <div title="Activo" className="StatusMenuOption" style={{ backgroundColor: "#A0A2A2", borderRadius: "0.5rem", cursor: 'pointer', width: '1.8rem', height: '1.8rem', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setShowStatusMenu(null); changeStatus(showStatusMenu, 1); }}></div>
@@ -1127,21 +1160,6 @@ export default function Users() {
                 </div>
             )}
 
-            {/* Backdrop para cerrar menú al click afuera */}
-            {showStatusMenu && (
-                <div
-                    onClick={() => setShowStatusMenu(null)}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 999,
-                        backgroundColor: 'transparent'
-                    }}
-                />
-            )}
         </Container>
 
 
@@ -1164,7 +1182,7 @@ export default function Users() {
                 onHide={() => setShowSolicitudBajaModal(false)}
                 alumnoId={alumnoParaBaja?.id}
                 alumnoNombre={alumnoParaBaja?.nombre}
-                onSuccess={() => cargarDatos()}
+                onSuccess={() => cargarDatos(true)}
             />
         </>
     )

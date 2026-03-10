@@ -4,9 +4,9 @@ import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts';
 import '../../../utils/styles/MaestroClases.css';
 import * as XLSX from 'xlsx';
-const session = JSON.parse(localStorage.getItem('user') || null);
 
 export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) => {
+  const session = JSON.parse(localStorage.getItem('user') || null);
   const [clases, setClases] = useState([]);
 
   useEffect(() => {
@@ -20,13 +20,16 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
       "Domingo": 7
     };
     const fetchMaterial = async () => {
+      const role = session?.data?.role;
+      const campus = session?.data?.campus;
       const response = await AxiosClient({
         method: "GET",
-        url: session.data.role && session.data.campus && session.data.role === "SUPER" ? `/clase/${objeto.user_id}` : `/clase/maestro/${objeto.user_id}/${session.data.campus}`,
+        url: role === "SUPER" ? `/clase/${objeto.user_id}` : `/clase/maestro/${objeto.user_id}/${campus}`,
       });
-      if (!response.error) {
+      if (!response || response.error) return;
+      if (Array.isArray(response)) {
         const temp = response.map((obj) => {
-          return { ...obj, alumnos: obj.alumnos.split(',') }
+          return { ...obj, alumnos: obj.alumnos ? obj.alumnos.split(',') : [] }
         });
 
         temp.sort((a, b) => {
