@@ -329,13 +329,6 @@ export default function SuperDashboard() {
             backgroundColor: campusConfig[campus]?.color || '#999',
         }));
 
-        // Larghetto al final con color verde destacado
-        datasets.push({
-            label: 'Larghetto',
-            data: larghetto,
-            backgroundColor: '#10B981',
-        });
-
         return { labels: meses, datasets };
     };
 
@@ -352,7 +345,8 @@ export default function SuperDashboard() {
         },
         scales: {
             y: {
-                beginAtZero: true
+                beginAtZero: true,
+                ticks: { stepSize: 20 }
             }
         }
     };

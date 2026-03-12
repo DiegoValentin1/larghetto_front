@@ -628,11 +628,11 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                             style={inputStyle}
                         >
                             <option value="">Selecciona un Instrumento</option>
-                            {instrumentos.map((item) => (
+                            {instrumentos.map((item) => item.status ? (
                                 <option key={item.id} value={item.id}>
                                     {item.instrumento}
                                 </option>
-                            ))}
+                            ) : null)}
                         </Form.Select>
                         {form.errors.instrumento1 && (
                             <span className="error-text" style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.instrumento1}</span>

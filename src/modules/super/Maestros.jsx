@@ -14,9 +14,7 @@ import { EditTeeForm } from './SuperForms/EditTeeForm';
 import { AddMaestroForm } from './SuperForms/AddMaestroForm';
 import { EditMaestroForm } from './SuperForms/EditMaestroForm';
 import { AiOutlineBarChart } from 'react-icons/ai'
-import { MdOutlineAttachMoney } from "react-icons/md";
 import { MaestroChart } from './SuperForms/MaestroChart';
-import { MaestroPayment } from './Components/MaestroPayment';
 import { MaestroClases } from './Components/MaestroClases';
 import { GrSchedule } from "react-icons/gr";
 
@@ -90,12 +88,6 @@ export default function SuperMaterialesTee() {
                         }} style={{ height: 25, width: 25, marginBottom: 0 }} />
                     </div> */}
                     <div style={{ paddingRight: 10 }}>
-                        <MdOutlineAttachMoney className='DataIcon' onClick={() => {
-                            setSelectedObject(row);
-                            setIsPayment(true);
-                        }} style={{ height: 25, width: 25, marginBottom: 0 }} />
-                    </div>
-                    <div style={{ paddingRight: 10 }}>
                         <GrSchedule className='DataIcon' onClick={() => {
                             setSelectedObject(row);
                             setIsClases(true);
@@ -128,7 +120,6 @@ const filtrarInstrumentos = (lista) => {
 
 const [isEditing, setIsEditting] = useState(false);
 const [isChart, setIsChart] = useState(false);
-const [isPayment, setIsPayment] = useState(false);
 const [isClases, setIsClases] = useState(false);
 const [isOpen, setIsOpen] = useState(false);
 const [datos, setDatos] = useState([]);
@@ -532,8 +523,7 @@ return (
         {isOpen && <AddMaestroForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
         {isEditing && <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos} />}
         {isChart && <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />}
-        {isPayment && <MaestroPayment isOpen={isPayment} cargarDatos={cargarDatos} onClose={() => setIsPayment(false)} objeto={selectedObject} />}
-        {isClases && <MaestroClases isOpen={isClases} cargarDatos={cargarDatos} onClose={() => setIsClases(false)} objeto={selectedObject} />}
+{isClases && <MaestroClases isOpen={isClases} cargarDatos={cargarDatos} onClose={() => setIsClases(false)} objeto={selectedObject} />}
     </>
 )
 }

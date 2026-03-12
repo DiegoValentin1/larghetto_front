@@ -1202,11 +1202,11 @@ export const EditUserForm = ({
                   onChange={form.handleChange}
                 >
                   <option value="">Selecciona un Instrumento</option>
-                  {instrumentos.map((item) => (
+                  {instrumentos.map((item) => item.status ? (
                     <option key={item.id} value={item.id}>
                       {item.instrumento}
                     </option>
-                  ))}
+                  ) : null)}
                 </Form.Select>
 
 
