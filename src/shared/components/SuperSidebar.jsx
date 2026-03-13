@@ -34,7 +34,7 @@ const SuperSidebar = () => {
         { path: '/instrumentos', icon: <GiGuitarBassHead size={24} />, label: 'Instrumentos' },
         { path: '/promociones', icon: <TbDiscount2Off size={24} />, label: 'Promociones' },
         { path: '/recepcionistas', icon: <IoWoman size={24} />, label: 'Recepcionistas' },
-        { path: '/encargados', icon: <RiAdminLine size={24} />, label: 'Encargados' },
+        { path: '/encargados', icon: <RiAdminLine size={24} />, label: 'Directivos' },
         { path: '/solicitudes-baja', icon: <FaUserMinus size={24} />, label: 'Solicitudes Baja' },
     ];
 

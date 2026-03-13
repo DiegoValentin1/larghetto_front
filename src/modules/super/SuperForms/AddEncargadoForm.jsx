@@ -128,7 +128,7 @@ export const AddEncargadoForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 fontWeight: '700',
                 color: '#1F2937'
             }}>
-                Registrar Encargado
+                Registrar Directivo
             </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{

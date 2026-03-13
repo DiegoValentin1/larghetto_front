@@ -277,7 +277,7 @@ export default function Users() {
                         (superCampus === 3 ? "cuautla" :
                             (superCampus === 4 ? "CDMX" : user.data.campus))));
 
-            const url = `/personal/lazy?offset=0&limit=100${campusParam ? `&campus=${campusParam}` : ''}`;
+            const url = `/personal/lazy?offset=0&limit=10000${campusParam ? `&campus=${campusParam}` : ''}`;
 
             AxiosClient({ url, method: "GET" })
                 .then(response => {
@@ -310,7 +310,7 @@ export default function Users() {
                         (superCampus === 3 ? "cuautla" :
                             (superCampus === 4 ? "CDMX" : user.data.campus))));
 
-            const url = `/personal/search?q=${encodeURIComponent(valorInput)}&offset=0&limit=100${campusParam ? `&campus=${campusParam}` : ''}`;
+            const url = `/personal/search?q=${encodeURIComponent(valorInput)}&offset=0&limit=10000${campusParam ? `&campus=${campusParam}` : ''}`;
 
             AxiosClient({ url, method: "GET" })
                 .then(response => {
@@ -530,8 +530,8 @@ export default function Users() {
 
             // Cargar alumnos con infinite scroll
             const url = searchQuery ?
-                `/personal/search?q=${encodeURIComponent(searchQuery)}&offset=${currentOffset}&limit=100${campusParam ? `&campus=${campusParam}` : ''}` :
-                `/personal/lazy?offset=${currentOffset}&limit=100${campusParam ? `&campus=${campusParam}` : ''}`;
+                `/personal/search?q=${encodeURIComponent(searchQuery)}&offset=${currentOffset}&limit=10000${campusParam ? `&campus=${campusParam}` : ''}` :
+                `/personal/lazy?offset=${currentOffset}&limit=10000${campusParam ? `&campus=${campusParam}` : ''}`;
 
             const response = await AxiosClient({
                 url: url,
@@ -547,11 +547,11 @@ export default function Users() {
                     setDatos(prev => [...prev, ...response]);
                 }
 
-                // Si retorna menos de 100, ya no hay más
-                if (response.length < 100) {
+                // Si retorna menos de 10000, ya no hay más
+                if (response.length < 10000) {
                     setHasMore(false);
                 } else {
-                    setOffset(currentOffset + 100);
+                    setOffset(currentOffset + 10000);
                 }
 
                 // Cargar conteo de status desde backend
@@ -796,23 +796,6 @@ export default function Users() {
                 </Col>
             </Row>
 
-            {/* Icono de SuperPagos (solo SUPER) */}
-            {user.data.role === "SUPER" && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                    <FaRegMoneyBillAlt
-                        onClick={() => setIsSuperPagos(true)}
-                        style={{
-                            height: "32px",
-                            width: "32px",
-                            color: "#2563EB",
-                            cursor: 'pointer',
-                            transition: 'color 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.color = '#1D4ED8'}
-                        onMouseLeave={(e) => e.currentTarget.style.color = '#2563EB'}
-                    />
-                </div>
-            )}
 
             {/* FASE 3: Leyenda de Status y Total Cursos */}
             <Row className="mb-3 align-items-center">

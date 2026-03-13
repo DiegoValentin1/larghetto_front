@@ -1304,11 +1304,11 @@ export const EditUserForm = ({
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
-                      {instrumentos.map((item) => (
+                      {instrumentos.map((item) => item.status ? (
                         <option key={item.id} value={item.id}>
                           {item.instrumento}
                         </option>
-                      ))}
+                      ) : null)}
                     </Form.Select>
 
                   {form.errors.instrumento2 && (
@@ -1403,11 +1403,11 @@ export const EditUserForm = ({
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
-                      {instrumentos.map((item) => (
+                      {instrumentos.map((item) => item.status ? (
                         <option key={item.id} value={item.id}>
                           {item.instrumento}
                         </option>
-                      ))}
+                      ) : null)}
                     </Form.Select>
 
                   {form.errors.instrumento3 && (
@@ -1502,11 +1502,11 @@ export const EditUserForm = ({
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
-                      {instrumentos.map((item) => (
+                      {instrumentos.map((item) => item.status ? (
                         <option key={item.id} value={item.id}>
                           {item.instrumento}
                         </option>
-                      ))}
+                      ) : null)}
                     </Form.Select>
 
                   {form.errors.instrumento4 && (
@@ -1601,11 +1601,11 @@ export const EditUserForm = ({
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
-                      {instrumentos.map((item) => (
+                      {instrumentos.map((item) => item.status ? (
                         <option key={item.id} value={item.id}>
                           {item.instrumento}
                         </option>
-                      ))}
+                      ) : null)}
                     </Form.Select>
 
                   {form.errors.instrumento5 && (
@@ -1700,11 +1700,11 @@ export const EditUserForm = ({
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
-                      {instrumentos.map((item) => (
+                      {instrumentos.map((item) => item.status ? (
                         <option key={item.id} value={item.id}>
                           {item.instrumento}
                         </option>
-                      ))}
+                      ) : null)}
                     </Form.Select>
 
                   {form.errors.instrumento6 && (
@@ -1799,11 +1799,11 @@ export const EditUserForm = ({
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
-                      {instrumentos.map((item) => (
+                      {instrumentos.map((item) => item.status ? (
                         <option key={item.id} value={item.id}>
                           {item.instrumento}
                         </option>
-                      ))}
+                      ) : null)}
                     </Form.Select>
 
                   {form.errors.instrumento7 && (
@@ -1898,11 +1898,11 @@ export const EditUserForm = ({
                       onChange={form.handleChange}
                     >
                       <option value="">Selecciona un Instrumento</option>
-                      {instrumentos.map((item) => (
+                      {instrumentos.map((item) => item.status ? (
                         <option key={item.id} value={item.id}>
                           {item.instrumento}
                         </option>
-                      ))}
+                      ) : null)}
                     </Form.Select>
 
                   {form.errors.instrumento8 && (

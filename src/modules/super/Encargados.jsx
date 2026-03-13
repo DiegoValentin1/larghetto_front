@@ -242,7 +242,7 @@ export default function Encargados() {
                                         fontWeight: "700",
                                         color: "#1F2937"
                                     }}>
-                                        Encargados
+                                        Directivos
                                     </span>
                                     <button
                                         onClick={() => setIsOpen(true)}
