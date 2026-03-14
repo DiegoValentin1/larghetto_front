@@ -35,7 +35,7 @@ export const AddRecepcionistaForm = ({ isOpen, cargarDatos, onClose, option }) =
             role: "ALUMNO",
             nombre: "",
             fechaNacimiento: "",
-
+            campus: "",
         },
         validationSchema:
             yup.object().shape({
@@ -46,6 +46,7 @@ export const AddRecepcionistaForm = ({ isOpen, cargarDatos, onClose, option }) =
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
+                campus: yup.string().required("Campo obligatorio"),
                 // clabe: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
                 // cuenta: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
                 // banco: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
@@ -70,7 +71,7 @@ export const AddRecepcionistaForm = ({ isOpen, cargarDatos, onClose, option }) =
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/user",
-                            data: JSON.stringify({ ...values, role: "RECEPCION", campus:session.data.campus }),
+                            data: JSON.stringify({ ...values, role: "RECEPCION" }),
                         });
                         console.log(response);
                         if (!response.error) {
@@ -199,6 +200,17 @@ export const AddRecepcionistaForm = ({ isOpen, cargarDatos, onClose, option }) =
                         {
                             form.errors.contactoEmergencia && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.contactoEmergencia}</span>)
                         }
+                    </Form.Group>
+                    <Form.Group className='mb-3'>
+                        <Form.Label htmlFor='campus' style={labelStyle}>Campus</Form.Label>
+                        <Form.Select name="campus" value={form.values.campus} onChange={form.handleChange} style={inputStyle}>
+                            <option value="">Selecciona un Campus</option>
+                            <option value="bugambilias">Bugambilias</option>
+                            <option value="centro">Centro</option>
+                            <option value="cuautla">Cuautla</option>
+                            <option value="CDMX">CDMX</option>
+                        </Form.Select>
+                        {form.errors.campus && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.campus}</span>)}
                     </Form.Group>
                 </div>
                 {/* <div className="InputContainer3">

@@ -88,29 +88,35 @@ export default function Users() {
             name: 'Matricula',
             selector: 'matricula',
             sortable: true,
+            width: '100px',
         },
         {
             name: 'Nombre',
             selector: 'name',
             sortable: true,
+            width: '450px',
         },
         {
             name: 'Mensualidad',
             selector: (row) => row.mensualidad && (row.mensualidad - (row.mensualidad * (row.descuento / 100))).toLocaleString('en', { maximumFractionDigits: 2, minimumFractionDigits: 2 }),
             sortable: true,
+            width: '120px',
         },
         {
             name: 'Inscripción',
             selector: (row) => row.inscripcion && row.inscripcion.toLocaleString('en', { maximumFractionDigits: 2, minimumFractionDigits: 2 }),
             sortable: true,
+            width: '110px',
         },
         {
             name: 'Próximo Pago',
             selector: (row) => { return row.proximo_pago ? row.proximo_pago.substring(0, 10) : '' },
             sortable: true,
+            width: '120px',
         },
         {
             name: 'Pago del Mes',
+            width: '70px',
             selector: (row) => {
                 if (!row.proximo_pago) return <div>N/A</div>;
                 // Normalizar ambas fechas a solo YYYY-MM-DD sin horas
@@ -125,11 +131,13 @@ export default function Users() {
             name: 'Campus',
             selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
             sortable: true,
+            width: '120px',
         },
         {
             name: 'Status',
             selector: 'estado',
             sortable: true,
+            width: '80px',
             cell: (row) => {
                 if (row.estado == 1) {
                     return <div style={{ marginLeft: "0.8rem", backgroundColor: "#A0A2A2", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
@@ -203,7 +211,7 @@ export default function Users() {
                 </div>
             ),
         },
-    ];
+    ].filter(Boolean);
 
 
 
@@ -905,7 +913,7 @@ export default function Users() {
                                         Alumnos
                                     </div>
 
-                                    {(user.data.campus === 'bugambilias' && user.data.role === 'ENCARGADO') && (
+                                    {false && (user.data.campus === 'bugambilias' && user.data.role === 'ENCARGADO') && (
                                         <div
                                             className={`switch ${switchCampus ? "switchonC" : "switchoffC"}`}
                                             onClick={() => setSwitchCampus(!switchCampus)}

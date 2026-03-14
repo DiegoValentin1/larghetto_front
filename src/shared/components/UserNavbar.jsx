@@ -121,7 +121,7 @@ const UserNavbar = () => {
           background: '#2563EB',
           color: '#FFFFFF'
         }}>
-          {user.data.role}
+          {user.data.role === 'ENCARGADO' ? 'DIRECTIVO' : user.data.role}
         </div>
       </div>
       {isOpen && <ChangePassword isOpen={isOpen} onClose={() => setIsOpen(false)} />
