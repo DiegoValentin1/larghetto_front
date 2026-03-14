@@ -40,22 +40,25 @@ export default function Recepcionistas() {
             name: 'Telefono',
             selector: 'telefono',
             sortable: true,
+            width: '120px',
         },
         {
             name: 'Domicilio',
             selector: 'domicilio',
             sortable: true,
         },
-        session.data.role === 'SUPER' && 
+        session.data.role === 'SUPER' &&
         {
             name: 'Campus',
             selector: row => row.campus.charAt(0).toUpperCase() + row.campus.slice(1),
             sortable: true,
+            width: '120px',
         },
         {
             name: 'Status',
             selector: 'status',
             sortable: true,
+            width: '80px',
             cell: (row) => {
                 if (row.status) {
                     return <div style={{ marginLeft: "0.8rem", backgroundColor: "#40DC51", padding: "0.2rem", borderRadius: "0.5rem", width: "1rem", height: "1rem" }}></div>;
@@ -66,6 +69,7 @@ export default function Recepcionistas() {
         },
         {
             name: '',
+            width: '90px',
             cell: (row) => (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
                     <div style={{ paddingRight: 10 }}>
