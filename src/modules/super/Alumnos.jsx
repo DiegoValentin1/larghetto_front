@@ -94,7 +94,7 @@ export default function Users() {
             name: 'Nombre',
             selector: 'name',
             sortable: true,
-            width: '450px',
+            width: '300px',
         },
         {
             name: 'Mensualidad',
