@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import '../../utils/styles/UserNavbar.css'
 import { AuthContext } from "../../modules/auth/authContext";
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../plugins/alerts';
-import { RiLockPasswordLine } from "react-icons/ri";
+import FeatherIcon from 'feather-icons-react';
 import { Link } from "react-router-dom";
 import { ChangePassword } from './ChangePassword';
 import { useSidebar } from '../contexts/SidebarContext';
@@ -91,19 +91,17 @@ const UserNavbar = () => {
       left: sidebarWidth,
       transition: 'width 0.3s ease, left 0.3s ease'
     }}>
-      <RiLockPasswordLine
-        className="icon"
-        data-label="Cambiar Contraseña"
+      <FeatherIcon
+        icon="lock"
+        size={20}
         style={{
-          height: 24,
-          width: 24,
-          color: "#6B7280",
+          color: "#111827",
           cursor: 'pointer',
           transition: 'color 0.2s ease'
         }}
         onClick={() => setIsOpen(!isOpen)}
-        onMouseEnter={(e) => e.target.style.color = '#2563EB'}
-        onMouseLeave={(e) => e.target.style.color = '#6B7280'}
+        onMouseEnter={(e) => e.currentTarget.style.color = '#2563EB'}
+        onMouseLeave={(e) => e.currentTarget.style.color = '#111827'}
       />
       <div style={{
         display: 'flex',
