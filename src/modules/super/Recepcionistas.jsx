@@ -42,11 +42,6 @@ export default function Recepcionistas() {
             sortable: true,
             width: '120px',
         },
-        {
-            name: 'Domicilio',
-            selector: 'domicilio',
-            sortable: true,
-        },
         session.data.role === 'SUPER' &&
         {
             name: 'Campus',

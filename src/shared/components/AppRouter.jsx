@@ -19,6 +19,7 @@ import CuautlaNoti from "./CuautlaNoti";
 import CentroNoti from "./CentroNoti";
 import BugaNoti from "./BugaNoti";
 import CoyoacanNoti from "./CoyoacanNoti";
+import AuditLogPage from "../../modules/super/AuditLog/AuditLogPage";
 
 export const AppRouter = () => {
   const { user } = useContext(AuthContext);
@@ -42,6 +43,7 @@ export const AppRouter = () => {
                       <Route path="maestros-archivados" element={<MaestrosArchivados />} />
                       {/* <Route path="promociones" element={<Promociones/>} /> */}
                       <Route path="recepcionistas" element={<Recepcionistas />} />
+                      <Route path="audit-log" element={<AuditLogPage />} />
                       <Route path="cuautla" element={<CuautlaNoti />} />
                       <Route path="centro" element={<CentroNoti />} />
                       <Route path="buga" element={<BugaNoti />} />
@@ -64,6 +66,7 @@ export const AppRouter = () => {
                         <Route path="encargados" element={<Encargados />} />
                         <Route path="recepcionistas" element={<Recepcionistas />} />
                         <Route path="solicitudes-baja" element={<SolicitudesBaja />} />
+                        <Route path="audit-log" element={<AuditLogPage />} />
                         <Route path="cuautla" element={<CuautlaNoti />} />
                         <Route path="centro" element={<CentroNoti />} />
                         <Route path="buga" element={<BugaNoti />} />

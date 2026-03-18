@@ -36,6 +36,7 @@ const SuperSidebar = () => {
         { path: '/recepcionistas', icon: <IoWoman size={24} />, label: 'Recepcionistas' },
         { path: '/encargados', icon: <RiAdminLine size={24} />, label: 'Directivos' },
         { path: '/solicitudes-baja', icon: <FaUserMinus size={24} />, label: 'Solicitudes Baja' },
+        { path: '/audit-log', icon: <FeatherIcon icon="activity" size={24} />, label: 'Historial' },
     ];
 
     const isActive = (path) => location.pathname === path;

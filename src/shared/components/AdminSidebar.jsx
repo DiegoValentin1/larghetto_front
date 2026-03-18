@@ -28,6 +28,7 @@ const AdminSidebar = () => {
         { path: '/maestros', icon: <FaChalkboardTeacher size={24} />, label: 'Maestros' },
         { path: '/instrumentos', icon: <GiGuitarBassHead size={24} />, label: 'Instrumentos' },
         { path: '/recepcionistas', icon: <IoWoman size={24} />, label: 'Recepcionistas' },
+        { path: '/audit-log', icon: <FeatherIcon icon="activity" size={24} />, label: 'Historial' },
     ];
 
     const isActive = (path) => location.pathname === path;
