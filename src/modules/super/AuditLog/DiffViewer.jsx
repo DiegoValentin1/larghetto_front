@@ -14,7 +14,7 @@ const ALUMNO_ESTADOS = {
 
 const HIDDEN_FIELDS = new Set([
   'user_id', 'id', 'alumno_id', 'personal_id', 'created_at', 'updated_at',
-  'statusToggled'
+  'statusToggled', 'id_clase', 'id_alumno'
 ]);
 
 const FIELD_LABELS = {
@@ -28,7 +28,8 @@ const FIELD_LABELS = {
   status: 'Status', matricula: 'Matrícula',
   banco: 'Banco', cuenta: 'Cuenta', clabe: 'CLABE',
   fecha_inicio: 'Fecha inicio', motivo: 'Motivo', respuesta: 'Respuesta',
-  archived: 'Archivado', clases: 'Clases', pagos: 'Pagos'
+  archived: 'Archivado', clases: 'Clases', pagos: 'Pagos',
+  alumno: 'Alumno', clase: 'Clase', fecha: 'Fecha'
 };
 
 const ACTION_LABELS = {
@@ -232,6 +233,16 @@ const DiffViewer = ({ isOpen, onClose, record }) => {
                             fontSize: '0.72rem', fontWeight: '700', color: '#fff',
                             background: info.color, boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
                           }}>{info.label}</span>
+                        );
+                      }
+                      if (key === 'status' && val !== null && val !== undefined) {
+                        const isActive = Number(val) === 1 || val === true;
+                        return (
+                          <span style={{
+                            display: 'inline-block', padding: '0.15rem 0.55rem', borderRadius: '999px',
+                            fontSize: '0.72rem', fontWeight: '700', color: '#fff',
+                            background: isActive ? '#16A34A' : '#6B7280'
+                          }}>{isActive ? 'Activo' : 'Inactivo'}</span>
                         );
                       }
                       return formatValue(val);

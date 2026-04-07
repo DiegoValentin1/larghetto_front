@@ -13,7 +13,9 @@ const requestHandler = (request) => {
     request.headers['Content-type']='application/json';
     const session = JSON.parse(localStorage.getItem('user') || null);
     console.log(request);
-    const temp = JSON.parse(request.data || null);
+    const temp = request.data
+        ? (typeof request.data === 'string' ? JSON.parse(request.data) : request.data)
+        : null;
     request.data = {...temp, empleado:session?.data ? session.data.name : "N/A"};
     if(session?.isLogged && session?.data?.token) {
         request.headers["Authorization"] = `Bearer ${session.data.token}`;

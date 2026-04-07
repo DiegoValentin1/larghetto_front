@@ -22,6 +22,15 @@ const ROLE_STYLES = {
   RECEPCION:  { color: '#059669', bg: '#D1FAE5' },
 };
 
+const ENTITY_TYPE_STYLES = {
+  ALUMNO:         { label: 'Alumno',     color: '#92400E', bg: '#FEF3C7' },
+  MAESTRO:        { label: 'Maestro',    color: '#1E40AF', bg: '#DBEAFE' },
+  PERSONAL:       { label: 'Personal',   color: '#5B21B6', bg: '#EDE9FE' },
+  SOLICITUD_BAJA: { label: 'Baja',       color: '#9D174D', bg: '#FCE7F3' },
+  ASISTENCIA:     { label: 'Asistencia', color: '#065F46', bg: '#D1FAE5' },
+  REPOSICION:     { label: 'Reposición', color: '#374151', bg: '#F3F4F6' },
+};
+
 const ENTITY_LABELS = {
   ALUMNO: 'Alumno', MAESTRO: 'Maestro', PERSONAL: 'Personal',
   SOLICITUD_BAJA: 'Baja', ASISTENCIA: 'Asistencia', REPOSICION: 'Reposición'
@@ -132,21 +141,34 @@ const AuditLogTable = ({ data, totalRows, currentPage, onPageChange, loading }) 
     },
     {
       name: 'Entidad',
-      cell: row => (
-        <button
-          onClick={e => { e.stopPropagation(); setTimelineEntry(row); }}
-          title="Ver timeline de esta entidad"
-          style={{
-            background: '#F3F4F6', border: 'none', borderRadius: '6px',
-            padding: '0.25rem 0.6rem', cursor: 'pointer', fontSize: '0.8rem', color: '#374151',
-            transition: 'background 0.15s'
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = '#E5E7EB'}
-          onMouseLeave={e => e.currentTarget.style.background = '#F3F4F6'}
-        >
-          {ENTITY_LABELS[row.entity_type] || row.entity_type} {row.entity_name || `#${row.entity_id}`}
-        </button>
-      ),
+      cell: row => {
+        const es = ENTITY_TYPE_STYLES[row.entity_type];
+        return (
+          <button
+            onClick={e => { e.stopPropagation(); setTimelineEntry(row); }}
+            title="Ver timeline de esta entidad"
+            style={{
+              background: '#F3F4F6', border: 'none', borderRadius: '6px',
+              padding: '0.3rem 0.6rem', cursor: 'pointer', fontSize: '0.8rem', color: '#374151',
+              transition: 'background 0.15s', display: 'flex', flexDirection: 'column',
+              alignItems: 'flex-start', gap: '0.2rem', textAlign: 'left'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#E5E7EB'}
+            onMouseLeave={e => e.currentTarget.style.background = '#F3F4F6'}
+          >
+            {es && (
+              <span style={{
+                display: 'inline-block', padding: '0.1rem 0.45rem', borderRadius: '999px',
+                fontSize: '0.68rem', fontWeight: 700, color: es.color, background: es.bg,
+                lineHeight: 1.4, flexShrink: 0
+              }}>
+                {es.label}
+              </span>
+            )}
+            <span style={{ lineHeight: 1.3 }}>{row.entity_name || `#${row.entity_id}`}</span>
+          </button>
+        );
+      },
       width: '140px',
     },
     {
