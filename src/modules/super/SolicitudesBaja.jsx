@@ -19,6 +19,10 @@ export default function SolicitudesBaja() {
     const [solicitudSeleccionada, setSolicitudSeleccionada] = useState(null);
     const [respuesta, setRespuesta] = useState('');
 
+    // Modal motivo completo
+    const [showMotivoModal, setShowMotivoModal] = useState(false);
+    const [motivoModal, setMotivoModal] = useState({ texto: '', alumno: '' });
+
     useEffect(() => {
         cargarSolicitudes();
     }, [filtroEstado]);
@@ -217,7 +221,17 @@ export default function SolicitudesBaja() {
             selector: row => row.motivo,
             cell: row => (
                 <div style={{ whiteSpace: 'normal', padding: '8px 0' }}>
-                    {row.motivo.length > 50 ? row.motivo.substring(0, 50) + '...' : row.motivo}
+                    {row.motivo.length > 50 ? (
+                        <>
+                            {row.motivo.substring(0, 50)}...{' '}
+                            <span
+                                onClick={() => setMotivoModal({ texto: row.motivo, alumno: row.alumno_nombre }) || setShowMotivoModal(true)}
+                                style={{ color: '#6366F1', cursor: 'pointer', fontWeight: '600', fontSize: '0.8rem', whiteSpace: 'nowrap', textDecoration: 'underline' }}
+                            >
+                                ver más
+                            </span>
+                        </>
+                    ) : row.motivo}
                 </div>
             ),
             width: '250px',
@@ -358,6 +372,21 @@ export default function SolicitudesBaja() {
                     </Card.Body>
                 </Card>
             </Container>
+
+            {/* Modal motivo completo */}
+            <Modal show={showMotivoModal} onHide={() => setShowMotivoModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title style={{ fontSize: '1rem' }}>Motivo de baja — {motivoModal.alumno}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word', margin: 0, fontSize: '0.9rem', color: '#374151', lineHeight: '1.6' }}>
+                        {motivoModal.texto}
+                    </p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowMotivoModal(false)}>Cerrar</Button>
+                </Modal.Footer>
+            </Modal>
 
             {/* Modal para Aprobar/Rechazar */}
             <Modal show={showModal} onHide={cerrarModal} centered>
