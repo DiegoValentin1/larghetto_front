@@ -143,6 +143,7 @@ export const EditUserForm = ({
   const [pagos, setPagos] = useState([]);
   const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
   const [montosPorMes, setMontosPorMes] = useState({});
+  const [mostrarBadgeRecargo, setMostrarBadgeRecargo] = useState(false);
   const { user } = useContext(AuthContext);
 
   // ========================================
@@ -454,6 +455,13 @@ export const EditUserForm = ({
     value = parseInt(value);
     const nomMes = document.getElementById('mes' + mesFormated);
     const currentYear = new Date().getFullYear();
+
+    // Si el usuario cambia manualmente el selector del mes actual, ocultar el badge de sugerencia
+    const mesActual = new Date().getMonth() + 1;
+    if (parseInt(mesFormated) === mesActual) {
+      setMostrarBadgeRecargo(false);
+    }
+
     if (value !== 0) {
       nomMes.style.backgroundColor = colores[value];
       const nuevaFecha = `${currentYear}-${mes.toString().padStart(2, '0')}-01`;
@@ -462,7 +470,7 @@ export const EditUserForm = ({
       console.log([...nuevosPagos, { fecha: nuevaFecha, tipo: value }]);
     } else {
       nomMes.style.backgroundColor = colores[0];
-      
+
       const fechaRemovida = `${currentYear}-${mes.toString().padStart(2, '0')}-01`;
       setPagos(pagos.filter(fecha => fecha.fecha !== fechaRemovida));
       console.log(pagos.filter(fecha => fecha.fecha !== fechaRemovida));
@@ -501,6 +509,16 @@ export const EditUserForm = ({
       6: "pink"
     };
 
+    const hoy = new Date();
+    const mesActual = hoy.getMonth() + 1; // 1-indexed
+    const diaActual = hoy.getDate();
+    const esDespuesDia7 = diaActual > 7;
+
+    // Verificar si el alumno ya pagó el mes actual
+    const yaPagoMesActual = listaFechasTemp.some(
+      f => new Date(f.fecha).getMonth() + 1 === mesActual
+    );
+
     // Marcar y habilitar los checkboxes
     for (let i = 1; i <= 12; i++) {
       const nomMes = document.getElementById('mes' + i);
@@ -512,8 +530,34 @@ export const EditUserForm = ({
         checkbox.disabled = !((user.data.role === 'SUPER' || (user.data.campus === 'centro' && user.data.role === 'ENCARGADO')));
         nomMes.style.backgroundColor = fechaEnMes ? colores[fechaEnMes.tipo] : colores[0];
       } else {
-        checkbox.value = "0";
-        nomMes.style.backgroundColor = "gray";
+        // Advertencia de recargo: si es después del día 7 y es el mes actual sin pago
+        if (i === mesActual && esDespuesDia7 && !yaPagoMesActual) {
+          checkbox.value = "0";
+          nomMes.style.backgroundColor = "gray";
+          setMostrarBadgeRecargo(true);
+          // Para RECEPCION: deshabilitar opciones 1 y 2, solo permitir recargo o no pago
+          if (user.data.role === 'RECEPCION') {
+            checkbox.disabled = false;
+            // Deshabilitar opción Pago Normal (1) y Descuento (2) via JS
+            const optNormal = checkbox.querySelector('option[value="1"]');
+            const optDescuento = checkbox.querySelector('option[value="2"]');
+            if (optNormal) optNormal.disabled = true;
+            if (optDescuento) optDescuento.disabled = true;
+          }
+        } else {
+          checkbox.value = "0";
+          nomMes.style.backgroundColor = "gray";
+        }
+      }
+    }
+
+    // Para RECEPCION: bloquear opciones 1 y 2 del mes actual si ya pasó el día 7
+    if (user.data.role === 'RECEPCION' && esDespuesDia7 && !yaPagoMesActual) {
+      const selectMesActual = document.getElementById('pago' + mesActual);
+      if (selectMesActual) {
+        Array.from(selectMesActual.options).forEach(opt => {
+          if (opt.value === '1' || opt.value === '2') opt.disabled = true;
+        });
       }
     }
   }
@@ -852,7 +896,20 @@ export const EditUserForm = ({
             paddingBottom: "0.75rem",
             borderBottom: "2px solid #E5E7EB"
           }}>
-            Pagos Por Mes
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              Pagos Por Mes
+              {mostrarBadgeRecargo && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                  backgroundColor: '#FEF3C7', color: '#92400E',
+                  border: '1px solid #F59E0B', borderRadius: '6px',
+                  padding: '0.2rem 0.6rem', fontSize: '0.7rem', fontWeight: '600'
+                }}>
+                  <FeatherIcon icon="alert-triangle" size={12} />
+                  Recargo aplicable después del día 7
+                </span>
+              )}
+            </span>
           </div>
           {/* Información de Promoción Temporal */}
           {(() => {

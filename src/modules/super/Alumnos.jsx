@@ -41,6 +41,10 @@ export default function Users() {
     const [totalMensualidad, setTotalMensualidad] = useState(0);
     const [totalFaltantes, setTotalFaltantes] = useState(0);
     const [totalInscripciones, setTotalInscripciones] = useState(0);
+    const [totalRecargos, setTotalRecargos] = useState(0);
+    const [estimadoRecargos, setEstimadoRecargos] = useState(0);
+    const esDespuesDia7 = new Date().getDate() > 7;
+    const [statsVersion, setStatsVersion] = useState(0);
     const [contador, setContador] = useState(0);
     const [totalClases, setTotalClases] = useState(0);
     const [superCampus, setSuperCampus] = useState(0);
@@ -350,7 +354,7 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, [switchCampus, superCampus]);
+    }, [switchCampus, superCampus, statsVersion]);
 
     useEffect(() => {
         const fetchMaterial = async () => {
@@ -370,7 +374,7 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, [switchCampus, superCampus]);
+    }, [switchCampus, superCampus, statsVersion]);
 
     useEffect(() => {
         if (showStatusMenu) {
@@ -400,7 +404,7 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, [switchCampus, superCampus]);
+    }, [switchCampus, superCampus, statsVersion]);
 
     useEffect(() => {
         const fetchMaterial = async () => {
@@ -420,7 +424,38 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, [switchCampus, superCampus]);
+    }, [switchCampus, superCampus, statsVersion]);
+
+    useEffect(() => {
+        const fetchRecargos = async () => {
+            const campusUrl = (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                "total" : (superCampus === 1 ? "centro" :
+                    (superCampus === 2 ? "bugambilias" :
+                        (superCampus === 3 ? "cuautla" :
+                            (superCampus === 4 ? "CDMX" : user.data.campus))));
+            try {
+                const res = await AxiosClient({ method: "GET", url: `/stats/pagos/recargos/${campusUrl}` });
+                setTotalRecargos(res?.data?.total_recargos ?? 0);
+            } catch (e) { setTotalRecargos(0); }
+        };
+        fetchRecargos();
+    }, [switchCampus, superCampus, statsVersion]);
+
+    useEffect(() => {
+        if (!esDespuesDia7) return;
+        const fetchEsperados = async () => {
+            const campusUrl = (switchCampus || superCampus === 0 && user.data.role === "SUPER") ?
+                "total" : (superCampus === 1 ? "centro" :
+                    (superCampus === 2 ? "bugambilias" :
+                        (superCampus === 3 ? "cuautla" :
+                            (superCampus === 4 ? "CDMX" : user.data.campus))));
+            try {
+                const res = await AxiosClient({ method: "GET", url: `/stats/pagos/recargos-esperados/${campusUrl}` });
+                setEstimadoRecargos(res?.data?.estimado ?? 0);
+            } catch (e) { setEstimadoRecargos(0); }
+        };
+        fetchEsperados();
+    }, [switchCampus, superCampus, statsVersion]);
 
     useEffect(() => {
         const fetchMaterial = async () => {
@@ -440,7 +475,7 @@ export default function Users() {
             }
         };
         fetchMaterial();
-    }, [switchCampus, superCampus]);
+    }, [switchCampus, superCampus, statsVersion]);
 
     const changeStatus = async (id, estado) => {
         console.log(id, estado);
@@ -593,7 +628,7 @@ export default function Users() {
 
     useEffect(() => {
         cargarDatos(true);
-    }, [switchCampus, superCampus]);
+    }, [switchCampus, superCampus, statsVersion]);
 
     // Estilos personalizados para DataTable
     const customTableStyles = {
@@ -737,6 +772,9 @@ export default function Users() {
                             }}>
                                 ${pagosMes ? pagosMes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
                             </div>
+                            <div style={{ fontSize: '0.72rem', color: '#9CA3AF', marginTop: '4px' }}>
+                                incl. recargos: ${totalRecargos ? totalRecargos.toLocaleString('en', { maximumFractionDigits: 2 }) : '0'}
+                            </div>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -768,6 +806,11 @@ export default function Users() {
                             }}>
                                 ${totalFaltantes ? totalFaltantes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
                             </div>
+                            {esDespuesDia7 && (
+                                <div style={{ fontSize: '0.72rem', color: '#B91C1C', marginTop: '4px' }}>
+                                    est. recargos: ${estimadoRecargos ? estimadoRecargos.toLocaleString('en', { maximumFractionDigits: 2 }) : '0'}
+                                </div>
+                            )}
                         </Card.Body>
                     </Card>
                 </Col>
@@ -1163,7 +1206,7 @@ export default function Users() {
 
             {/* Modales */}
             {isOpen && <AddUserForm isOpen={isOpen} cargarDatos={cargarDatos} onClose={() => setIsOpen(false)} />}
-            {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} />}
+            {isEditing && <EditUserForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => { setIsEditting(false); setStatsVersion(v => v + 1); }} objeto={selectedObject} />}
             {isInfo && <AlumnoInfo isOpen={isInfo} objeto={selectedObject} onClose={() => setIsInfo(false)} />}
             {isSuperPagos && <SuperPagos isOpen={isSuperPagos} objeto={selectedObject} onClose={() => setIsSuperPagos(false)} />}
 

@@ -16,6 +16,18 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
     const [totalFaltantes, setTotalFaltantes] = useState({
         larghetto:0, centro:0, bugambilias:0, cuautla:0, cdmx:0
     });
+    const [totalRecargos, setTotalRecargos] = useState({
+        larghetto:0, centro:0, bugambilias:0, cuautla:0, cdmx:0
+    });
+    const [recargosEsperados, setRecargosEsperados] = useState({
+        larghetto:{ cantidad:0, estimado:0 },
+        centro:{ cantidad:0, estimado:0 },
+        bugambilias:{ cantidad:0, estimado:0 },
+        cuautla:{ cantidad:0, estimado:0 },
+        cdmx:{ cantidad:0, estimado:0 }
+    });
+
+    const esDespuesDia7 = new Date().getDate() > 7;
 
     const redondear = (cantidad)=>{
        return cantidad ? cantidad.toLocaleString('en', { maximumFractionDigits: 4 }) : 0
@@ -113,6 +125,54 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
     }, []);
 
 
+    useEffect(() => {
+        const fetchRecargos = async () => {
+            try {
+                const [r1, r2, r3, r4, r5] = await Promise.all([
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos/total" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos/centro" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos/bugambilias" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos/cuautla" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos/CDMX" }),
+                ]);
+                setTotalRecargos({
+                    larghetto: r1?.data?.total_recargos ?? 0,
+                    centro: r2?.data?.total_recargos ?? 0,
+                    bugambilias: r3?.data?.total_recargos ?? 0,
+                    cuautla: r4?.data?.total_recargos ?? 0,
+                    cdmx: r5?.data?.total_recargos ?? 0,
+                });
+            } catch (err) {
+                console.log("Error cargando recargos:", err);
+            }
+        };
+        fetchRecargos();
+    }, []);
+
+    useEffect(() => {
+        const fetchRecargosEsperados = async () => {
+            try {
+                const [r1, r2, r3, r4, r5] = await Promise.all([
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos-esperados/total" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos-esperados/centro" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos-esperados/bugambilias" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos-esperados/cuautla" }),
+                    AxiosClient({ method: "GET", url: "/stats/pagos/recargos-esperados/CDMX" }),
+                ]);
+                setRecargosEsperados({
+                    larghetto: { cantidad: r1?.data?.cantidad ?? 0, estimado: r1?.data?.estimado ?? 0 },
+                    centro:    { cantidad: r2?.data?.cantidad ?? 0, estimado: r2?.data?.estimado ?? 0 },
+                    bugambilias: { cantidad: r3?.data?.cantidad ?? 0, estimado: r3?.data?.estimado ?? 0 },
+                    cuautla:   { cantidad: r4?.data?.cantidad ?? 0, estimado: r4?.data?.estimado ?? 0 },
+                    cdmx:      { cantidad: r5?.data?.cantidad ?? 0, estimado: r5?.data?.estimado ?? 0 },
+                });
+            } catch (err) {
+                console.log("Error cargando recargos esperados:", err);
+            }
+        };
+        fetchRecargosEsperados();
+    }, []);
+
     const handleClose = () => {
         onClose();
     }
@@ -150,10 +210,18 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             <div className="totalRecibido totalPagos">
                                 <div>Pagos Obtenidos</div>
                                 <div>{redondear(pagosMes.larghetto)}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '2px' }}>
+                                    incl. recargos: ${redondear(totalRecargos.larghetto)}
+                                </div>
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
                                 <div>{redondear(totalFaltantes.larghetto)}</div>
+                                {esDespuesDia7 && (
+                                    <div style={{ fontSize: '0.75rem', color: '#9B1C1C', marginTop: '2px' }}>
+                                        est. recargos: ${redondear(recargosEsperados.larghetto.estimado)}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
@@ -164,10 +232,18 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             <div className="totalRecibido totalPagos">
                                 <div>Pagos Obtenidos</div>
                                 <div>{redondear(pagosMes.centro)}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '2px' }}>
+                                    incl. recargos: ${redondear(totalRecargos.centro)}
+                                </div>
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
                                 <div>{redondear(totalFaltantes.centro)}</div>
+                                {esDespuesDia7 && (
+                                    <div style={{ fontSize: '0.75rem', color: '#9B1C1C', marginTop: '2px' }}>
+                                        est. recargos: ${redondear(recargosEsperados.centro.estimado)}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
@@ -178,10 +254,18 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             <div className="totalRecibido totalPagos">
                                 <div>Pagos Obtenidos</div>
                                 <div>{redondear(pagosMes.bugambilias)}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '2px' }}>
+                                    incl. recargos: ${redondear(totalRecargos.bugambilias)}
+                                </div>
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
                                 <div>{redondear(totalFaltantes.bugambilias)}</div>
+                                {esDespuesDia7 && (
+                                    <div style={{ fontSize: '0.75rem', color: '#9B1C1C', marginTop: '2px' }}>
+                                        est. recargos: ${redondear(recargosEsperados.bugambilias.estimado)}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
@@ -192,10 +276,18 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             <div className="totalRecibido totalPagos">
                                 <div>Pagos Obtenidos</div>
                                 <div>{redondear(pagosMes.cuautla)}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '2px' }}>
+                                    incl. recargos: ${redondear(totalRecargos.cuautla)}
+                                </div>
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
                                 <div>{redondear(totalFaltantes.cuautla)}</div>
+                                {esDespuesDia7 && (
+                                    <div style={{ fontSize: '0.75rem', color: '#9B1C1C', marginTop: '2px' }}>
+                                        est. recargos: ${redondear(recargosEsperados.cuautla.estimado)}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -219,10 +311,18 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             <div className="totalRecibido totalPagos">
                                 <div>Pagos Obtenidos</div>
                                 <div>{redondear(pagosMes.cdmx)}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '2px' }}>
+                                    incl. recargos: ${redondear(totalRecargos.cdmx)}
+                                </div>
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
                                 <div>{redondear(totalFaltantes.cdmx)}</div>
+                                {esDespuesDia7 && (
+                                    <div style={{ fontSize: '0.75rem', color: '#9B1C1C', marginTop: '2px' }}>
+                                        est. recargos: ${redondear(recargosEsperados.cdmx.estimado)}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
@@ -233,17 +333,25 @@ export const SuperPagos = ({ isOpen, onClose, objeto }) => {
                             <div className="totalRecibido totalPagos">
                                 <div>Pagos Obtenidos</div>
                                 <div>{redondear(pagosMes.cdmx)}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '2px' }}>
+                                    incl. recargos: ${redondear(totalRecargos.cdmx)}
+                                </div>
                             </div>
                             <div className="totalFaltante totalPagos">
                                 <div>Pagos Faltantes</div>
                                 <div>{redondear(totalFaltantes.cdmx)}</div>
+                                {esDespuesDia7 && (
+                                    <div style={{ fontSize: '0.75rem', color: '#9B1C1C', marginTop: '2px' }}>
+                                        est. recargos: ${redondear(recargosEsperados.cdmx.estimado)}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="ChartContainer chartContainerP">
-                            
+
                         </div>
                         <div className="ChartContainer chartContainerP">
-                            
+
                         </div>
                     </div>
                 </div>
