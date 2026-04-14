@@ -772,8 +772,9 @@ export default function Users() {
                             }}>
                                 ${pagosMes ? pagosMes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
                             </div>
-                            <div style={{ fontSize: '0.72rem', color: '#9CA3AF', marginTop: '4px' }}>
-                                incl. recargos: ${totalRecargos ? totalRecargos.toLocaleString('en', { maximumFractionDigits: 2 }) : '0'}
+                            <div style={{ fontSize: '0.72rem', color: '#6B7280', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <span>Sin recargos: ${pagosMes && totalRecargos ? (pagosMes - totalRecargos).toLocaleString('en', { maximumFractionDigits: 2 }) : (pagosMes ? pagosMes.toLocaleString('en', { maximumFractionDigits: 2 }) : '0')}</span>
+                                <span style={{ color: '#D97706' }}>Recargos cobrados: ${totalRecargos ? totalRecargos.toLocaleString('en', { maximumFractionDigits: 2 }) : '0'}</span>
                             </div>
                         </Card.Body>
                     </Card>
@@ -804,13 +805,12 @@ export default function Users() {
                                 fontWeight: '700',
                                 color: '#EF4444'
                             }}>
-                                ${totalFaltantes ? totalFaltantes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0}
+                                ${totalFaltantes && estimadoRecargos ? (totalFaltantes + estimadoRecargos).toLocaleString('en', { maximumFractionDigits: 2 }) : (totalFaltantes ? totalFaltantes.toLocaleString('en', { maximumFractionDigits: 2 }) : 0)}
                             </div>
-                            {esDespuesDia7 && (
-                                <div style={{ fontSize: '0.72rem', color: '#B91C1C', marginTop: '4px' }}>
-                                    est. recargos: ${estimadoRecargos ? estimadoRecargos.toLocaleString('en', { maximumFractionDigits: 2 }) : '0'}
-                                </div>
-                            )}
+                            <div style={{ fontSize: '0.72rem', color: '#6B7280', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <span>Sin recargos: ${totalFaltantes ? totalFaltantes.toLocaleString('en', { maximumFractionDigits: 2 }) : '0'}</span>
+                                <span style={{ color: '#B91C1C' }}>Recargos estimados: ${estimadoRecargos ? estimadoRecargos.toLocaleString('en', { maximumFractionDigits: 2 }) : '0'}</span>
+                            </div>
                         </Card.Body>
                     </Card>
                 </Col>

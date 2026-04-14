@@ -16,7 +16,9 @@ import { EditMaestroForm } from './SuperForms/EditMaestroForm';
 import { AiOutlineBarChart } from 'react-icons/ai'
 import { MaestroChart } from './SuperForms/MaestroChart';
 import { MaestroClases } from './Components/MaestroClases';
+import { PaseListaMensual } from './Components/PaseListaMensual';
 import { GrSchedule } from "react-icons/gr";
+import { AiOutlineTable } from 'react-icons/ai';
 
 
 
@@ -81,12 +83,12 @@ export default function SuperMaterialesTee() {
             ) : 
             (
                 <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
-                    {/* <div style={{ paddingRight: 10 }}>
-                        <AiOutlineBarChart className='DataIcon' onClick={() => {
+                    <div style={{ paddingRight: 10 }}>
+                        <AiOutlineTable className='DataIcon' onClick={() => {
                             setSelectedObject(row);
-                            setIsChart(true);
-                        }} style={{ height: 25, width: 25, marginBottom: 0 }} />
-                    </div> */}
+                            setIsPaseLista(true);
+                        }} title="Pase de lista mensual" style={{ height: 25, width: 25, marginBottom: 0 }} />
+                    </div>
                     <div style={{ paddingRight: 10 }}>
                         <GrSchedule className='DataIcon' onClick={() => {
                             setSelectedObject(row);
@@ -121,6 +123,7 @@ const filtrarInstrumentos = (lista) => {
 const [isEditing, setIsEditting] = useState(false);
 const [isChart, setIsChart] = useState(false);
 const [isClases, setIsClases] = useState(false);
+const [isPaseLista, setIsPaseLista] = useState(false);
 const [isOpen, setIsOpen] = useState(false);
 const [datos, setDatos] = useState([]);
 const [instrumentosMaestros, setInstrumentosMaestros] = useState([]);
@@ -524,6 +527,7 @@ return (
         {isEditing && <EditMaestroForm isOpen={isEditing} cargarDatos={cargarDatos} onClose={() => setIsEditting(false)} objeto={selectedObject} maIn={maestroInstrumentos} />}
         {isChart && <MaestroChart isOpen={isChart} cargarDatos={cargarDatos} onClose={() => setIsChart(false)} objeto={selectedObject} />}
 {isClases && <MaestroClases isOpen={isClases} cargarDatos={cargarDatos} onClose={() => setIsClases(false)} objeto={selectedObject} />}
+{isPaseLista && <PaseListaMensual isOpen={isPaseLista} onClose={() => setIsPaseLista(false)} objeto={selectedObject} />}
     </>
 )
 }

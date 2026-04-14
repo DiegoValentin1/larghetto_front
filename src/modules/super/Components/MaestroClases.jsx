@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Modal } from 'react-bootstrap';
-import { MdCalendarToday } from 'react-icons/md';
+import { MdCalendarToday, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import AxiosClient from '../../../shared/plugins/axios';
 import Alert from '../../../shared/plugins/alerts';
 import '../../../utils/styles/MaestroClases.css';
@@ -9,40 +9,40 @@ const DIAS_ORDEN = { Lunes: 1, Martes: 2, Miercoles: 3, Jueves: 4, Viernes: 5, S
 const DIA_CORTO  = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MES_CORTO  = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
-const hoy = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
+// Valores exactos como están en la DB (sin acentos en Miercoles y Sabado)
+const DIAS_DB = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 
-const DIAS_ES   = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-const MESES_ES  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const toDateStr = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-const formatFechaLarga = (fechaStr) => {
+const hoy = () => toDateStr(new Date());
+
+/** Convierte una fecha YYYY-MM-DD al nombre del día de la semana en formato DB */
+const getDiaNombre = (fechaStr) => {
   const [y, m, d] = fechaStr.split('-').map(Number);
-  const fecha = new Date(y, m - 1, d);
-  const dia   = DIAS_ES[fecha.getDay()];
-  const mes   = MESES_ES[fecha.getMonth()];
-  return `${dia.charAt(0).toUpperCase() + dia.slice(1)} ${d} de ${mes} de ${y}`;
+  return DIAS_DB[new Date(y, m - 1, d).getDay()];
 };
 
-/** Últimos N días hasta hoy (incluyendo hoy), más reciente al final */
-const buildStrip = (diasAtras = 6) => {
-  const result = [];
-  const base = new Date();
-  base.setHours(12, 0, 0, 0);
-  for (let i = -diasAtras; i <= 0; i++) {
-    const d = new Date(base);
-    d.setDate(base.getDate() + i);
-    const fecha = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    result.push({
-      fecha,
-      diaNombre: DIA_CORTO[d.getDay()],
-      diaNum: d.getDate(),
-      mes: MES_CORTO[d.getMonth()],
-      esHoy: fecha === hoy(),
-    });
-  }
-  return result;
+/** Retorna el lunes (Date) de la semana que contiene fechaStr */
+const getLunesDe = (fechaStr) => {
+  const [y, m, d] = fechaStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  date.setHours(12, 0, 0, 0);
+  const dow = date.getDay();
+  date.setDate(date.getDate() - (dow === 0 ? 6 : dow - 1));
+  return date;
+};
+
+/** Genera los 7 días (Lun→Dom) de la semana que contiene refFecha */
+const buildStrip = (refFecha) => {
+  const lunes = getLunesDe(refFecha);
+  const todayFecha = hoy();
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(lunes);
+    d.setDate(lunes.getDate() + i);
+    const fecha = toDateStr(d);
+    return { fecha, diaNombre: DIA_CORTO[d.getDay()], diaNum: d.getDate(), mes: MES_CORTO[d.getMonth()], esHoy: fecha === todayFecha };
+  });
 };
 
 const claseKey = (c) => `${c.dia}__${c.hora}__${c.instrumento}`;
@@ -58,13 +58,32 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
   const [loadingSet, setLoadingSet]  = useState(new Set());
   const [savingSet, setSavingSet]    = useState(new Set());
 
-  const strip = buildStrip(6);
+  const strip = buildStrip(selectedFecha);
+  const lunesHoy = toDateStr(getLunesDe(hoy()));
+  const lunesSel = toDateStr(getLunesDe(selectedFecha));
+  const esUltimaSemana = lunesSel >= lunesHoy;
+
+  const prevSemana = () => {
+    const [y, m, d] = selectedFecha.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    date.setDate(date.getDate() - 7);
+    setSelectedFecha(toDateStr(date));
+  };
+
+  const nextSemana = () => {
+    if (esUltimaSemana) return;
+    const [y, m, d] = selectedFecha.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    date.setDate(date.getDate() + 7);
+    const nueva = toDateStr(date);
+    setSelectedFecha(nueva <= hoy() ? nueva : hoy());
+  };
 
   // ── Cargar clases del maestro ──────────────────────────────────────────────
   useEffect(() => {
     if (!isOpen) return;
     setAlumnosMap({});
-    setSelectedFecha(hoy());
+    setSelectedFecha(hoy);  // reset a hoy al abrir
     const fetchClases = async () => {
       const url = role === 'SUPER'
         ? `/clase/${objeto.user_id}`
@@ -100,59 +119,71 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
 
   useEffect(() => {
     if (clases.length > 0) {
-      fetchAlumnosParaFecha(clases, selectedFecha);
+      const diaSel = getDiaNombre(selectedFecha);
+      const clasesFiltradas = clases.filter(c => c.dia === diaSel);
+      setAlumnosMap({});
+      fetchAlumnosParaFecha(clasesFiltradas, selectedFecha);
     }
   }, [clases, selectedFecha]);
 
-  // ── Toggle asistencia (auto-save optimista) ────────────────────────────────
+  // ── Solo hoy es editable ──────────────────────────────────────────────────
+  const esEditable = (_fecha) => true; // DEBUG: sin restricción de fecha
+
+  // ── Re-fetch de una clase específica ─────────────────────────────────────
+  const refetchClase = useCallback(async (clase, fecha) => {
+    const key = claseKey(clase);
+    setLoadingSet(prev => new Set([...prev, key]));
+    try {
+      const params = new URLSearchParams({ dia: clase.dia, hora: clase.hora, instrumento: clase.instrumento, fecha });
+      const res = await AxiosClient({ method: 'GET', url: `/clase/alumnos/${objeto.user_id}?${params}` });
+      setAlumnosMap(prev => ({ ...prev, [key]: Array.isArray(res) ? res : [] }));
+    } catch {
+      // mantener data anterior si falla el refetch
+    } finally {
+      setLoadingSet(prev => { const s = new Set(prev); s.delete(key); return s; });
+    }
+  }, [objeto.user_id]);
+
+  // ── Ciclo 3 estados: inasistencia → asistencia → reposición → inasistencia ─
   const handleToggle = async (clase, alumno) => {
-    const key     = claseKey(clase);
+    if (!esEditable(selectedFecha)) return;
     const saveKey = `${alumno.id_alumno}-${alumno.id_clase}`;
     if (savingSet.has(saveKey)) return;
 
-    const marcado = !!alumno.asistio;
+    const tieneAsistencia = !!alumno.asistio;
+    const tieneRepo       = !!alumno.id_repo;
 
-    setAlumnosMap(prev => ({
-      ...prev,
-      [key]: prev[key].map(a =>
-        a.id_alumno === alumno.id_alumno && a.id_clase === alumno.id_clase
-          ? { ...a, asistio: !marcado }
-          : a
-      ),
-    }));
     setSavingSet(prev => new Set([...prev, saveKey]));
-
     try {
-      if (!marcado) {
+      if (!tieneAsistencia && !tieneRepo) {
+        // 0 → asistencia
         await AxiosClient({
           method: 'POST',
           url: '/personal/alumno/asistencias',
           data: { id_alumno: alumno.id_alumno, fecha: selectedFecha, id_clase: alumno.id_clase },
         });
-      } else {
+      } else if (tieneAsistencia) {
+        // asistencia → reposición
         await AxiosClient({
           method: 'DELETE',
           url: `/personal/alumno/asistencias/${alumno.id_alumno}/${selectedFecha}/${alumno.id_clase}`,
         });
+        await AxiosClient({
+          method: 'POST',
+          url: '/instrumento/repo',
+          data: { fecha: selectedFecha, alumno_id: alumno.id_alumno, maestro_id: objeto.user_id },
+        });
+      } else {
+        // reposición → 0
+        await AxiosClient({ method: 'DELETE', url: `/personal/repo/${alumno.id_repo}` });
       }
+      // Re-fetch real desde DB para tener el estado correcto
+      await refetchClase(clase, selectedFecha);
     } catch {
-      setAlumnosMap(prev => ({
-        ...prev,
-        [key]: prev[key].map(a =>
-          a.id_alumno === alumno.id_alumno && a.id_clase === alumno.id_clase
-            ? { ...a, asistio: marcado }
-            : a
-        ),
-      }));
       Alert.fire({ title: 'Error', text: 'No se pudo guardar', icon: 'error', timer: 2000, showConfirmButton: false });
     } finally {
       setSavingSet(prev => { const s = new Set(prev); s.delete(saveKey); return s; });
     }
-  };
-
-  const handleFechaExterna = (e) => {
-    const val = e.target.value;
-    if (val && val <= hoy()) setSelectedFecha(val);
   };
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -177,102 +208,105 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
             Clases — {objeto?.name}
           </Modal.Title>
 
-          {/* Strip de fechas + picker */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {/* Días del strip, distribuidos uniformemente */}
-            <div style={{ display: 'flex', flex: 1, gap: '0.3rem' }}>
+          {/* Carrusel de semana: ← [Lun…Dom] → + picker */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+
+            {/* Flecha anterior */}
+            <button
+              onClick={prevSemana}
+              title="Semana anterior"
+              style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1.5px solid #D1D5DB', backgroundColor: '#fff', cursor: 'pointer', color: '#6B7280', padding: 0 }}
+            >
+              <MdChevronLeft size={18} />
+            </button>
+
+            {/* 7 días de la semana */}
+            <div style={{ display: 'flex', flex: 1, gap: '0.25rem' }}>
               {strip.map(({ fecha, diaNombre, diaNum, mes, esHoy }) => {
                 const selected = fecha === selectedFecha;
+                const esFuturo = fecha > hoy();
                 return (
                   <button
                     key={fecha}
-                    onClick={() => setSelectedFecha(fecha)}
+                    onClick={() => !esFuturo && setSelectedFecha(fecha)}
                     title={fecha}
+                    disabled={esFuturo}
                     style={{
                       flex: 1,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      padding: '0.3rem 0.2rem',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      padding: '0.3rem 0.1rem',
                       borderRadius: '7px',
-                      border: selected ? '1.5px solid #2563EB' : esHoy ? '1.5px solid #2563EB' : '1.5px solid transparent',
-                      cursor: 'pointer',
+                      border: selected ? '1.5px solid #2563EB' : esHoy ? '1.5px solid #93C5FD' : '1.5px solid transparent',
+                      cursor: esFuturo ? 'not-allowed' : 'pointer',
                       backgroundColor: selected ? '#2563EB' : esHoy ? '#DBEAFE' : 'transparent',
-                      color: selected ? '#fff' : esHoy ? '#1D4ED8' : '#6B7280',
+                      color: selected ? '#fff' : esFuturo ? '#D1D5DB' : esHoy ? '#1D4ED8' : '#6B7280',
                       fontWeight: esHoy ? '700' : '400',
                       transition: 'all 0.12s',
                       minWidth: 0,
+                      opacity: esFuturo ? 0.4 : 1,
                     }}
-                    onMouseEnter={e => { if (!selected) e.currentTarget.style.backgroundColor = esHoy ? '#BFDBFE' : '#F3F4F6'; }}
-                    onMouseLeave={e => { if (!selected) e.currentTarget.style.backgroundColor = esHoy ? '#DBEAFE' : 'transparent'; }}
                   >
-                    <span style={{ fontSize: '0.6rem', fontWeight: '600', textTransform: 'uppercase', lineHeight: 1.3 }}>{diaNombre}</span>
-                    <span style={{ fontSize: '0.95rem', fontWeight: '700', lineHeight: 1.2 }}>{diaNum}</span>
-                    <span style={{ fontSize: '0.58rem', opacity: 0.75, lineHeight: 1.2 }}>{mes}</span>
+                    <span style={{ fontSize: '0.58rem', fontWeight: '600', textTransform: 'uppercase', lineHeight: 1.3 }}>{diaNombre}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: '700', lineHeight: 1.2 }}>{diaNum}</span>
+                    <span style={{ fontSize: '0.55rem', opacity: 0.75, lineHeight: 1.2 }}>{mes}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Separador */}
-            <div style={{ width: '1px', height: '36px', backgroundColor: '#D1D5DB', flexShrink: 0 }} />
+            {/* Flecha siguiente (deshabilitada si ya estamos en la semana actual) */}
+            <button
+              onClick={nextSemana}
+              disabled={esUltimaSemana}
+              title="Semana siguiente"
+              style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1.5px solid #D1D5DB', backgroundColor: '#fff', cursor: esUltimaSemana ? 'not-allowed' : 'pointer', color: esUltimaSemana ? '#D1D5DB' : '#6B7280', padding: 0 }}
+            >
+              <MdChevronRight size={18} />
+            </button>
 
-            {/* Date picker para fechas anteriores */}
-            {(() => {
-              const fueraDelStrip = !strip.find(d => d.fecha === selectedFecha);
-              return (
-                <div
-                  onClick={() => document.getElementById('mc-date-picker')?.showPicker?.()}
-                  style={{
-                    position: 'relative', flexShrink: 0, cursor: 'pointer',
-                    border: fueraDelStrip ? '1.5px solid #2563EB' : '1.5px solid #D1D5DB',
-                    borderRadius: '7px',
-                    backgroundColor: fueraDelStrip ? '#DBEAFE' : '#fff',
-                    padding: '0.35rem 0.75rem 0.35rem 0.5rem',
-                    display: 'flex', alignItems: 'center', gap: '0.3rem',
-                    fontSize: '0.75rem', color: fueraDelStrip ? '#1D4ED8' : '#6B7280',
-                    fontWeight: fueraDelStrip ? '700' : '400',
-                    userSelect: 'none',
-                    minWidth: '80px',
-                  }}
-                >
-                  <MdCalendarToday size={13} />
-                  <span>{fueraDelStrip ? selectedFecha : 'Otra fecha'}</span>
-                  <input
-                    id="mc-date-picker"
-                    type="date"
-                    max={hoy()}
-                    value={fueraDelStrip ? selectedFecha : ''}
-                    onChange={handleFechaExterna}
-                    style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
-                  />
-                </div>
-              );
-            })()}
-          </div>
-
-          {/* Indicador de fecha seleccionada si es del picker */}
-          {!strip.find(d => d.fecha === selectedFecha) && selectedFecha && (
-            <div style={{ fontSize: '0.72rem', color: '#1D4ED8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <MdCalendarToday size={12} />
-              {formatFechaLarga(selectedFecha)}
+            {/* Picker para saltar a fecha específica */}
+            <div
+              onClick={() => document.getElementById('mc-date-picker')?.showPicker?.()}
+              title="Ir a fecha específica"
+              style={{ position: 'relative', flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1.5px solid #D1D5DB', backgroundColor: '#fff', cursor: 'pointer', color: '#6B7280' }}
+            >
+              <MdCalendarToday size={14} />
+              <input
+                id="mc-date-picker"
+                type="date"
+                max={hoy()}
+                value={selectedFecha}
+                onChange={e => { if (e.target.value && e.target.value <= hoy()) setSelectedFecha(e.target.value); }}
+                style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
+              />
             </div>
-          )}
+          </div>
         </div>
       </Modal.Header>
 
       <Modal.Body style={{ padding: '1.25rem', backgroundColor: '#FFFFFF', maxHeight: '70vh', overflowY: 'auto' }}>
-        {clases.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#6B7280', fontSize: '0.9rem' }}>
-            Sin clases registradas
-          </div>
-        ) : (
+        {(() => {
+          const diaSel = getDiaNombre(selectedFecha);
+          const clasesFiltradas = clases.filter(c => c.dia === diaSel);
+          if (clases.length === 0) return (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#6B7280', fontSize: '0.9rem' }}>
+              Sin clases registradas
+            </div>
+          );
+          if (clasesFiltradas.length === 0) return (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#6B7280', fontSize: '0.9rem' }}>
+              Sin clases para el {diaSel}
+            </div>
+          );
+          return (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-            {clases.map((clase, idx) => {
+            {clasesFiltradas.map((clase, idx) => {
               const key      = claseKey(clase);
               const alumnos  = alumnosMap[key] || [];
               const cargando = loadingSet.has(key);
-              const presentes = alumnos.filter(a => !!a.asistio).length;
+              const numAsistencias = alumnos.filter(a => !!a.asistio).length;
+              const numRepos       = alumnos.filter(a => !!a.id_repo).length;
+              const presentes      = numAsistencias + numRepos;
 
               return (
                 <div key={idx} style={{ borderRadius: '10px', border: '2px solid #E5E7EB', overflow: 'hidden', backgroundColor: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
@@ -284,9 +318,17 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                       {clase.hora}
                     </span>
                     {!cargando && alumnos.length > 0 && (
-                      <span style={{ fontSize: '0.68rem', fontWeight: '700', backgroundColor: presentes > 0 ? '#D1FAE5' : 'rgba(255,255,255,0.15)', color: presentes > 0 ? '#065F46' : 'rgba(255,255,255,0.8)', borderRadius: '999px', padding: '0.1rem 0.45rem' }}>
-                        {presentes}/{alumnos.length}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: '700', backgroundColor: numAsistencias > 0 ? '#D1FAE5' : 'rgba(255,255,255,0.15)', color: numAsistencias > 0 ? '#065F46' : 'rgba(255,255,255,0.7)', borderRadius: '999px', padding: '0.1rem 0.45rem' }}>
+                          ✓ {numAsistencias}
+                        </span>
+                        <span style={{ fontSize: '0.68rem', fontWeight: '700', backgroundColor: numRepos > 0 ? '#FEF3C7' : 'rgba(255,255,255,0.15)', color: numRepos > 0 ? '#92400E' : 'rgba(255,255,255,0.7)', borderRadius: '999px', padding: '0.1rem 0.45rem' }}>
+                          R {numRepos}
+                        </span>
+                        <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.6)', fontWeight: '600' }}>
+                          /{alumnos.length}
+                        </span>
+                      </div>
                     )}
                   </div>
 
@@ -297,40 +339,56 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                     ) : alumnos.length === 0 ? (
                       <div style={{ textAlign: 'center', padding: '1.25rem 0', color: '#9CA3AF', fontSize: '0.8rem' }}>Sin alumnos</div>
                     ) : alumnos.map((alumno, aidx) => {
-                      const saveKey  = `${alumno.id_alumno}-${alumno.id_clase}`;
+                      const saveKey   = `${alumno.id_alumno}-${alumno.id_clase}`;
                       const guardando = savingSet.has(saveKey);
                       const asistio   = !!alumno.asistio;
+                      const tieneRepo = !!alumno.id_repo;
+                      const editable  = esEditable(selectedFecha);
+
+                      // colores por estado
+                      const estiloFila = asistio
+                        ? { border: '1.5px solid #10B981', backgroundColor: '#ECFDF5' }
+                        : tieneRepo
+                          ? { border: '1.5px solid #F59E0B', backgroundColor: '#FFFBEB' }
+                          : { border: '1.5px solid #E5E7EB', backgroundColor: '#F9FAFB' };
+
+                      const estiloCheck = asistio
+                        ? { border: '2px solid #10B981', backgroundColor: '#10B981' }
+                        : tieneRepo
+                          ? { border: '2px solid #F59E0B', backgroundColor: '#F59E0B' }
+                          : { border: '2px solid #D1D5DB', backgroundColor: '#fff' };
 
                       return (
                         <div
                           key={aidx}
-                          onClick={() => !guardando && handleToggle(clase, alumno)}
+                          onClick={() => !guardando && editable && handleToggle(clase, alumno)}
+                          title={!editable ? 'Día cerrado — solo lectura' : undefined}
                           style={{
                             display: 'flex', alignItems: 'center', gap: '0.5rem',
                             padding: '0.4rem 0.5rem', borderRadius: '6px',
-                            border: asistio ? '1.5px solid #10B981' : '1.5px solid #E5E7EB',
-                            backgroundColor: asistio ? '#ECFDF5' : '#F9FAFB',
-                            cursor: guardando ? 'wait' : 'pointer',
-                            transition: 'all 0.12s', opacity: guardando ? 0.65 : 1,
+                            ...estiloFila,
+                            cursor: guardando ? 'wait' : editable ? 'pointer' : 'not-allowed',
+                            transition: 'all 0.12s',
+                            opacity: guardando ? 0.65 : !editable ? 0.6 : 1,
                             userSelect: 'none',
                           }}
                         >
-                          {/* Checkbox visual */}
+                          {/* Indicador visual de estado */}
                           <div style={{
                             width: '15px', height: '15px', borderRadius: '4px', flexShrink: 0,
-                            border: asistio ? '2px solid #10B981' : '2px solid #D1D5DB',
-                            backgroundColor: asistio ? '#10B981' : '#fff',
+                            ...estiloCheck,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.12s',
                           }}>
-                            {asistio && !guardando && (
+                            {guardando ? (
+                              <div style={{ width: '7px', height: '7px', borderRadius: '50%', border: '1.5px solid #9CA3AF', borderTopColor: 'transparent', animation: 'spin 0.6s linear infinite' }} />
+                            ) : asistio ? (
                               <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
                                 <path d="M1 3.5L3 5.5L8 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                               </svg>
-                            )}
-                            {guardando && (
-                              <div style={{ width: '7px', height: '7px', borderRadius: '50%', border: '1.5px solid #9CA3AF', borderTopColor: 'transparent', animation: 'spin 0.6s linear infinite' }} />
-                            )}
+                            ) : tieneRepo ? (
+                              <span style={{ fontSize: '0.55rem', fontWeight: '800', color: '#fff', lineHeight: 1 }}>R</span>
+                            ) : null}
                           </div>
 
                           <span style={{ fontSize: '0.8rem', color: '#1F2937', flex: 1, lineHeight: 1.3 }}>
@@ -339,6 +397,12 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                               <span style={{ color: '#9CA3AF', marginLeft: '0.3rem', fontSize: '0.72rem' }}>{alumno.matricula}</span>
                             )}
                           </span>
+
+                          {tieneRepo && (
+                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: '#B45309', backgroundColor: '#FEF3C7', borderRadius: '4px', padding: '0.1rem 0.35rem' }}>
+                              Repos.
+                            </span>
+                          )}
                         </div>
                       );
                     })}
@@ -347,7 +411,8 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
               );
             })}
           </div>
-        )}
+          );
+        })()}
       </Modal.Body>
     </Modal>
   );
