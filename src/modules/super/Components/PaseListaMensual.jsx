@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdChevronLeft, MdChevronRight, MdCalendarToday } from 'react-icons/md';
 import AxiosClient from '../../../shared/plugins/axios';
 
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -16,6 +16,15 @@ const formatHeader = (fechaStr) => {
 const getDiaNombreDB = (fechaStr) => {
   const [y, m, d] = fechaStr.split('-').map(Number);
   return DIAS_DB[new Date(y, m - 1, d).getDay()];
+};
+
+/** Retorna la clave del lunes de la semana (YYYY-MM-DD) para agrupar por semana */
+const getLunesKey = (fechaStr) => {
+  const [y, m, d] = fechaStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const dow = date.getDay();
+  date.setDate(d - (dow === 0 ? 6 : dow - 1));
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 };
 
 export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
@@ -52,15 +61,11 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
   };
 
   const nextMes = () => {
-    const esUltimo = currentDate.year === hoy.getFullYear() && currentDate.month === hoy.getMonth() + 1;
-    if (esUltimo) return;
     setCurrentDate(prev => prev.month === 12
       ? { year: prev.year + 1, month: 1 }
       : { year: prev.year, month: prev.month + 1 }
     );
   };
-
-  const esUltimoMes = currentDate.year === hoy.getFullYear() && currentDate.month === hoy.getMonth() + 1;
 
   const { fechas = [], alumnos = [], matriz = {}, diasPorAlumno = {}, resumen = {} } = data || {};
 
@@ -87,9 +92,26 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
             <Modal.Title style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1F2937', margin: 0 }}>
               {MESES[currentDate.month - 1]} {currentDate.year} — {objeto?.name}
             </Modal.Title>
-            <button onClick={nextMes} disabled={esUltimoMes} style={{ ...btnNavStyle, color: esUltimoMes ? '#D1D5DB' : '#6B7280', cursor: esUltimoMes ? 'not-allowed' : 'pointer' }}>
+            <button onClick={nextMes} style={btnNavStyle}>
               <MdChevronRight size={18} />
             </button>
+
+            {/* Selector de mes/año */}
+            <div style={{ position: 'relative' }} onClick={() => document.getElementById('plm-month-picker')?.showPicker?.()}>
+              <button style={btnNavStyle} title="Ir a mes/año">
+                <MdCalendarToday size={15} />
+              </button>
+              <input
+                id="plm-month-picker"
+                type="month"
+                value={`${currentDate.year}-${String(currentDate.month).padStart(2, '0')}`}
+                onChange={e => {
+                  const [y, m] = e.target.value.split('-').map(Number);
+                  if (y && m) setCurrentDate({ year: y, month: m });
+                }}
+                style={{ position: 'absolute', opacity: 0, width: '1px', height: '1px', top: 0, left: 0, pointerEvents: 'none' }}
+              />
+            </div>
           </div>
         </div>
       </Modal.Header>
@@ -171,7 +193,13 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
                     const diasAlumno = diasPorAlumno[alumno.id] || [];
                     // Fechas que le corresponden a este alumno
                     const fechasAlumno = fechas.filter(f => diasAlumno.includes(getDiaNombreDB(f)));
-                    const asistidas = fechasAlumno.filter(f => fila[f] === 'A' || fila[f] === 'R').length;
+                    // Semanas únicas donde el alumno tiene clase programada = clases esperadas
+                    const semanasEsperadas = new Set(fechasAlumno.map(f => getLunesKey(f))).size;
+                    // Semanas únicas donde asistió (A o R), contando cualquier día de la semana
+                    const semanasAsistidas = new Set(
+                      fechas.filter(f => fila[f] === 'A' || fila[f] === 'R').map(f => getLunesKey(f))
+                    ).size;
+                    const asistidas = semanasAsistidas;
                     const rowBg = idx % 2 === 0 ? '#FFFFFF' : '#F9FAFB';
                     return (
                       <tr key={alumno.id} style={{ backgroundColor: rowBg }}>
@@ -189,7 +217,9 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
                         {fechas.map(fecha => {
                           const aplica = diasAlumno.includes(getDiaNombreDB(fecha));
                           const estado = fila[fecha];
-                          if (!aplica) {
+
+                          // Celda gris: no aplica y sin asistencia registrada
+                          if (!aplica && !estado) {
                             return (
                               <td key={fecha} style={{
                                 borderBottom: '1px solid #E5E7EB',
@@ -198,13 +228,40 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
                               }} />
                             );
                           }
+
+                          // Celda blanca (día programado, sin asistencia):
+                          // solo mostrar si la semana no está ya cubierta por otra asistencia
+                          if (aplica && !estado) {
+                            const semana = getLunesKey(fecha);
+                            const semanaCubierta = fechas.some(f =>
+                              getLunesKey(f) === semana && (fila[f] === 'A' || fila[f] === 'R')
+                            );
+                            if (semanaCubierta) {
+                              return (
+                                <td key={fecha} style={{
+                                  borderBottom: '1px solid #E5E7EB',
+                                  borderLeft: '1px solid #E5E7EB',
+                                  backgroundColor: '#D1D5DB',
+                                }} />
+                              );
+                            }
+                            return (
+                              <td key={fecha} style={{
+                                borderBottom: '1px solid #E5E7EB',
+                                borderLeft: '1px solid #E5E7EB',
+                                backgroundColor: rowBg,
+                              }} />
+                            );
+                          }
+
+                          // Celda con asistencia o repo
                           return (
                             <td key={fecha} style={{
                               textAlign: 'center',
                               borderBottom: '1px solid #E5E7EB',
                               borderLeft: '1px solid #E5E7EB',
                               padding: '0.25rem',
-                              backgroundColor: estado === 'A' ? '#ECFDF5' : estado === 'R' ? '#FFFBEB' : rowBg,
+                              backgroundColor: estado === 'A' ? '#ECFDF5' : '#FFFBEB',
                             }}>
                               {estado === 'A' && <span style={{ color: '#10B981', fontWeight: '700', fontSize: '0.75rem' }}>✓</span>}
                               {estado === 'R' && <span style={{ color: '#D97706', fontWeight: '700', fontSize: '0.7rem' }}>R</span>}
@@ -220,7 +277,7 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
                           color: asistidas > 0 ? '#1F2937' : '#D1D5DB',
                           fontSize: '0.75rem',
                         }}>
-                          {asistidas}/{fechasAlumno.length}
+                          {asistidas}/{semanasEsperadas}
                         </td>
                       </tr>
                     );

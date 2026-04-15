@@ -47,6 +47,13 @@ const buildStrip = (refFecha) => {
 
 const claseKey = (c) => `${c.dia}__${c.hora}__${c.instrumento}`;
 
+const DIAS_LARGO = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const formatFechaCorta = (fechaStr) => {
+  const [y, m, d] = fechaStr.split('-').map(Number);
+  const dow = new Date(y, m - 1, d).getDay();
+  return `${DIAS_LARGO[dow]} ${d}`;
+};
+
 export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) => {
   const session = JSON.parse(localStorage.getItem('user') || null);
   const role   = session?.data?.role;
@@ -59,9 +66,7 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
   const [savingSet, setSavingSet]    = useState(new Set());
 
   const strip = buildStrip(selectedFecha);
-  const lunesHoy = toDateStr(getLunesDe(hoy()));
-  const lunesSel = toDateStr(getLunesDe(selectedFecha));
-  const esUltimaSemana = lunesSel >= lunesHoy;
+
 
   const prevSemana = () => {
     const [y, m, d] = selectedFecha.split('-').map(Number);
@@ -71,12 +76,10 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
   };
 
   const nextSemana = () => {
-    if (esUltimaSemana) return;
     const [y, m, d] = selectedFecha.split('-').map(Number);
     const date = new Date(y, m - 1, d);
     date.setDate(date.getDate() + 7);
-    const nueva = toDateStr(date);
-    setSelectedFecha(nueva <= hoy() ? nueva : hoy());
+    setSelectedFecha(toDateStr(date));
   };
 
   // ── Cargar clases del maestro ──────────────────────────────────────────────
@@ -126,8 +129,8 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
     }
   }, [clases, selectedFecha]);
 
-  // ── Solo hoy es editable ──────────────────────────────────────────────────
-  const esEditable = (_fecha) => true; // DEBUG: sin restricción de fecha
+  // ── Edición: SUPER puede editar cualquier fecha; otros solo hoy ──────────
+  const esEditable = (fecha) => role === 'SUPER' || fecha === hoy();
 
   // ── Re-fetch de una clase específica ─────────────────────────────────────
   const refetchClase = useCallback(async (clase, fecha) => {
@@ -228,22 +231,20 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                 return (
                   <button
                     key={fecha}
-                    onClick={() => !esFuturo && setSelectedFecha(fecha)}
+                    onClick={() => setSelectedFecha(fecha)}
                     title={fecha}
-                    disabled={esFuturo}
                     style={{
                       flex: 1,
                       display: 'flex', flexDirection: 'column', alignItems: 'center',
                       padding: '0.3rem 0.1rem',
                       borderRadius: '7px',
                       border: selected ? '1.5px solid #2563EB' : esHoy ? '1.5px solid #93C5FD' : '1.5px solid transparent',
-                      cursor: esFuturo ? 'not-allowed' : 'pointer',
+                      cursor: 'pointer',
                       backgroundColor: selected ? '#2563EB' : esHoy ? '#DBEAFE' : 'transparent',
-                      color: selected ? '#fff' : esFuturo ? '#D1D5DB' : esHoy ? '#1D4ED8' : '#6B7280',
+                      color: selected ? '#fff' : esFuturo ? '#9CA3AF' : esHoy ? '#1D4ED8' : '#6B7280',
                       fontWeight: esHoy ? '700' : '400',
                       transition: 'all 0.12s',
                       minWidth: 0,
-                      opacity: esFuturo ? 0.4 : 1,
                     }}
                   >
                     <span style={{ fontSize: '0.58rem', fontWeight: '600', textTransform: 'uppercase', lineHeight: 1.3 }}>{diaNombre}</span>
@@ -254,12 +255,11 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
               })}
             </div>
 
-            {/* Flecha siguiente (deshabilitada si ya estamos en la semana actual) */}
+            {/* Flecha siguiente */}
             <button
               onClick={nextSemana}
-              disabled={esUltimaSemana}
               title="Semana siguiente"
-              style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1.5px solid #D1D5DB', backgroundColor: '#fff', cursor: esUltimaSemana ? 'not-allowed' : 'pointer', color: esUltimaSemana ? '#D1D5DB' : '#6B7280', padding: 0 }}
+              style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1.5px solid #D1D5DB', backgroundColor: '#fff', cursor: 'pointer', color: '#6B7280', padding: 0 }}
             >
               <MdChevronRight size={18} />
             </button>
@@ -274,9 +274,8 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
               <input
                 id="mc-date-picker"
                 type="date"
-                max={hoy()}
                 value={selectedFecha}
-                onChange={e => { if (e.target.value && e.target.value <= hoy()) setSelectedFecha(e.target.value); }}
+                onChange={e => { if (e.target.value) setSelectedFecha(e.target.value); }}
                 style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
               />
             </div>
@@ -339,18 +338,21 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                     ) : alumnos.length === 0 ? (
                       <div style={{ textAlign: 'center', padding: '1.25rem 0', color: '#9CA3AF', fontSize: '0.8rem' }}>Sin alumnos</div>
                     ) : alumnos.map((alumno, aidx) => {
-                      const saveKey   = `${alumno.id_alumno}-${alumno.id_clase}`;
-                      const guardando = savingSet.has(saveKey);
-                      const asistio   = !!alumno.asistio;
-                      const tieneRepo = !!alumno.id_repo;
-                      const editable  = esEditable(selectedFecha);
+                      const saveKey      = `${alumno.id_alumno}-${alumno.id_clase}`;
+                      const guardando    = savingSet.has(saveKey);
+                      const asistio      = !!alumno.asistio;
+                      const tieneRepo    = !!alumno.id_repo;
+                      const editable     = esEditable(selectedFecha);
+                      const otraFecha    = alumno.asistencia_otra_fecha || null;
+                      const slotCubierto = !asistio && !tieneRepo && !!otraFecha;
 
-                      // colores por estado
-                      const estiloFila = asistio
-                        ? { border: '1.5px solid #10B981', backgroundColor: '#ECFDF5' }
-                        : tieneRepo
-                          ? { border: '1.5px solid #F59E0B', backgroundColor: '#FFFBEB' }
-                          : { border: '1.5px solid #E5E7EB', backgroundColor: '#F9FAFB' };
+                      const estiloFila = slotCubierto
+                        ? { border: '1.5px solid #D1D5DB', backgroundColor: '#F3F4F6' }
+                        : asistio
+                          ? { border: '1.5px solid #10B981', backgroundColor: '#ECFDF5' }
+                          : tieneRepo
+                            ? { border: '1.5px solid #F59E0B', backgroundColor: '#FFFBEB' }
+                            : { border: '1.5px solid #E5E7EB', backgroundColor: '#F9FAFB' };
 
                       const estiloCheck = asistio
                         ? { border: '2px solid #10B981', backgroundColor: '#10B981' }
@@ -359,49 +361,72 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                           : { border: '2px solid #D1D5DB', backgroundColor: '#fff' };
 
                       return (
-                        <div
-                          key={aidx}
-                          onClick={() => !guardando && editable && handleToggle(clase, alumno)}
-                          title={!editable ? 'Día cerrado — solo lectura' : undefined}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: '0.5rem',
-                            padding: '0.4rem 0.5rem', borderRadius: '6px',
-                            ...estiloFila,
-                            cursor: guardando ? 'wait' : editable ? 'pointer' : 'not-allowed',
-                            transition: 'all 0.12s',
-                            opacity: guardando ? 0.65 : !editable ? 0.6 : 1,
-                            userSelect: 'none',
-                          }}
-                        >
-                          {/* Indicador visual de estado */}
-                          <div style={{
-                            width: '15px', height: '15px', borderRadius: '4px', flexShrink: 0,
-                            ...estiloCheck,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            transition: 'all 0.12s',
-                          }}>
-                            {guardando ? (
-                              <div style={{ width: '7px', height: '7px', borderRadius: '50%', border: '1.5px solid #9CA3AF', borderTopColor: 'transparent', animation: 'spin 0.6s linear infinite' }} />
-                            ) : asistio ? (
-                              <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                                <path d="M1 3.5L3 5.5L8 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                            ) : tieneRepo ? (
-                              <span style={{ fontSize: '0.55rem', fontWeight: '800', color: '#fff', lineHeight: 1 }}>R</span>
-                            ) : null}
+                        <div key={aidx} style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                          <div
+                            onClick={() => !slotCubierto && !guardando && editable && handleToggle(clase, alumno)}
+                            title={slotCubierto ? undefined : !editable ? 'Día cerrado — solo lectura' : undefined}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '0.5rem',
+                              padding: '0.4rem 0.5rem', borderRadius: '6px',
+                              ...estiloFila,
+                              cursor: slotCubierto ? 'default' : guardando ? 'wait' : editable ? 'pointer' : 'not-allowed',
+                              transition: 'all 0.12s',
+                              opacity: guardando ? 0.65 : (!editable && !slotCubierto) ? 0.6 : 1,
+                              userSelect: 'none',
+                            }}
+                          >
+                            {/* Indicador visual de estado */}
+                            <div style={{
+                              width: '15px', height: '15px', borderRadius: '4px', flexShrink: 0,
+                              ...estiloCheck,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              transition: 'all 0.12s',
+                            }}>
+                              {guardando ? (
+                                <div style={{ width: '7px', height: '7px', borderRadius: '50%', border: '1.5px solid #9CA3AF', borderTopColor: 'transparent', animation: 'spin 0.6s linear infinite' }} />
+                              ) : asistio ? (
+                                <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                                  <path d="M1 3.5L3 5.5L8 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              ) : tieneRepo ? (
+                                <span style={{ fontSize: '0.55rem', fontWeight: '800', color: '#fff', lineHeight: 1 }}>R</span>
+                              ) : null}
+                            </div>
+
+                            <span style={{
+                              fontSize: '0.8rem', color: slotCubierto ? '#9CA3AF' : '#1F2937',
+                              flex: 1, lineHeight: 1.3,
+                              textDecoration: slotCubierto ? 'line-through' : 'none',
+                            }}>
+                              {alumno.name}
+                              {alumno.matricula && (
+                                <span style={{ color: '#9CA3AF', marginLeft: '0.3rem', fontSize: '0.72rem' }}>{alumno.matricula}</span>
+                              )}
+                            </span>
+
+                            {tieneRepo && (
+                              <span style={{ fontSize: '0.65rem', fontWeight: '700', color: '#B45309', backgroundColor: '#FEF3C7', borderRadius: '4px', padding: '0.1rem 0.35rem' }}>
+                                Repos.
+                              </span>
+                            )}
                           </div>
 
-                          <span style={{ fontSize: '0.8rem', color: '#1F2937', flex: 1, lineHeight: 1.3 }}>
-                            {alumno.name}
-                            {alumno.matricula && (
-                              <span style={{ color: '#9CA3AF', marginLeft: '0.3rem', fontSize: '0.72rem' }}>{alumno.matricula}</span>
-                            )}
-                          </span>
-
-                          {tieneRepo && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: '#B45309', backgroundColor: '#FEF3C7', borderRadius: '4px', padding: '0.1rem 0.35rem' }}>
-                              Repos.
-                            </span>
+                          {/* Leyenda de slot cubierto — click para ir a esa fecha */}
+                          {slotCubierto && (
+                            <div
+                              onClick={() => setSelectedFecha(otraFecha)}
+                              style={{
+                                fontSize: '0.65rem', color: '#6B7280',
+                                paddingLeft: '1.75rem',
+                                cursor: 'pointer',
+                                userSelect: 'none',
+                              }}
+                            >
+                              ↳ Asistencia contada el{' '}
+                              <span style={{ fontWeight: '700', color: '#4B5563', textDecoration: 'underline' }}>
+                                {formatFechaCorta(otraFecha)}
+                              </span>
+                            </div>
                           )}
                         </div>
                       );
