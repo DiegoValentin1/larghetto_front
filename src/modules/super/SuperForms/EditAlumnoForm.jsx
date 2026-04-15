@@ -849,14 +849,14 @@ export const EditUserForm = ({
             </Form.Group>
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='telefono' style={labelStyle}>Telefono</Form.Label>
-              <Form.Control type='number' min={0} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} style={inputStyle} />
+              <Form.Control type='number' min={0} onWheel={(e) => e.target.blur()} name='telefono' placeholder="7771234567" value={form.values.telefono} onChange={form.handleChange} style={inputStyle} />
               {
                 form.errors.telefono && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.telefono}</span>)
               }
             </Form.Group>
             <Form.Group className='mb-3'>
               <Form.Label htmlFor='contactoEmergencia' style={labelStyle}>Contacto de Emergencia</Form.Label>
-              <Form.Control type='number' min={0} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} style={inputStyle} />
+              <Form.Control type='number' min={0} onWheel={(e) => e.target.blur()} name='contactoEmergencia' placeholder="7777654321" value={form.values.contactoEmergencia} onChange={form.handleChange} style={inputStyle} />
               {
                 form.errors.contactoEmergencia && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.contactoEmergencia}</span>)
               }
@@ -2051,7 +2051,7 @@ export const EditUserForm = ({
                 </Form.Group>
                 <Form.Group className='mb-3'>
                   <Form.Label htmlFor='madreTelefono' style={labelStyle}>Contacto de la madre</Form.Label>
-                  <Form.Control type='number' min={0} name='madreTelefono' placeholder="7771234567" value={form.values.madreTelefono} onChange={form.handleChange} style={inputStyle} />
+                  <Form.Control type='number' min={0} onWheel={(e) => e.target.blur()} name='madreTelefono' placeholder="7771234567" value={form.values.madreTelefono} onChange={form.handleChange} style={inputStyle} />
                   {
                     form.errors.madreTelefono && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.madreTelefono}</span>)
                   }
@@ -2065,7 +2065,7 @@ export const EditUserForm = ({
                 </Form.Group>
                 <Form.Group className='mb-3'>
                   <Form.Label htmlFor='padreTelefono' style={labelStyle}>Contacto del padre</Form.Label>
-                  <Form.Control type='number' min={0} name='padreTelefono' placeholder="7777654321" value={form.values.padreTelefono} onChange={form.handleChange} style={inputStyle} />
+                  <Form.Control type='number' min={0} onWheel={(e) => e.target.blur()} name='padreTelefono' placeholder="7777654321" value={form.values.padreTelefono} onChange={form.handleChange} style={inputStyle} />
                   {
                     form.errors.padreTelefono && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.padreTelefono}</span>)
                   }
