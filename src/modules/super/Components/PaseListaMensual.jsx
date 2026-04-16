@@ -195,9 +195,9 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
                     const fechasAlumno = fechas.filter(f => diasAlumno.includes(getDiaNombreDB(f)));
                     // Semanas únicas donde el alumno tiene clase programada = clases esperadas
                     const semanasEsperadas = new Set(fechasAlumno.map(f => getLunesKey(f))).size;
-                    // Semanas únicas donde asistió (A o R), contando cualquier día de la semana
+                    // Semanas únicas donde asistió (A o R), incluyendo repos en fechas fuera del horario del maestro
                     const semanasAsistidas = new Set(
-                      fechas.filter(f => fila[f] === 'A' || fila[f] === 'R').map(f => getLunesKey(f))
+                      Object.keys(fila).filter(f => fila[f] === 'A' || fila[f] === 'R').map(f => getLunesKey(f))
                     ).size;
                     const asistidas = semanasAsistidas;
                     const rowBg = idx % 2 === 0 ? '#FFFFFF' : '#F9FAFB';
@@ -233,9 +233,10 @@ export const PaseListaMensual = ({ isOpen, onClose, objeto }) => {
                           // solo mostrar si la semana no está ya cubierta por otra asistencia
                           if (aplica && !estado) {
                             const semana = getLunesKey(fecha);
-                            const semanaCubierta = fechas.some(f =>
-                              getLunesKey(f) === semana && (fila[f] === 'A' || fila[f] === 'R')
-                            );
+                            // Checar semana cubierta en fechas del grid Y en repos fuera del horario del maestro
+                            const semanaCubierta =
+                              fechas.some(f => getLunesKey(f) === semana && (fila[f] === 'A' || fila[f] === 'R'))
+                              || Object.keys(fila).some(f => getLunesKey(f) === semana && fila[f] === 'R');
                             if (semanaCubierta) {
                               return (
                                 <td key={fecha} style={{

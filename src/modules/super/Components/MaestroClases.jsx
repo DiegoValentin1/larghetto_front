@@ -64,6 +64,7 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
   const [alumnosMap, setAlumnosMap]  = useState({});
   const [loadingSet, setLoadingSet]  = useState(new Set());
   const [savingSet, setSavingSet]    = useState(new Set());
+  const [repoModal, setRepoModal]    = useState({ open: false, clase: null, alumno: null, fechaRepo: '', slotSel: null });
 
   const strip = buildStrip(selectedFecha);
 
@@ -166,21 +167,46 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
           data: { id_alumno: alumno.id_alumno, fecha: selectedFecha, id_clase: alumno.id_clase },
         });
       } else if (tieneAsistencia) {
-        // asistencia → reposición
-        await AxiosClient({
-          method: 'DELETE',
-          url: `/personal/alumno/asistencias/${alumno.id_alumno}/${selectedFecha}/${alumno.id_clase}`,
-        });
-        await AxiosClient({
-          method: 'POST',
-          url: '/instrumento/repo',
-          data: { fecha: selectedFecha, alumno_id: alumno.id_alumno, maestro_id: objeto.user_id },
-        });
+        // asistencia → reposición: abrir modal para elegir fecha de reposición
+        setSavingSet(prev => { const s = new Set(prev); s.delete(saveKey); return s; });
+        setRepoModal({ open: true, clase, alumno, fechaRepo: '', slotSel: null });
+        return;
       } else {
         // reposición → 0
         await AxiosClient({ method: 'DELETE', url: `/personal/repo/${alumno.id_repo}` });
       }
       // Re-fetch real desde DB para tener el estado correcto
+      await refetchClase(clase, selectedFecha);
+    } catch {
+      Alert.fire({ title: 'Error', text: 'No se pudo guardar', icon: 'error', timer: 2000, showConfirmButton: false });
+    } finally {
+      setSavingSet(prev => { const s = new Set(prev); s.delete(saveKey); return s; });
+    }
+  };
+
+  // ── Confirmar reposición con fecha elegida ────────────────────────────────
+  const confirmarRepo = async () => {
+    const { clase, alumno, fechaRepo, slotSel } = repoModal;
+    setRepoModal({ open: false, clase: null, alumno: null, fechaRepo: '', slotSel: null });
+    const saveKey = `${alumno.id_alumno}-${alumno.id_clase}`;
+    setSavingSet(prev => new Set([...prev, saveKey]));
+    try {
+      await AxiosClient({
+        method: 'DELETE',
+        url: `/personal/alumno/asistencias/${alumno.id_alumno}/${selectedFecha}/${alumno.id_clase}`,
+      });
+      await AxiosClient({
+        method: 'POST',
+        url: '/instrumento/repo',
+        data: {
+          fecha: fechaRepo,
+          alumno_id: alumno.id_alumno,
+          maestro_id: objeto.user_id,
+          hora: slotSel?.hora || null,
+          instrumento: slotSel?.instrumento || null,
+          fecha_original: selectedFecha,
+        },
+      });
       await refetchClase(clase, selectedFecha);
     } catch {
       Alert.fire({ title: 'Error', text: 'No se pudo guardar', icon: 'error', timer: 2000, showConfirmButton: false });
@@ -343,8 +369,11 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                       const asistio      = !!alumno.asistio;
                       const tieneRepo    = !!alumno.id_repo;
                       const editable     = esEditable(selectedFecha);
-                      const otraFecha    = alumno.asistencia_otra_fecha || null;
-                      const slotCubierto = !asistio && !tieneRepo && !!otraFecha;
+                      const otraFecha      = alumno.asistencia_otra_fecha || null;
+                      const repoOtraFecha  = alumno.repo_otra_fecha || null;
+                      const slotCubierto   = !asistio && !tieneRepo && (!!otraFecha || !!repoOtraFecha);
+                      const labelOtraFecha = otraFecha || repoOtraFecha;
+                      const esRepo         = !otraFecha && !!repoOtraFecha;
 
                       const estiloFila = slotCubierto
                         ? { border: '1.5px solid #D1D5DB', backgroundColor: '#F3F4F6' }
@@ -411,10 +440,28 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                             )}
                           </div>
 
-                          {/* Leyenda de slot cubierto — click para ir a esa fecha */}
-                          {slotCubierto && (
+                          {/* Leyenda "Reponiendo clase del X" — solo cuando el alumno aparece vía UNION repo */}
+                          {tieneRepo && alumno.repo_fecha_original && (
                             <div
-                              onClick={() => setSelectedFecha(otraFecha)}
+                              onClick={() => setSelectedFecha(alumno.repo_fecha_original)}
+                              style={{
+                                fontSize: '0.65rem', color: '#92400E',
+                                paddingLeft: '1.75rem',
+                                cursor: 'pointer',
+                                userSelect: 'none',
+                              }}
+                            >
+                              ↳ Reponiendo clase del{' '}
+                              <span style={{ fontWeight: '700', textDecoration: 'underline' }}>
+                                {formatFechaCorta(alumno.repo_fecha_original)}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Leyenda de slot cubierto — click para ir a esa fecha */}
+                          {slotCubierto && labelOtraFecha && (
+                            <div
+                              onClick={() => setSelectedFecha(labelOtraFecha)}
                               style={{
                                 fontSize: '0.65rem', color: '#6B7280',
                                 paddingLeft: '1.75rem',
@@ -422,9 +469,9 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                                 userSelect: 'none',
                               }}
                             >
-                              ↳ Asistencia contada el{' '}
-                              <span style={{ fontWeight: '700', color: '#4B5563', textDecoration: 'underline' }}>
-                                {formatFechaCorta(otraFecha)}
+                              ↳ {esRepo ? 'Reposición el' : 'Asistencia contada el'}{' '}
+                              <span style={{ fontWeight: '700', color: esRepo ? '#B45309' : '#4B5563', textDecoration: 'underline' }}>
+                                {formatFechaCorta(labelOtraFecha)}
                               </span>
                             </div>
                           )}
@@ -439,6 +486,105 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
           );
         })()}
       </Modal.Body>
+
+      {/* Mini modal: elegir fecha y slot de reposición */}
+      {repoModal.open && (() => {
+        const slotsDelDia = repoModal.fechaRepo
+          ? clases.filter(c => c.dia === getDiaNombre(repoModal.fechaRepo))
+          : [];
+        const puedeConfirmar = repoModal.fechaRepo && repoModal.slotSel;
+        return (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.45)',
+          }}>
+            <div style={{
+              backgroundColor: '#fff', borderRadius: '12px', padding: '1.5rem',
+              width: '340px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+            }}>
+              <div style={{ fontWeight: '700', color: '#1F2937', fontSize: '0.95rem', marginBottom: '0.25rem' }}>
+                Registrar reposición
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#6B7280', marginBottom: '1rem' }}>
+                {repoModal.alumno?.name} — ¿Cuándo se repone la clase?
+              </div>
+
+              {/* Fecha */}
+              <div style={{ fontSize: '0.72rem', fontWeight: '600', color: '#374151', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Fecha</div>
+              <input
+                type="date"
+                value={repoModal.fechaRepo}
+                min={hoy()}
+                placeholder="Selecciona una fecha"
+                onChange={e => setRepoModal(prev => ({ ...prev, fechaRepo: e.target.value, slotSel: null }))}
+                style={{
+                  width: '100%', padding: '0.5rem 0.75rem', borderRadius: '8px',
+                  border: '1.5px solid #D1D5DB', fontSize: '0.85rem', marginBottom: repoModal.fechaRepo ? '1rem' : '1.25rem',
+                  outline: 'none', color: repoModal.fechaRepo ? '#1F2937' : '#9CA3AF',
+                }}
+              />
+              {!repoModal.fechaRepo && (
+                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', textAlign: 'center', marginBottom: '1rem' }}>
+                  Selecciona una fecha para ver los horarios disponibles
+                </div>
+              )}
+
+              {/* Slots del día */}
+              {repoModal.fechaRepo && (
+                <>
+                  <div style={{ fontSize: '0.72rem', fontWeight: '600', color: '#374151', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Horario ({getDiaNombre(repoModal.fechaRepo)})
+                  </div>
+                  {slotsDelDia.length === 0 ? (
+                    <div style={{ fontSize: '0.78rem', color: '#9CA3AF', marginBottom: '1rem' }}>Sin clases ese día</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', marginBottom: '1rem' }}>
+                      {slotsDelDia.map((slot, i) => {
+                        const sel = repoModal.slotSel?.hora === slot.hora && repoModal.slotSel?.instrumento === slot.instrumento;
+                        return (
+                          <div
+                            key={i}
+                            onClick={() => setRepoModal(prev => ({ ...prev, slotSel: { hora: slot.hora, instrumento: slot.instrumento } }))}
+                            style={{
+                              padding: '0.45rem 0.75rem', borderRadius: '7px', cursor: 'pointer',
+                              border: sel ? '2px solid #F59E0B' : '1.5px solid #E5E7EB',
+                              backgroundColor: sel ? '#FFFBEB' : '#F9FAFB',
+                              display: 'flex', gap: '0.5rem', alignItems: 'center',
+                              fontSize: '0.82rem', fontWeight: sel ? '700' : '500', color: sel ? '#92400E' : '#374151',
+                              transition: 'all 0.1s',
+                            }}
+                          >
+                            <span>{slot.hora}</span>
+                            <span style={{ color: '#9CA3AF' }}>·</span>
+                            <span>{slot.instrumento}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => setRepoModal({ open: false, clase: null, alumno: null, fechaRepo: '', slotSel: null })}
+                  style={{ padding: '0.4rem 0.9rem', borderRadius: '7px', border: '1.5px solid #D1D5DB', backgroundColor: '#fff', color: '#374151', fontSize: '0.82rem', cursor: 'pointer', fontWeight: '600' }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmarRepo}
+                  disabled={!puedeConfirmar}
+                  style={{ padding: '0.4rem 0.9rem', borderRadius: '7px', border: 'none', backgroundColor: puedeConfirmar ? '#F59E0B' : '#E5E7EB', color: puedeConfirmar ? '#fff' : '#9CA3AF', fontSize: '0.82rem', cursor: puedeConfirmar ? 'pointer' : 'not-allowed', fontWeight: '700' }}
+                >
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </Modal>
   );
 };
