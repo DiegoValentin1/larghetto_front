@@ -131,7 +131,7 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
   }, [clases, selectedFecha]);
 
   // ── Edición: SUPER puede editar cualquier fecha; otros solo hoy ──────────
-  const esEditable = (fecha) => role === 'SUPER' || fecha === hoy();
+  const esEditable = (fecha) => role === 'SUPER' || fecha >= hoy();
 
   // ── Re-fetch de una clase específica ─────────────────────────────────────
   const refetchClase = useCallback(async (clase, fecha) => {
