@@ -174,6 +174,16 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
       } else {
         // reposición → 0
         await AxiosClient({ method: 'DELETE', url: `/personal/repo/${alumno.id_repo}` });
+        // Refrescar todos los slots del día actual
+        const diaSel = getDiaNombre(selectedFecha);
+        await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaSel), selectedFecha);
+        // Si el repo tenía fecha_original, refrescar ese día también (quitar el tachado)
+        const fechaOrig = alumno.repo_fecha_original;
+        if (fechaOrig && fechaOrig !== selectedFecha) {
+          const diaOrig = getDiaNombre(fechaOrig);
+          await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaOrig), fechaOrig);
+        }
+        return;
       }
       // Re-fetch real desde DB para tener el estado correcto
       await refetchClase(clase, selectedFecha);
@@ -207,7 +217,14 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
           fecha_original: selectedFecha,
         },
       });
-      await refetchClase(clase, selectedFecha);
+      // Refrescar todas las clases del día original (para mostrar tachado)
+      const diaOrig = getDiaNombre(selectedFecha);
+      await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaOrig), selectedFecha);
+      // Si el repo es para otro día, refrescar ese día también (para mostrar el repo)
+      if (fechaRepo && fechaRepo !== selectedFecha) {
+        const diaRepo = getDiaNombre(fechaRepo);
+        await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaRepo), fechaRepo);
+      }
     } catch {
       Alert.fire({ title: 'Error', text: 'No se pudo guardar', icon: 'error', timer: 2000, showConfirmButton: false });
     } finally {
