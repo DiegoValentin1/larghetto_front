@@ -174,14 +174,13 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
       } else {
         // reposición → 0
         await AxiosClient({ method: 'DELETE', url: `/personal/repo/${alumno.id_repo}` });
-        // Refrescar todos los slots del día actual
+        // Refrescar slot a slot (merge, no reemplaza todo el mapa)
         const diaSel = getDiaNombre(selectedFecha);
-        await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaSel), selectedFecha);
-        // Si el repo tenía fecha_original, refrescar ese día también (quitar el tachado)
+        await Promise.all(clases.filter(c => c.dia === diaSel).map(c => refetchClase(c, selectedFecha)));
         const fechaOrig = alumno.repo_fecha_original;
         if (fechaOrig && fechaOrig !== selectedFecha) {
           const diaOrig = getDiaNombre(fechaOrig);
-          await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaOrig), fechaOrig);
+          await Promise.all(clases.filter(c => c.dia === diaOrig).map(c => refetchClase(c, fechaOrig)));
         }
         return;
       }
@@ -217,13 +216,12 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
           fecha_original: selectedFecha,
         },
       });
-      // Refrescar todas las clases del día original (para mostrar tachado)
+      // Refrescar slot a slot (merge, no reemplaza todo el mapa)
       const diaOrig = getDiaNombre(selectedFecha);
-      await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaOrig), selectedFecha);
-      // Si el repo es para otro día, refrescar ese día también (para mostrar el repo)
+      await Promise.all(clases.filter(c => c.dia === diaOrig).map(c => refetchClase(c, selectedFecha)));
       if (fechaRepo && fechaRepo !== selectedFecha) {
         const diaRepo = getDiaNombre(fechaRepo);
-        await fetchAlumnosParaFecha(clases.filter(c => c.dia === diaRepo), fechaRepo);
+        await Promise.all(clases.filter(c => c.dia === diaRepo).map(c => refetchClase(c, fechaRepo)));
       }
     } catch {
       Alert.fire({ title: 'Error', text: 'No se pudo guardar', icon: 'error', timer: 2000, showConfirmButton: false });
