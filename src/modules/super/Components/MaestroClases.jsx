@@ -216,13 +216,9 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
           fecha_original: selectedFecha,
         },
       });
-      // Refrescar slot a slot (merge, no reemplaza todo el mapa)
+      // Solo refrescar el día original — no tocar el día de repo para no confundir la semana actual
       const diaOrig = getDiaNombre(selectedFecha);
       await Promise.all(clases.filter(c => c.dia === diaOrig).map(c => refetchClase(c, selectedFecha)));
-      if (fechaRepo && fechaRepo !== selectedFecha) {
-        const diaRepo = getDiaNombre(fechaRepo);
-        await Promise.all(clases.filter(c => c.dia === diaRepo).map(c => refetchClase(c, fechaRepo)));
-      }
     } catch {
       Alert.fire({ title: 'Error', text: 'No se pudo guardar', icon: 'error', timer: 2000, showConfirmButton: false });
     } finally {
@@ -458,7 +454,7 @@ export const MaestroClases = ({ isOpen, cargarDatos, onClose, option, objeto }) 
                           {/* Leyenda "Reponiendo clase del X" — solo cuando el alumno aparece vía UNION repo */}
                           {tieneRepo && alumno.repo_fecha_original && (
                             <div
-                              onClick={() => setSelectedFecha(alumno.repo_fecha_original)}
+                              onClick={(e) => { e.stopPropagation(); setSelectedFecha(String(alumno.repo_fecha_original).slice(0, 10)); }}
                               style={{
                                 fontSize: '0.65rem', color: '#92400E',
                                 paddingLeft: '1.75rem',
