@@ -20,12 +20,41 @@ const parseNewValue = (raw) => {
   catch { return null; }
 };
 
+const formatFechaFront = (fechaStr) => {
+  if (!fechaStr) return null;
+  try {
+    const parts = String(fechaStr).split('-').map(Number);
+    if (parts.length < 3 || parts.some(isNaN)) return null;
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    if (isNaN(date.getTime())) return null;
+    return new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+  } catch { return null; }
+};
+
+const boldify = (text, ...terms) => {
+  if (!text) return [{ text: '', bold: false }];
+  let segments = [{ text, bold: false }];
+  for (const term of terms) {
+    if (!term) continue;
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`);
+    const next = [];
+    for (const seg of segments) {
+      if (seg.bold) { next.push(seg); continue; }
+      const parts = seg.text.split(regex);
+      for (const part of parts) next.push({ text: part, bold: part === term });
+    }
+    segments = next;
+  }
+  return segments;
+};
+
 const ACTION_COLORS = {
   CREATE: '#16A34A', UPDATE: '#1D4ED8', DELETE: '#DC2626',
   STATUS_CHANGE: '#D97706', BAJA_SOLICITADA: '#7C3AED',
   BAJA_APROBADA: '#DC2626', BAJA_RECHAZADA: '#059669',
   ASISTENCIA: '#0891B2', ARCHIVE: '#64748B',
-  PAGO: '#0F766E',
+  PAGO: '#0F766E', PAGO_ADD: '#16A34A', PAGO_REMOVE: '#DC2626',
 };
 
 const ACTION_LABELS = {
@@ -33,7 +62,7 @@ const ACTION_LABELS = {
   STATUS_CHANGE: 'Cambio estado', BAJA_SOLICITADA: 'Baja solicitada',
   BAJA_APROBADA: 'Baja aprobada', BAJA_RECHAZADA: 'Baja rechazada',
   ASISTENCIA: 'Asistencia', ARCHIVE: 'Archivado',
-  PAGO: 'Pago',
+  PAGO: 'Pago', PAGO_ADD: 'Pago registrado', PAGO_REMOVE: 'Pago eliminado',
 };
 
 const formatDate = (d) => new Intl.DateTimeFormat('es-MX', {
@@ -100,8 +129,17 @@ const EntityTimeline = ({ isOpen, onClose, entityType, entityId, entityName }) =
               </div>
             )}
             {!loading && timeline.map((entry, idx) => {
-              const color = ACTION_COLORS[entry.action_type] || '#374151';
-              const label = ACTION_LABELS[entry.action_type] || entry.action_type;
+              let color, label;
+              if (entry.entity_type === 'ASISTENCIA') {
+                color = entry.action_type === 'DELETE' ? '#DC2626' : '#16A34A';
+                label = 'Asistencia';
+              } else if (entry.entity_type === 'REPOSICION') {
+                color = entry.action_type === 'DELETE' ? '#DC2626' : '#16A34A';
+                label = 'Reposición';
+              } else {
+                color = ACTION_COLORS[entry.action_type] || '#374151';
+                label = ACTION_LABELS[entry.action_type] || entry.action_type;
+              }
               const isLast = idx === timeline.length - 1;
               return (
                 <div key={entry.id} style={{ display: 'flex', gap: '1rem', position: 'relative' }}>
@@ -131,9 +169,11 @@ const EntityTimeline = ({ isOpen, onClose, entityType, entityId, entityName }) =
                       const nv = parseNewValue(entry.new_value);
                       const estadoInfo = nv !== null && nv.estado !== undefined ? ALUMNO_ESTADOS[nv.estado] : null;
                       const parts = (entry.summary || '').split(/a:\s*/);
+                      const segments = boldify(parts[0], entry.user_name, entry.entity_name);
                       return (
                         <p style={{ margin: '0.35rem 0 0.25rem', fontSize: '0.875rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
-                          {parts[0]}{parts.length > 1 && 'a: '}
+                          {segments.map((s, i) => s.bold ? <strong key={i}>{s.text}</strong> : s.text)}
+                          {parts.length > 1 && 'a: '}
                           {estadoInfo ? (
                             <span style={{
                               display: 'inline-block', padding: '0.15rem 0.55rem', borderRadius: '999px',
@@ -145,9 +185,34 @@ const EntityTimeline = ({ isOpen, onClose, entityType, entityId, entityName }) =
                           ) : (parts[1] || '')}
                         </p>
                       );
+                    })() : entry.entity_type === 'REPOSICION' ? (() => {
+                      const val = parseNewValue(entry.new_value) || parseNewValue(entry.old_value);
+                      const fechaRepoFmt = formatFechaFront(val?.fecha);
+                      const fechaOrigFmt = formatFechaFront(val?.fecha_original);
+                      const text = entry.summary || '';
+                      if (fechaRepoFmt) {
+                        const arrowIdx = text.indexOf(' → ');
+                        const prefix = arrowIdx >= 0 ? text.slice(0, arrowIdx) : text;
+                        const segments = boldify(prefix, entry.user_name, entry.entity_name, fechaOrigFmt);
+                        return (
+                          <p style={{ margin: '0.35rem 0 0.25rem', fontSize: '0.875rem', color: '#374151' }}>
+                            {segments.map((s, i) => s.bold ? <strong key={i}>{s.text}</strong> : s.text)}
+                            {' → repone el '}<strong style={{ color: '#EA580C' }}>{fechaRepoFmt}</strong>
+                          </p>
+                        );
+                      }
+                      return (
+                        <p style={{ margin: '0.35rem 0 0.25rem', fontSize: '0.875rem', color: '#374151' }}>
+                          {boldify(text, entry.user_name, entry.entity_name).map((s, i) =>
+                            s.bold ? <strong key={i}>{s.text}</strong> : s.text
+                          )}
+                        </p>
+                      );
                     })() : (
                       <p style={{ margin: '0.35rem 0 0.25rem', fontSize: '0.875rem', color: '#374151' }}>
-                        {entry.summary}
+                        {boldify(entry.summary, entry.user_name, entry.entity_name).map((s, i) =>
+                          s.bold ? <strong key={i}>{s.text}</strong> : s.text
+                        )}
                       </p>
                     )}
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>

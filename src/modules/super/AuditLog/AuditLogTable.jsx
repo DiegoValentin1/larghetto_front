@@ -14,6 +14,8 @@ const ACTION_STYLES = {
   ASISTENCIA:      { label: 'Asistencia',    color: '#0891B2', bg: '#CFFAFE' },
   ARCHIVE:         { label: 'Archivado',     color: '#64748B', bg: '#F1F5F9' },
   PAGO:            { label: 'Pago',          color: '#0F766E', bg: '#CCFBF1' },
+  PAGO_ADD:        { label: 'Pago',          color: '#16A34A', bg: '#DCFCE7' },
+  PAGO_REMOVE:     { label: 'Pago',          color: '#DC2626', bg: '#FEE2E2' },
 };
 
 const ROLE_STYLES = {
@@ -23,17 +25,17 @@ const ROLE_STYLES = {
 };
 
 const ENTITY_TYPE_STYLES = {
-  ALUMNO:         { label: 'Alumno',     color: '#92400E', bg: '#FEF3C7' },
-  MAESTRO:        { label: 'Maestro',    color: '#1E40AF', bg: '#DBEAFE' },
-  PERSONAL:       { label: 'Personal',   color: '#5B21B6', bg: '#EDE9FE' },
-  SOLICITUD_BAJA: { label: 'Baja',       color: '#9D174D', bg: '#FCE7F3' },
-  ASISTENCIA:     { label: 'Asistencia', color: '#065F46', bg: '#D1FAE5' },
-  REPOSICION:     { label: 'Reposición', color: '#374151', bg: '#F3F4F6' },
+  ALUMNO:         { label: 'Alumno',  color: '#92400E', bg: '#FEF3C7' },
+  MAESTRO:        { label: 'Maestro', color: '#1E40AF', bg: '#DBEAFE' },
+  PERSONAL:       { label: 'Personal',color: '#5B21B6', bg: '#EDE9FE' },
+  SOLICITUD_BAJA: { label: 'Baja',    color: '#9D174D', bg: '#FCE7F3' },
+  ASISTENCIA:     { label: 'Alumno',  color: '#92400E', bg: '#FEF3C7' },
+  REPOSICION:     { label: 'Alumno',  color: '#92400E', bg: '#FEF3C7' },
 };
 
 const ENTITY_LABELS = {
   ALUMNO: 'Alumno', MAESTRO: 'Maestro', PERSONAL: 'Personal',
-  SOLICITUD_BAJA: 'Baja', ASISTENCIA: 'Asistencia', REPOSICION: 'Reposición'
+  SOLICITUD_BAJA: 'Baja', ASISTENCIA: 'Alumno', REPOSICION: 'Alumno'
 };
 
 const ALUMNO_ESTADOS = {
@@ -54,29 +56,100 @@ const parseNewValue = (raw) => {
   catch { return null; }
 };
 
+const formatFechaFront = (fechaStr) => {
+  if (!fechaStr) return null;
+  try {
+    const parts = String(fechaStr).split('-').map(Number);
+    if (parts.length < 3 || parts.some(isNaN)) return null;
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    if (isNaN(date.getTime())) return null;
+    return new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+  } catch { return null; }
+};
+
+// Divide el texto en segmentos marcando cuáles van en negrita
+const boldify = (text, ...terms) => {
+  if (!text) return [{ text: '', bold: false }];
+  let segments = [{ text, bold: false }];
+  for (const term of terms) {
+    if (!term) continue;
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`);
+    const next = [];
+    for (const seg of segments) {
+      if (seg.bold) { next.push(seg); continue; }
+      const parts = seg.text.split(regex);
+      for (const part of parts) next.push({ text: part, bold: part === term });
+    }
+    segments = next;
+  }
+  return segments;
+};
+
 const SummaryCell = ({ row }) => {
   const baseText = row.summary || '';
-  if (row.action_type !== 'STATUS_CHANGE') {
-    return <span style={{ fontSize: '0.82rem', color: '#374151' }}>{baseText}</span>;
-  }
   const nv = parseNewValue(row.new_value);
-  const estado = nv !== null && nv.estado !== undefined ? nv.estado : null;
-  const estadoInfo = estado !== null ? ALUMNO_ESTADOS[estado] : null;
-  // Split summary on "a: " to inject the badge after that text
-  const parts = baseText.split(/a:\s*/);
-  return (
-    <span style={{ fontSize: '0.82rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
-      {parts[0]}{parts.length > 1 && 'a: '}
-      {estadoInfo ? (
-        <span style={{
-          display: 'inline-block', padding: '0.15rem 0.55rem', borderRadius: '999px',
-          fontSize: '0.72rem', fontWeight: '700', color: '#fff',
-          background: estadoInfo.color,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
-        }}>
-          {estadoInfo.label}
+
+  // Para STATUS_CHANGE: inyectar badge de estado al final
+  if (row.action_type === 'STATUS_CHANGE') {
+    const estado = nv?.estado ?? null;
+    const estadoInfo = estado !== null ? ALUMNO_ESTADOS[estado] : null;
+    const parts = baseText.split(/a:\s*/);
+    const segments = boldify(parts[0], row.user_name, row.entity_name);
+    return (
+      <span style={{ fontSize: '0.82rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+        {segments.map((s, i) => s.bold ? <strong key={i}>{s.text}</strong> : s.text)}
+        {parts.length > 1 && 'a: '}
+        {estadoInfo ? (
+          <span style={{
+            display: 'inline-block', padding: '0.15rem 0.55rem', borderRadius: '999px',
+            fontSize: '0.72rem', fontWeight: '700', color: '#fff',
+            background: estadoInfo.color, boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
+          }}>
+            {estadoInfo.label}
+          </span>
+        ) : (parts[1] || '')}
+      </span>
+    );
+  }
+
+  if (row.entity_type === 'REPOSICION') {
+    const val = parseNewValue(row.new_value) || parseNewValue(row.old_value);
+    const fechaRepoFmt  = formatFechaFront(val?.fecha);
+    const fechaOrigFmt  = formatFechaFront(val?.fecha_original);
+    if (fechaRepoFmt) {
+      const arrowIdx = baseText.indexOf(' → ');
+      const prefix = arrowIdx >= 0 ? baseText.slice(0, arrowIdx) : baseText;
+      const segments = boldify(prefix, row.user_name, row.entity_name, fechaOrigFmt);
+      return (
+        <span style={{ fontSize: '0.82rem', color: '#374151' }}>
+          {segments.map((s, i) => s.bold ? <strong key={i}>{s.text}</strong> : s.text)}
+          {' → repone el '}<strong style={{ color: '#EA580C' }}>{fechaRepoFmt}</strong>
         </span>
-      ) : (parts[1] || '')}
+      );
+    }
+  }
+
+  if (row.action_type === 'PAGO_ADD' || row.action_type === 'PAGO_REMOVE') {
+    const isPagoAdd = row.action_type === 'PAGO_ADD';
+    const montoColor = isPagoAdd ? '#16A34A' : '#DC2626';
+    const val = parseNewValue(isPagoAdd ? row.new_value : row.old_value);
+    const monto = val?.monto ? `$${val.monto}` : null;
+    // Quitar el monto del texto del summary para renderizarlo aparte
+    const textSinMonto = monto ? baseText.replace(monto, '').trimEnd() : baseText;
+    const segments = boldify(textSinMonto, row.user_name, row.entity_name);
+    return (
+      <span style={{ fontSize: '0.82rem', color: '#374151' }}>
+        {segments.map((s, i) => s.bold ? <strong key={i}>{s.text}</strong> : s.text)}
+        {monto && <strong style={{ color: montoColor }}> {monto}</strong>}
+      </span>
+    );
+  }
+
+  const segments = boldify(baseText, row.user_name, row.entity_name);
+  return (
+    <span style={{ fontSize: '0.82rem', color: '#374151' }}>
+      {segments.map((s, i) => s.bold ? <strong key={i}>{s.text}</strong> : s.text)}
     </span>
   );
 };
@@ -174,7 +247,18 @@ const AuditLogTable = ({ data, totalRows, currentPage, onPageChange, loading }) 
     {
       name: 'Acción',
       cell: row => {
-        const s = ACTION_STYLES[row.action_type] || { label: row.action_type, color: '#374151', bg: '#F3F4F6' };
+        let s;
+        if (row.entity_type === 'ASISTENCIA') {
+          s = row.action_type === 'DELETE'
+            ? { label: 'Asistencia', color: '#DC2626', bg: '#FEE2E2' }
+            : { label: 'Asistencia', color: '#16A34A', bg: '#DCFCE7' };
+        } else if (row.entity_type === 'REPOSICION') {
+          s = row.action_type === 'DELETE'
+            ? { label: 'Reposición', color: '#DC2626', bg: '#FEE2E2' }
+            : { label: 'Reposición', color: '#16A34A', bg: '#DCFCE7' };
+        } else {
+          s = ACTION_STYLES[row.action_type] || { label: row.action_type, color: '#374151', bg: '#F3F4F6' };
+        }
         return <Badge text={s.label} color={s.color} bg={s.bg} />;
       },
       width: '130px',

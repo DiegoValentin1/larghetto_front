@@ -42,7 +42,27 @@ const ACTION_LABELS = {
   BAJA_RECHAZADA: { label: 'Baja rechazada', color: '#059669', bg: '#D1FAE5' },
   ASISTENCIA: { label: 'Asistencia', color: '#0891B2', bg: '#CFFAFE' },
   ARCHIVE: { label: 'Archivado', color: '#64748B', bg: '#F1F5F9' },
-  PAGO: { label: 'Pago', color: '#0F766E', bg: '#CCFBF1' },
+  PAGO:        { label: 'Pago',           color: '#0F766E', bg: '#CCFBF1' },
+  PAGO_ADD:    { label: 'Pago registrado', color: '#16A34A', bg: '#DCFCE7' },
+  PAGO_REMOVE: { label: 'Pago eliminado',  color: '#DC2626', bg: '#FEE2E2' },
+};
+
+const boldify = (text, ...terms) => {
+  if (!text) return [{ text: '', bold: false }];
+  let segments = [{ text, bold: false }];
+  for (const term of terms) {
+    if (!term) continue;
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`);
+    const next = [];
+    for (const seg of segments) {
+      if (seg.bold) { next.push(seg); continue; }
+      const parts = seg.text.split(regex);
+      for (const part of parts) next.push({ text: part, bold: part === term });
+    }
+    segments = next;
+  }
+  return segments;
 };
 
 const formatValue = (val) => {
@@ -133,12 +153,61 @@ const DiffViewer = ({ isOpen, onClose, record }) => {
     ...(newValue ? Object.keys(newValue) : [])
   ].filter(k => !HIDDEN_FIELDS.has(k)));
 
-  const actionInfo = ACTION_LABELS[record.action_type] || { label: record.action_type, color: '#374151', bg: '#F3F4F6' };
+  let actionInfo;
+  if (record.entity_type === 'ASISTENCIA') {
+    actionInfo = record.action_type === 'DELETE'
+      ? { label: 'Asistencia', color: '#DC2626', bg: '#FEE2E2' }
+      : { label: 'Asistencia', color: '#16A34A', bg: '#DCFCE7' };
+  } else if (record.entity_type === 'REPOSICION') {
+    actionInfo = record.action_type === 'DELETE'
+      ? { label: 'Reposición', color: '#DC2626', bg: '#FEE2E2' }
+      : { label: 'Reposición', color: '#16A34A', bg: '#DCFCE7' };
+  } else {
+    actionInfo = ACTION_LABELS[record.action_type] || { label: record.action_type, color: '#374151', bg: '#F3F4F6' };
+  }
 
   const formatDate = (d) => new Intl.DateTimeFormat('es-MX', {
     day: '2-digit', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit', timeZone: 'America/Mexico_City'
   }).format(new Date(d));
+
+  const formatFechaFront = (fechaStr) => {
+    if (!fechaStr) return null;
+    try {
+      const parts = String(fechaStr).split('-').map(Number);
+      if (parts.length < 3 || parts.some(isNaN)) return null;
+      const date = new Date(parts[0], parts[1] - 1, parts[2]);
+      if (isNaN(date.getTime())) return null;
+      return new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+    } catch { return null; }
+  };
+
+  const renderSummary = () => {
+    const text = record.summary || '';
+    if (record.entity_type === 'REPOSICION') {
+      const val = newValue || oldValue;
+      const fechaRepoFmt = formatFechaFront(val?.fecha);
+      const fechaOrigFmt = formatFechaFront(val?.fecha_original);
+      if (fechaRepoFmt) {
+        const arrowIdx = text.indexOf(' → ');
+        const prefix = arrowIdx >= 0 ? text.slice(0, arrowIdx) : text;
+        const segments = boldify(prefix, record.user_name, record.entity_name, fechaOrigFmt);
+        return (
+          <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151' }}>
+            {segments.map((s, i) => s.bold ? <strong key={i}>{s.text}</strong> : s.text)}
+            {' → repone el '}<strong style={{ color: '#EA580C' }}>{fechaRepoFmt}</strong>
+          </p>
+        );
+      }
+    }
+    return (
+      <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151' }}>
+        {boldify(text, record.user_name, record.entity_name).map((s, i) =>
+          s.bold ? <strong key={i}>{s.text}</strong> : s.text
+        )}
+      </p>
+    );
+  };
 
   return (
     <div
@@ -172,7 +241,7 @@ const DiffViewer = ({ isOpen, onClose, record }) => {
                 {record.entity_name || `${record.entity_type} #${record.entity_id}`}
               </span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{record.summary}</p>
+            {renderSummary()}
             <p style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: '#9CA3AF' }}>
               {record.user_name} · {record.user_role} · {record.campus || '—'} · {formatDate(record.created_at)}
             </p>
