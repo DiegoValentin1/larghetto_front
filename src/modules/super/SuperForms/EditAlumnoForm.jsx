@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import axios from "axios";
 import { Button, Col, Row, Form, Modal, FormGroup } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -145,6 +146,27 @@ export const EditUserForm = ({
   const [montosPorMes, setMontosPorMes] = useState({});
   const [mostrarBadgeRecargo, setMostrarBadgeRecargo] = useState(false);
   const { user } = useContext(AuthContext);
+
+  // === DEBUG TRACKING (provisional) ===
+  // Captura eventos de modal para detectar si recepcionistas guardan o no
+  const debugSessionId = useRef(`${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 11)}`);
+  const debugSavedRef = useRef(false);
+  const debugTrack = (event_type, details = null) => {
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+      const session = JSON.parse(localStorage.getItem('user') || 'null');
+      const token = session?.data?.token;
+      axios.post(`${API_URL}/debug/pago-tracking`, {
+        session_id: debugSessionId.current,
+        alumno_id: objeto?.user_id || null,
+        alumno_name: objeto?.name || null,
+        event_type,
+        details
+      }, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      }).catch(() => { /* fire and forget */ });
+    } catch { /* nunca debe romper la UI */ }
+  };
 
   // ========================================
   // FUNCIONES HELPER PARA PROMOCIONES CON DURACIÓN
@@ -326,6 +348,8 @@ export const EditUserForm = ({
         allowOutsideClick: () => !Alert.isLoading,
         preConfirm: async () => {
           try {
+            debugSavedRef.current = true;
+            debugTrack('SAVE_CLICKED', { pagos_count: pagos?.length || 0 });
             const clases = [];
 
             for (let i = 1; i <= numInstrumentos; i++) {
@@ -375,6 +399,7 @@ export const EditUserForm = ({
   });
 
   useEffect(() => {
+    debugTrack('MODAL_OPEN');
     const fetchMaterial = async () => {
       const response = await AxiosClient({
         method: "GET",
@@ -387,6 +412,13 @@ export const EditUserForm = ({
       }
     };
     fetchMaterial();
+    // Cleanup: si se desmonta sin haber dado SAVE, registramos MODAL_CLOSED
+    return () => {
+      if (!debugSavedRef.current) {
+        debugTrack('MODAL_CLOSED');
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -440,6 +472,7 @@ export const EditUserForm = ({
   }, []);
 
   const manejarCambioSelect = (event, mes) => {
+    debugTrack('PAGO_CHANGE', { mes, tipo: event.target.value });
     const colores = {
       0: "gray",
       1: "green",
