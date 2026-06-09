@@ -30,9 +30,12 @@ const UploadPicture = ({ id }) => {
             //     }
             // });
             const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+            const session = JSON.parse(localStorage.getItem('user') || 'null');
+            const token = session?.data?.token;
             const response = await axios.post(`${API_URL}/uploads/upload/${id}`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    ...(token && { Authorization: `Bearer ${token}` })
                 }
             });
             console.log(response.data);
