@@ -6,6 +6,7 @@ import FeatherIcon from 'feather-icons-react'
 import Select from 'react-select';
 import AxiosClient from '../../../shared/plugins/axios';
 import Alert, { confirmMsj, confirmTitle, succesMsj, successTitle, errorMsj, errorTitle } from '../../../shared/plugins/alerts';
+import { esMontoValido, montoANumero } from '../../../utils/monto';
 import '../../../utils/styles/UserNuevoTrabajo.css';
 import { AuthContext } from '../../auth/authContext';
 
@@ -133,7 +134,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-                mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+                mensualidad: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)).test('monto-positivo', 'La mensualidad debe ser mayor a 0', v => montoANumero(v) > 0),
+                inscripcion: yup.string().test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => !v || esMontoValido(v)),
                 maestro: yup.string().required("Campo obligatorio"),
                 instrumento: yup.string().required("Campo obligatorio"),
                 promocion: yup.string().required("Campo obligatorio"),
@@ -155,7 +157,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-                mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+                mensualidad: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)).test('monto-positivo', 'La mensualidad debe ser mayor a 0', v => montoANumero(v) > 0),
+                inscripcion: yup.string().test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => !v || esMontoValido(v)),
                 maestro: yup.string().required("Campo obligatorio"),
                 instrumento: yup.string().required("Campo obligatorio"),
                 promocion: yup.string().required("Campo obligatorio"),
@@ -183,7 +186,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-                mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+                mensualidad: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)).test('monto-positivo', 'La mensualidad debe ser mayor a 0', v => montoANumero(v) > 0),
+                inscripcion: yup.string().test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => !v || esMontoValido(v)),
                 promocion: yup.string().required("Campo obligatorio"),
                 nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
@@ -200,7 +204,8 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                 municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
                 telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
                 contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-                mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+                mensualidad: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)).test('monto-positivo', 'La mensualidad debe ser mayor a 0', v => montoANumero(v) > 0),
+                inscripcion: yup.string().test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => !v || esMontoValido(v)),
                 promocion: yup.string().required("Campo obligatorio"),
             }),
         onSubmit: async (values) => {
@@ -262,18 +267,29 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         const clases = [];
 
                         for (let i = 1; i <= numInstrumentos; i++) {
-                            clases.push({
+                            const clase = {
                                 maestro: values[`maestro${i}`],
                                 instrumento: values[`instrumento${i}`],
                                 dia: values[`dia${i}`],
                                 hora: values[`hora${i}`]
-                            });
+                            };
+                            if (clase.maestro && clase.instrumento && clase.dia && clase.hora) {
+                                clases.push(clase);
+                            }
                         }
-                        console.log(JSON.stringify({ ...values, role: "ALUMNO", clases, campus: session.data.campus }));
+                        const payload = {
+                            ...values,
+                            role: "ALUMNO",
+                            mensualidad: montoANumero(values.mensualidad),
+                            inscripcion: montoANumero(values.inscripcion),
+                            clases,
+                            campus: session.data.campus
+                        };
+                        console.log(JSON.stringify(payload));
                         const response = await AxiosClient({
                             method: "POST",
                             url: "/personal/alumno",
-                            data: JSON.stringify({ ...values, role: "ALUMNO", clases, campus: session.data.campus }),
+                            data: JSON.stringify(payload),
                         });
                         console.log(response);
                         if (!response.error) {
@@ -291,9 +307,10 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         return response;
                     } catch (error) {
                         console.log(error);
+                        const msg = error?.response?.data?.message;
                         Alert.fire({
                             title: errorTitle,
-                            text: errorMsj,
+                            text: msg || errorMsj,
                             icon: "error",
                             confirmButtonColor: "#3085d6",
                             confirmButtonText: "Aceptar"
@@ -452,14 +469,14 @@ export const AddUserForm = ({ isOpen, cargarDatos, onClose, option }) => {
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='mensualidad' style={labelStyle}>Mensualidad</Form.Label>
-                            <Form.Control name='mensualidad' placeholder="0" value={form.values.mensualidad} onChange={form.handleChange} style={inputStyle} />
+                            <Form.Control name='mensualidad' inputMode="decimal" placeholder="1350" value={form.values.mensualidad} onChange={form.handleChange} style={inputStyle} />
                             {
                                 form.errors.mensualidad && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.mensualidad}</span>)
                             }
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label htmlFor='inscripcion' style={labelStyle}>Inscripción</Form.Label>
-                            <Form.Control name='inscripcion' placeholder="0" value={form.values.inscripcion} onChange={form.handleChange} style={inputStyle} />
+                            <Form.Control name='inscripcion' inputMode="decimal" placeholder="1350" value={form.values.inscripcion} onChange={form.handleChange} style={inputStyle} />
                             {
                                 form.errors.inscripcion && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.inscripcion}</span>)
                             }

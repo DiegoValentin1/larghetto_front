@@ -14,6 +14,7 @@ import Alert, {
   errorMsj,
   errorTitle,
 } from "../../../shared/plugins/alerts";
+import { esMontoValido, montoANumero } from "../../../utils/monto";
 import { FaPlus } from 'react-icons/fa'
 import { BiMinus } from 'react-icons/bi'
 
@@ -308,10 +309,10 @@ export const EditUserForm = ({
         municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-        mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        mensualidad: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)).test('monto-positivo', 'La mensualidad debe ser mayor a 0', v => montoANumero(v) > 0),
         promocion: yup.string().required("Campo obligatorio"),
         fechaInicio: yup.string().required("Campo obligatorio"),
-        inscripcion: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        inscripcion: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)),
         // nombreMadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         // madreTelefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         // nombrePadre: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
@@ -323,13 +324,13 @@ export const EditUserForm = ({
         email: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").email('Correo electrónico inválido'),
         fechaNacimiento: yup.string().required("Campo obligatorio"),
         fechaInicio: yup.string().required("Campo obligatorio"),
-        inscripcion: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        inscripcion: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)),
         nivel: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
         domicilio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres").max(250, "Maximo 250 caracteres"),
         municipio: yup.string().required("Campo obligatorio").min(1, "Minimo 1 caracteres"),
         telefono: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
         contactoEmergencia: yup.string().required("Campo obligatorio").min(10, 'Minimo 10 Dígitos').max(10, 'Maximo 10 Dígitos'),
-        mensualidad: yup.string().required("Obligatorio").min(1, "Minimo 1 caracteres"),
+        mensualidad: yup.string().required("Obligatorio").test('monto', 'Solo números, sin $ ni comas (ej. 1350)', v => esMontoValido(v)).test('monto-positivo', 'La mensualidad debe ser mayor a 0', v => montoANumero(v) > 0),
         promocion: yup.string().required("Campo obligatorio"),
       }),
     onSubmit: async (values) => {
@@ -353,19 +354,32 @@ export const EditUserForm = ({
             const clases = [];
 
             for (let i = 1; i <= numInstrumentos; i++) {
-              clases.push({
+              const clase = {
                 maestro: values[`maestro${i}`],
                 instrumento: values[`instrumento${i}`],
                 dia: values[`dia${i}`],
                 hora: values[`hora${i}`]
-              });
+              };
+              if (clase.maestro && clase.instrumento && clase.dia && clase.hora) {
+                clases.push(clase);
+              }
             }
-            console.log(JSON.stringify({ ...values, role: "ALUMNO" }));
+            const payload = {
+              ...values,
+              role: "ALUMNO",
+              mensualidad: montoANumero(values.mensualidad),
+              inscripcion: montoANumero(values.inscripcion),
+              clases,
+              user_id: objeto.user_id,
+              pagos,
+              matricula: objeto.matricula
+            };
+            console.log(JSON.stringify(payload));
             console.log("Holaaaaaaa", clases, numInstrumentos, pagos)
             const response = await AxiosClient({
               method: "PUT",
               url: "/personal/alumno",
-              data: JSON.stringify({ ...values, role: "ALUMNO", clases, user_id: objeto.user_id, pagos, matricula: objeto.matricula }),
+              data: JSON.stringify(payload),
             });
             console.log(response);
             if (!response.error) {
@@ -383,9 +397,10 @@ export const EditUserForm = ({
             return response;
           } catch (error) {
             console.log(error);
+            const msg = error?.response?.data?.message;
             Alert.fire({
               title: errorTitle,
-              text: errorMsj,
+              text: msg || errorMsj,
               icon: "error",
               confirmButtonColor: "#3085d6",
               confirmButtonText: "Aceptar"
@@ -674,7 +689,7 @@ export const EditUserForm = ({
     form.values.municipio = municipio;
     form.values.telefono = telefono;
     form.values.contactoEmergencia = contactoEmergencia;
-    form.values.mensualidad = mensualidad;
+    form.values.mensualidad = mensualidad !== null && mensualidad !== undefined ? String(mensualidad) : mensualidad;
     form.values.promocion = promocion_id;
     // form.values.hora = hora ? hora.substring(0, 5) : hora;
     form.values.observaciones = observaciones;
@@ -682,7 +697,7 @@ export const EditUserForm = ({
     form.values.nombrePadre = nombrePadre;
     form.values.madreTelefono = madreTelefono;
     form.values.padreTelefono = padreTelefono;
-    form.values.inscripcion = inscripcion;
+    form.values.inscripcion = inscripcion !== null && inscripcion !== undefined ? String(inscripcion) : inscripcion;
     form.values.fechaInicio = fecha_inicio ? fecha_inicio.substring(0, 10) : fecha_inicio;
     setMenor(nombreMadre !== 'N/A' ? true : false);
 
@@ -843,14 +858,14 @@ export const EditUserForm = ({
               </Form.Group>
               <Form.Group className='mb-3'>
                 <Form.Label htmlFor='mensualidad' style={labelStyle}>Mensualidad</Form.Label>
-                <Form.Control name='mensualidad' placeholder="0" value={form.values.mensualidad} onChange={form.handleChange} style={inputStyle} />
+                <Form.Control name='mensualidad' inputMode="decimal" placeholder="1350" value={form.values.mensualidad} onChange={form.handleChange} style={inputStyle} />
                 {
                   form.errors.mensualidad && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.mensualidad}</span>)
                 }
               </Form.Group>
               <Form.Group className='mb-3'>
                 <Form.Label htmlFor='inscripcion' style={labelStyle}>Inscripción</Form.Label>
-                <Form.Control name='inscripcion' placeholder="0" value={form.values.inscripcion} onChange={form.handleChange} style={inputStyle} />
+                <Form.Control name='inscripcion' inputMode="decimal" placeholder="1350" value={form.values.inscripcion} onChange={form.handleChange} style={inputStyle} />
                 {
                   form.errors.inscripcion && (<span className='error-text' style={{ color: '#EF4444', fontSize: '0.75rem' }}>{form.errors.inscripcion}</span>)
                 }
